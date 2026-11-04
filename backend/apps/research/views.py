@@ -1,6 +1,6 @@
 """Add manager / Add company: create the entry immediately, research it in the background."""
 from django.conf import settings
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Sum
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import BasePermission, IsAuthenticated
@@ -8,6 +8,8 @@ from rest_framework.response import Response
 
 from apps.companies.models import Company
 from apps.managers.models import Manager
+
+from apps.importer.services import _i
 
 from .engine import find_company, find_manager, unique_slug
 from .models import ResearchJob
@@ -25,13 +27,41 @@ def can_research(user) -> bool:
     return CanResearch().has_permission(type('R', (), {'user': user})(), None)
 
 
+# Typical usage per job (input tokens incl. search results, output tokens, searches) for the cost estimates
+TYPICAL = {'manager': (150_000, 9_000, 10), 'company': (60_000, 4_000, 5)}
+
+
+def estimate(kind: str, model: str) -> float:
+    from .engine import request_cost
+    tin, tout, s = TYPICAL[kind]
+    # split across ~2 requests so Haiku's 100K-prompt threshold is applied realistically
+    return round(2 * request_cost(model, tin // 2, tout // 2, 0) + s * settings.RESEARCH_SEARCH_PRICE, 2)
+
+
+def model_menu() -> dict:
+    return {
+        'models': [{'id': k, 'label': v['label'], 'est_manager': estimate('manager', k), 'est_company': estimate('company', k)}
+                   for k, v in settings.RESEARCH_MODELS.items()],
+        'defaults': {'manager': settings.RESEARCH_MODEL, 'portfolio': settings.RESEARCH_PORTFOLIO_MODEL,
+                     'company': settings.RESEARCH_COMPANY_MODEL},
+        'max_portfolio': settings.RESEARCH_MAX_PORTFOLIO,
+    }
+
+
+def pick_model(value, fallback: str) -> str:
+    v = str(value or '').strip()
+    return v if v in settings.RESEARCH_MODELS else fallback
+
+
 def job_json(j: ResearchJob) -> dict:
     kids = getattr(j, 'n_children', 0)
     return {
         'id': str(j.id), 'kind': j.kind, 'name': j.name, 'slug': j.slug, 'status': j.status,
         'error': j.error, 'summary': j.summary, 'include_portfolio': j.include_portfolio,
         'children_total': kids, 'children_done': getattr(j, 'n_done', 0), 'children_failed': getattr(j, 'n_failed', 0),
-        'searches': j.searches, 'cost_usd': j.cost_usd,
+        'searches': j.searches, 'cost_usd': round(j.cost + (getattr(j, 'children_cost', None) or 0), 3),
+        'portfolio_limit': j.portfolio_limit,
+        'model': j.model, 'portfolio_model': j.portfolio_model,
         'created_at': j.created_at.isoformat(), 'finished_at': j.finished_at.isoformat() if j.finished_at else None,
     }
 
@@ -40,7 +70,8 @@ def _jobs_qs():
     return (ResearchJob.objects.filter(parent__isnull=True)
             .annotate(n_children=Count('children'),
                       n_done=Count('children', filter=Q(children__status='done')),
-                      n_failed=Count('children', filter=Q(children__status='failed'))))
+                      n_failed=Count('children', filter=Q(children__status='failed')),
+                      children_cost=Sum('children__cost')))
 
 
 @api_view(['GET', 'POST'])
@@ -50,7 +81,7 @@ def research(request):
         jobs = list(_jobs_qs()[:30])
         active = ResearchJob.objects.filter(status__in=['queued', 'running']).count()
         return Response({'enabled': bool(settings.ANTHROPIC_API_KEY), 'can_research': can_research(request.user),
-                         'active': active, 'jobs': [job_json(j) for j in jobs]})
+                         'active': active, 'jobs': [job_json(j) for j in jobs], **model_menu()})
 
     if not can_research(request.user):
         return Response({'detail': CanResearch.message}, status=status.HTTP_403_FORBIDDEN)
@@ -83,8 +114,12 @@ def research(request):
                         status=status.HTTP_409_CONFLICT)
     obj.research_status = 'queued'
     obj.save(update_fields=['research_status'])
+    default = settings.RESEARCH_MODEL if kind == 'manager' else settings.RESEARCH_COMPANY_MODEL
     job = ResearchJob.objects.create(kind=kind, name=obj.name, website=website or obj.website, slug=obj.slug,
-                                     include_portfolio=kind == 'manager' and bool(request.data.get('include_portfolio', True)),
+                                     include_portfolio=kind == 'manager' and bool(request.data.get('include_portfolio', not existing_slug)),
+                                     model=pick_model(request.data.get('model'), default),
+                                     portfolio_model=pick_model(request.data.get('portfolio_model'), settings.RESEARCH_PORTFOLIO_MODEL),
+                                     portfolio_limit=max(0, min(60, _i(request.data.get('portfolio_limit')) or 0)),
                                      created_by=request.user)
     return Response({'id': obj.slug, 'job': job_json(job)}, status=status.HTTP_202_ACCEPTED)
 

@@ -72,7 +72,19 @@ Analysts and admins see **+ Add manager** and **+ Add company**. The entry appea
 - **Manager:** overview, AUM, funds, check sizes, stages, focus areas, key people, team, disclosed performance, best performers, exits, LP watch items, then its portfolio (up to `RESEARCH_MAX_PORTFOLIO` new companies). Companies already tracked are linked immediately; new ones are queued and researched one by one.
 - **Company:** valuation history by round, latest valuation, ARR/revenue, growth, margins, headcount, CEO, all notable investors, and positions for every tracked manager on its cap table.
 
-Progress, errors and approximate cost per job are under **Research** in the header (failed jobs can be retried); every profile also has a **Re-research** button. Rough cost with Sonnet: about $0.20–0.50 per company and $0.50 per manager profile, so a manager with 25 new portfolio companies is roughly $5–12. Rows added this way are marked `added_via=user` and are never removed by a weekly snapshot import. Viewer accounts cannot add (set the role in `/admin/`).
+Progress, errors and the actual cost of each job are under **Research** in the header (failed jobs can be retried); every profile has a **Re-research** button with its own model picker.
+
+**Models and cost.** The Add dialog lets you pick the model for the manager profile, the model for its portfolio companies, and how many new companies to research, and shows a live estimate. Defaults: Sonnet 5.5 for a manager profile, Haiku 5.5 for the portfolio fan-out, Sonnet 5.5 for a single added company. Typical cost per run (tokens + $10 per 1,000 web searches):
+
+| Model | Manager profile | Company |
+|---|---|---|
+| Haiku 5.5 | ~$0.12 | ~$0.06 |
+| Sonnet 5.5 | ~$0.49 | ~$0.21 |
+| Opus 5.5 | ~$0.88 | ~$0.37 |
+
+So a manager with 25 new portfolio companies is about $2 on the defaults. Change the defaults with `RESEARCH_MODEL`, `RESEARCH_PORTFOLIO_MODEL` and `RESEARCH_COMPANY_MODEL`; the menu and its prices live in `RESEARCH_MODELS` in `backend/atlas/settings/base.py`. Actual cost is computed per API request (including Haiku's higher rate above 100K-token prompts) and stored on each job.
+
+Rows added this way are marked `added_via=user` and are never removed by a weekly snapshot import. Viewer accounts cannot add (set the role in `/admin/`).
 
 ## Weekly refresh
 

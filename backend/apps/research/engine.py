@@ -34,7 +34,14 @@ class ResearchError(RuntimeError):
 
 
 # ── Claude call ───────────────────────────────────────────────────────────────
-def ask_claude(system: str, user: str, max_searches: int, max_tokens: int = 16000) -> tuple[str, dict]:
+def request_cost(model: str, input_tokens: int, output_tokens: int, searches: int) -> float:
+    """Price one API request (Haiku is cheaper for prompts up to 100K tokens)."""
+    p = settings.RESEARCH_MODELS.get(model, {}).get('price') or (2.0, 10.0, 2.0, 10.0)
+    pin, pout = (p[0], p[1]) if input_tokens <= 100_000 else (p[2], p[3])
+    return input_tokens * pin / 1e6 + output_tokens * pout / 1e6 + searches * settings.RESEARCH_SEARCH_PRICE
+
+
+def ask_claude(system: str, user: str, max_searches: int, max_tokens: int = 16000, model: str = '') -> tuple[str, dict]:
     """Run one research conversation with web search; follow pause_turn; return final text + usage."""
     if not settings.ANTHROPIC_API_KEY:
         raise ResearchError('Auto-research is off: set ANTHROPIC_API_KEY in the Railway service variables.')
@@ -43,15 +50,20 @@ def ask_claude(system: str, user: str, max_searches: int, max_tokens: int = 1600
     client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY, max_retries=3, timeout=600)
     tools = [{'type': 'web_search_20250305', 'name': 'web_search', 'max_uses': max_searches}]
     messages: list[dict[str, Any]] = [{'role': 'user', 'content': user}]
-    usage = {'input_tokens': 0, 'output_tokens': 0, 'searches': 0}
+    model = model or settings.RESEARCH_MODEL
+    usage = {'input_tokens': 0, 'output_tokens': 0, 'searches': 0, 'cost': 0.0}
     blocks: list[Any] = []
     for _ in range(6):  # initial turn + up to 5 pause_turn continuations
-        resp = client.messages.create(model=settings.RESEARCH_MODEL, max_tokens=max_tokens, system=system,
+        resp = client.messages.create(model=model, max_tokens=max_tokens, system=system,
                                       messages=messages, tools=tools)
-        usage['input_tokens'] += resp.usage.input_tokens or 0
-        usage['output_tokens'] += resp.usage.output_tokens or 0
-        stu = getattr(resp.usage, 'server_tool_use', None)
-        usage['searches'] += getattr(stu, 'web_search_requests', 0) or 0
+        u = resp.usage
+        tin = (u.input_tokens or 0) + (getattr(u, 'cache_read_input_tokens', 0) or 0) + (getattr(u, 'cache_creation_input_tokens', 0) or 0)
+        tout = u.output_tokens or 0
+        n_search = getattr(getattr(u, 'server_tool_use', None), 'web_search_requests', 0) or 0
+        usage['input_tokens'] += tin
+        usage['output_tokens'] += tout
+        usage['searches'] += n_search
+        usage['cost'] += request_cost(model, tin, tout, n_search)
         blocks.extend(resp.content)
         if resp.stop_reason != 'pause_turn':
             if resp.stop_reason == 'max_tokens':
@@ -154,8 +166,9 @@ def upsert_position(company: Company, manager: Manager, info: dict, via: str = '
 
 # ── manager ───────────────────────────────────────────────────────────────────
 def run_manager(job: ResearchJob) -> str:
-    system, user = manager_prompt(job.name, job.website, settings.RESEARCH_MAX_PORTFOLIO if job.include_portfolio else 0)
-    text, usage = ask_claude(system, user, max_searches=18 if job.include_portfolio else 12)
+    limit = job.portfolio_limit or settings.RESEARCH_MAX_PORTFOLIO
+    system, user = manager_prompt(job.name, job.website, limit if job.include_portfolio else 0)
+    text, usage = ask_claude(system, user, max_searches=16 if job.include_portfolio else 10, model=job.model)
     _record_usage(job, usage)
     data = parse_json(text)
     firm = data.get('firm') if isinstance(data.get('firm'), dict) else data
@@ -183,7 +196,7 @@ def run_manager(job: ResearchJob) -> str:
 
     linked = spawned = 0
     if job.include_portfolio:
-        for item in _l(data.get('portfolio'))[: settings.RESEARCH_MAX_PORTFOLIO * 2]:
+        for item in _l(data.get('portfolio'))[: limit * 2]:
             if not isinstance(item, dict) or not _s(item.get('name')):
                 continue
             name = _s(item['name'], 255)
@@ -193,13 +206,14 @@ def run_manager(job: ResearchJob) -> str:
                     linked += 1
                     recompute(existing)
                 continue
-            if spawned >= settings.RESEARCH_MAX_PORTFOLIO:
+            if spawned >= limit:
                 continue
             co = Company.objects.create(slug=unique_slug(Company, name, 96), name=name, website=_s(item.get('website'), 500),
                                         added_via='user', research_status='queued')
             Position.objects.create(company=co, manager=mgr, first_invest_year=_i(item.get('first_invest_year')),
                                     entry_round=_s(item.get('entry_round'), 255), lead=bool(item.get('lead')))
-            ResearchJob.objects.create(kind='company', name=name, website=co.website, slug=co.slug, parent=job,
+            pm = job.portfolio_model or settings.RESEARCH_PORTFOLIO_MODEL
+            ResearchJob.objects.create(kind='company', name=name, website=co.website, slug=co.slug, parent=job, model=pm,
                                        created_by=job.created_by, position={'manager': mgr.slug})
             spawned += 1
     return (f'{mgr.name}: profile filled; {linked} existing companies linked; {spawned} new companies queued for research.'
@@ -213,7 +227,7 @@ def run_company(job: ResearchJob) -> str:
     if job.position.get('manager'):
         via = Manager.objects.filter(slug=job.position['manager']).values_list('name', flat=True).first()
     system, user = company_prompt(job.name, job.website, roster, via)
-    text, usage = ask_claude(system, user, max_searches=8, max_tokens=12000)
+    text, usage = ask_claude(system, user, max_searches=6, max_tokens=12000, model=job.model)
     _record_usage(job, usage)
     data = parse_json(text)
     data['id'] = job.slug
@@ -253,7 +267,8 @@ def _record_usage(job: ResearchJob, usage: dict) -> None:
     job.searches += usage['searches']
     job.input_tokens += usage['input_tokens']
     job.output_tokens += usage['output_tokens']
-    job.save(update_fields=['searches', 'input_tokens', 'output_tokens'])
+    job.cost += usage.get('cost', 0.0)
+    job.save(update_fields=['searches', 'input_tokens', 'output_tokens', 'cost'])
 
 
 # ── job lifecycle ─────────────────────────────────────────────────────────────

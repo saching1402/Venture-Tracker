@@ -4,7 +4,7 @@
  */
 import { create } from 'zustand'
 import { api, errorText } from '../lib/api'
-import type { ResearchState } from '../types'
+import type { AddOptions, ResearchState } from '../types'
 import { useData } from './data'
 
 interface AddResult { ok: boolean; id?: string; exists?: boolean; message?: string }
@@ -14,8 +14,8 @@ interface ResearchStore extends ResearchState {
   trayOpen: boolean
   setTray: (open: boolean) => void
   refresh: () => Promise<void>
-  add: (kind: 'manager' | 'company', name: string, website: string, includePortfolio: boolean) => Promise<AddResult>
-  reresearch: (kind: 'manager' | 'company', id: string) => Promise<AddResult>
+  add: (kind: 'manager' | 'company', name: string, website: string, opts: AddOptions) => Promise<AddResult>
+  reresearch: (kind: 'manager' | 'company', id: string, model?: string) => Promise<AddResult>
   retry: (jobId: string) => Promise<void>
 }
 
@@ -24,6 +24,7 @@ let lastDone = ''
 
 export const useResearch = create<ResearchStore>((set, get) => ({
   enabled: false, can_research: false, active: 0, jobs: [], loaded: false, trayOpen: false,
+  models: [], defaults: { manager: '', portfolio: '', company: '' }, max_portfolio: 25,
 
   setTray: open => set({ trayOpen: open }),
 
@@ -40,9 +41,9 @@ export const useResearch = create<ResearchStore>((set, get) => ({
     } catch { /* keep last state; next action retries */ }
   },
 
-  async add(kind, name, website, includePortfolio) {
+  async add(kind, name, website, opts) {
     try {
-      const { data } = await api.post<{ id: string }>('/research/', { kind, name, website, include_portfolio: includePortfolio })
+      const { data } = await api.post<{ id: string }>('/research/', { kind, name, website, ...opts })
       await useData.getState().load()
       await get().refresh()
       set({ trayOpen: true })
@@ -53,9 +54,9 @@ export const useResearch = create<ResearchStore>((set, get) => ({
     }
   },
 
-  async reresearch(kind, id) {
+  async reresearch(kind, id, model) {
     try {
-      await api.post('/research/', { kind, id })
+      await api.post('/research/', { kind, id, model })
       await useData.getState().load()
       await get().refresh()
       set({ trayOpen: true })

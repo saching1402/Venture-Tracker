@@ -20,6 +20,10 @@ class ResearchJob(models.Model):
     status = models.CharField(max_length=10, choices=STATUSES, default='queued', db_index=True)
     error = models.TextField(blank=True)
     summary = models.TextField(blank=True)
+    model = models.CharField(max_length=64, blank=True)
+    portfolio_model = models.CharField(max_length=64, blank=True, help_text='Model for spawned portfolio-company jobs')
+    portfolio_limit = models.PositiveSmallIntegerField(default=0, help_text='New portfolio companies to research (0 = server default)')
+    cost = models.FloatField(default=0, help_text='USD, accumulated per API request')
     searches = models.PositiveIntegerField(default=0)
     input_tokens = models.PositiveIntegerField(default=0)
     output_tokens = models.PositiveIntegerField(default=0)
@@ -37,5 +41,4 @@ class ResearchJob(models.Model):
 
     @property
     def cost_usd(self) -> float:
-        """Rough cost: Sonnet-class token pricing plus $10 per 1,000 searches."""
-        return round(self.input_tokens * 2e-6 + self.output_tokens * 10e-6 + self.searches * 0.01, 2)
+        return round(self.cost, 3)

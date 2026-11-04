@@ -27,7 +27,7 @@ All money is **USD billions** (float). Dates are `YYYY-MM` or `YYYY-MM-DD` strin
 ## Auto-research (apps/research)
 - `POST /api/v1/research/` {kind, name, website?, include_portfolio?} or {kind, id} creates the row (`added_via='user'`, `research_status='queued'`) and a `ResearchJob`; `research_worker` (started in start.sh, `RESEARCH_CONCURRENCY` threads) claims jobs with `select_for_update(skip_locked)`.
 - `engine.ask_claude` uses the Messages API with `web_search_20250305`, follows `pause_turn`, and expects a final ```json block in the SCHEMA shape (prompts in `prompts.py`). Manager jobs spawn child company jobs; `recompute()` re-derives marks after linking.
-- Needs `ANTHROPIC_API_KEY`; model via `RESEARCH_MODEL` (default `claude-sonnet-5-5`). Only admin/analyst/staff can create jobs.
+- Needs `ANTHROPIC_API_KEY`. Model is chosen per job (Add dialog / Re-research) from `settings.RESEARCH_MODELS`, which also holds per-model prices; defaults `RESEARCH_MODEL` (manager, Sonnet), `RESEARCH_PORTFOLIO_MODEL` (fan-out, Haiku), `RESEARCH_COMPANY_MODEL` (Sonnet). Unknown model ids fall back to the default. `engine.request_cost` prices each API request; `ResearchJob.cost` accumulates it. Only admin/analyst/staff can create jobs.
 - Snapshot imports never delete `added_via='user'` rows; `pipeline/merge.py` keeps firm ids it hasn't seen in its CANON list.
 
 ## Conventions

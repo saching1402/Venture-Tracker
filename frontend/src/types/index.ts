@@ -163,8 +163,23 @@ export interface ResearchJob {
   children_failed: number
   searches: number
   cost_usd: number
+  model: string
+  portfolio_model: string
+  portfolio_limit: number
   created_at: string
   finished_at: string | null
 }
 
-export interface ResearchState { enabled: boolean; can_research: boolean; active: number; jobs: ResearchJob[] }
+export interface ResearchModel { id: string; label: string; est_manager: number; est_company: number }
+
+export interface ResearchState {
+  enabled: boolean
+  can_research: boolean
+  active: number
+  jobs: ResearchJob[]
+  models: ResearchModel[]
+  defaults: { manager: string; portfolio: string; company: string }
+  max_portfolio: number
+}
+
+export interface AddOptions { model?: string; portfolio_model?: string; portfolio_limit?: number; include_portfolio?: boolean }

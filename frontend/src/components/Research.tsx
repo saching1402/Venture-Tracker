@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
 import { go } from '../lib/route'
 import { useResearch } from '../store/research'
-import type { ResearchStatus } from '../types'
+import type { ResearchModel, ResearchStatus } from '../types'
+
+const usd = (v: number) => (v < 1 ? `$${v.toFixed(2)}` : `$${v.toFixed(v < 10 ? 1 : 0)}`)
+const modelLabel = (models: ResearchModel[], id: string) => models.find(m => m.id === id)?.label.split(' · ')[0] ?? id
 
 export function ResearchBadge({ status }: { status: ResearchStatus }) {
   if (!status) return null
@@ -26,10 +29,15 @@ export function AddButton({ kind }: { kind: 'manager' | 'company' }) {
 }
 
 function AddDialog({ kind, onClose }: { kind: 'manager' | 'company'; onClose: () => void }) {
-  const { add, enabled } = useResearch()
+  const { add, enabled, models, defaults, max_portfolio } = useResearch()
   const [name, setName] = useState('')
   const [website, setWebsite] = useState('')
   const [portfolio, setPortfolio] = useState(true)
+  const [model, setModel] = useState(kind === 'manager' ? defaults.manager : defaults.company)
+  const [pModel, setPModel] = useState(defaults.portfolio)
+  const [limit, setLimit] = useState(max_portfolio)
+  const est = (id: string, k: 'manager' | 'company') => models.find(m => m.id === id)?.[k === 'manager' ? 'est_manager' : 'est_company'] ?? 0
+  const total = kind === 'manager' ? est(model, 'manager') + (portfolio ? limit * est(pModel, 'company') : 0) : est(model, 'company')
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<{ text: string; id?: string } | null>(null)
 
@@ -43,7 +51,8 @@ function AddDialog({ kind, onClose }: { kind: 'manager' | 'company'; onClose: ()
     e.preventDefault()
     if (!name.trim() || busy) return
     setBusy(true)
-    const r = await add(kind, name.trim(), website.trim(), portfolio)
+    const r = await add(kind, name.trim(), website.trim(),
+      kind === 'manager' ? { model, portfolio_model: pModel, portfolio_limit: limit, include_portfolio: portfolio } : { model })
     setBusy(false)
     if (r.ok) { onClose(); go(`${kind === 'manager' ? 'gp' : 'co'}-${r.id}`); return }
     setErr({ text: r.message ?? 'Could not add.', id: r.exists ? r.id : undefined })
@@ -68,12 +77,40 @@ function AddDialog({ kind, onClose }: { kind: 'manager' | 'company'; onClose: ()
             <label className="form-label" htmlFor="add-web">Website <span className="note" style={{ textTransform: 'none' }}>(optional, helps tell similar names apart)</span></label>
             <input id="add-web" className="form-input" style={{ width: '100%' }} value={website} onChange={e => setWebsite(e.target.value)} placeholder="https://" />
           </div>
+          <div className="form-group">
+            <label className="form-label" htmlFor="add-model">{kind === 'manager' ? 'Model for the manager profile' : 'Research model'}</label>
+            <select id="add-model" className="form-select" style={{ width: '100%' }} value={model} onChange={e => setModel(e.target.value)}>
+              {models.map(m => <option key={m.id} value={m.id}>{m.label} (~{usd(kind === 'manager' ? m.est_manager : m.est_company)})</option>)}
+            </select>
+          </div>
           {kind === 'manager' && (
-            <label className="chk" style={{ alignItems: 'flex-start' }}>
-              <input id="add-portfolio" type="checkbox" checked={portfolio} onChange={e => setPortfolio(e.target.checked)} style={{ marginTop: 2 }} />
-              <span>Also research its portfolio companies. Companies already tracked are linked straight away; new ones are researched one by one.</span>
-            </label>
+            <>
+              <label className="chk" style={{ alignItems: 'flex-start', marginBottom: 12 }}>
+                <input id="add-portfolio" type="checkbox" checked={portfolio} onChange={e => setPortfolio(e.target.checked)} style={{ marginTop: 2 }} />
+                <span>Also research its portfolio companies. Companies already tracked are linked straight away; new ones are researched one by one.</span>
+              </label>
+              {portfolio && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px', gap: 10 }}>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label" htmlFor="add-pmodel">Model for portfolio companies</label>
+                    <select id="add-pmodel" className="form-select" style={{ width: '100%' }} value={pModel} onChange={e => setPModel(e.target.value)}>
+                      {models.map(m => <option key={m.id} value={m.id}>{m.label} (~{usd(m.est_company)} each)</option>)}
+                    </select>
+                  </div>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label" htmlFor="add-limit">New companies</label>
+                    <input id="add-limit" type="number" min={1} max={60} className="form-input" style={{ width: '100%' }} value={limit}
+                      onChange={e => setLimit(Math.max(1, Math.min(60, Number(e.target.value) || 1)))} />
+                  </div>
+                </div>
+              )}
+            </>
           )}
+          <div className="card" style={{ marginTop: 14, background: 'var(--surface2)', display: 'flex', alignItems: 'baseline', gap: 10 }}>
+            <span className="card-title" style={{ margin: 0 }}>Estimated cost</span>
+            <span className="kpi-val" style={{ fontSize: 20 }}>~{usd(total)}</span>
+            <span className="note">{kind === 'manager' && portfolio ? `profile + up to ${limit} new companies; tracked ones are linked free` : 'one research run'}</span>
+          </div>
           <p className="note" style={{ marginTop: 14 }}>
             The {what} appears in the list right away. Research runs in the background with web search and fills the same fields as the rest of the tracker,
             usually in {kind === 'manager' ? (portfolio ? '5–20 minutes including portfolio companies' : '2–4 minutes') : '1–3 minutes'}.
@@ -125,7 +162,7 @@ export function ResearchTray() {
                 )}
                 {j.summary && <div className="sub">{j.summary}</div>}
                 {j.error && <div className="sub" style={{ color: 'var(--red)' }}>{j.error}</div>}
-                <div className="sub">{new Date(j.created_at).toLocaleString()} · {j.searches} searches · ~${j.cost_usd.toFixed(2)}</div>
+                <div className="sub">{new Date(j.created_at).toLocaleString()} · {modelLabel(useResearch.getState().models, j.model)}{j.children_total ? ` + ${modelLabel(useResearch.getState().models, j.portfolio_model)} for portfolio` : ''} · {j.searches} searches · {usd(j.cost_usd)}{j.children_total ? ' incl. portfolio' : ''}</div>
                 {(j.status === 'failed' || j.children_failed > 0) && can_research && (
                   <div><button className="pb" onClick={() => void retry(j.id)}>Retry failed</button></div>
                 )}
@@ -139,14 +176,20 @@ export function ResearchTray() {
 }
 
 export function ReresearchButton({ kind, id, status }: { kind: 'manager' | 'company'; id: string; status?: ResearchStatus }) {
-  const { can_research, enabled, reresearch } = useResearch()
+  const { can_research, enabled, reresearch, models, defaults } = useResearch()
   const [msg, setMsg] = useState<string | null>(null)
+  const [model, setModel] = useState(kind === 'manager' ? defaults.manager : defaults.company)
   if (!can_research || !enabled) return null
   const busy = status === 'queued' || status === 'running'
   return (
     <>
-      <button className="btn" disabled={busy} title="Run web research again and update this profile"
-        onClick={async () => { const r = await reresearch(kind, id); setMsg(r.ok ? 'Research started' : r.message ?? 'Failed') }}>
+      {!busy && (
+        <select aria-label="Model for re-research" className="tbl-sel" value={model} onChange={e => setModel(e.target.value)}>
+          {models.map(m => <option key={m.id} value={m.id}>{m.label.split(' · ')[0]}</option>)}
+        </select>
+      )}
+      <button className="btn" disabled={busy} title="Run web research again and update this profile (its portfolio is not re-researched)"
+        onClick={async () => { const r = await reresearch(kind, id, model); setMsg(r.ok ? 'Research started' : r.message ?? 'Failed') }}>
         {busy ? 'Researching…' : 'Re-research'}
       </button>
       {msg && <span className="note">{msg}</span>}

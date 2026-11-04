@@ -133,7 +133,18 @@ CORS_ALLOW_CREDENTIALS = True
 
 # Auto-research (Add manager / Add company): Claude API + web search
 ANTHROPIC_API_KEY = env('ANTHROPIC_API_KEY', default='')
+# Default models: Sonnet for a manager's own profile, Haiku (≈20x cheaper) for the portfolio fan-out
 RESEARCH_MODEL = env('RESEARCH_MODEL', default='claude-sonnet-5-5')
+RESEARCH_PORTFOLIO_MODEL = env('RESEARCH_PORTFOLIO_MODEL', default='claude-haiku-5-5')
+RESEARCH_COMPANY_MODEL = env('RESEARCH_COMPANY_MODEL', default='claude-sonnet-5-5')
+# Models offered in the Add dialog. USD per million tokens: (input, output, input above 100K-token prompts, output above).
+# Update when Anthropic pricing changes; any model id here can also be set as a default above.
+RESEARCH_MODELS = {
+    'claude-haiku-5-5': {'label': 'Haiku 5.5 · economy', 'price': (0.10, 0.50, 0.50, 2.50)},
+    'claude-sonnet-5-5': {'label': 'Sonnet 5.5 · balanced', 'price': (2.0, 10.0, 2.0, 10.0)},
+    'claude-opus-5-5': {'label': 'Opus 5.5 · deepest', 'price': (4.0, 20.0, 4.0, 20.0)},
+}
+RESEARCH_SEARCH_PRICE = 0.01  # $10 per 1,000 web searches
 RESEARCH_MAX_PORTFOLIO = env.int('RESEARCH_MAX_PORTFOLIO', default=25)  # new companies researched per added manager
 RESEARCH_CONCURRENCY = env.int('RESEARCH_CONCURRENCY', default=3)
 

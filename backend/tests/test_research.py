@@ -32,9 +32,14 @@ CO = {'name': 'Brand New Robotics Co', 'sector': 'Deep tech', 'focus_tags': ['Ro
       'tracked_investors': [{'id': 'lux', 'first_invest_year': 2026, 'entry_round': 'Series A', 'lead': True}]}
 
 
-def fake_claude(system, user, max_searches, max_tokens=16000):
+CALLS = []
+
+
+def fake_claude(system, user, max_searches, max_tokens=16000, model=''):
+    CALLS.append(model)
     data = FIRM if 'investment manager' in user else CO
-    return f'Here you go.\n```json\n{json.dumps(data)}\n```', {'input_tokens': 1000, 'output_tokens': 500, 'searches': 3}
+    cost = engine.request_cost(model, 1000, 500, 3)
+    return f'Here you go.\n```json\n{json.dumps(data)}\n```', {'input_tokens': 1000, 'output_tokens': 500, 'searches': 3, 'cost': cost}
 
 
 @pytest.fixture
@@ -114,3 +119,35 @@ def test_failed_job_can_retry(setup):
 
 def test_parse_json_takes_last_block():
     assert engine.parse_json('a ```json\n{"x":1}\n``` b ```json\n{"x":2}\n```') == {'x': 2}
+
+
+@override_settings(ANTHROPIC_API_KEY='sk-test')
+def test_model_choice_and_costing(setup):
+    c, h = login('a@example.com')
+    menu = c.get('/api/v1/research/', **h).json()
+    ids = [m['id'] for m in menu['models']]
+    assert {'claude-haiku-5-5', 'claude-sonnet-5-5', 'claude-opus-5-5'} <= set(ids)
+    haiku = next(m for m in menu['models'] if m['id'] == 'claude-haiku-5-5')
+    sonnet = next(m for m in menu['models'] if m['id'] == 'claude-sonnet-5-5')
+    assert haiku['est_company'] < sonnet['est_company']
+    r = c.post('/api/v1/research/', {'kind': 'manager', 'name': 'Obvious Ventures', 'model': 'claude-opus-5-5',
+                                     'portfolio_model': 'claude-haiku-5-5', 'portfolio_limit': 'abc'},
+               content_type='application/json', **h)
+    assert r.status_code == 202 and r.json()['job']['model'] == 'claude-opus-5-5'
+    bad = c.post('/api/v1/research/', {'kind': 'company', 'name': 'X Corp', 'model': 'gpt-4'}, content_type='application/json', **h)
+    assert bad.json()['job']['model'] == 'claude-sonnet-5-5'   # unknown model ids fall back to the default
+    CALLS.clear()
+    with mock.patch.object(engine, 'ask_claude', side_effect=fake_claude):
+        while (job := engine.claim_next()):
+            engine.run_job(job)
+    assert CALLS[0] == 'claude-opus-5-5' and 'claude-haiku-5-5' in CALLS
+    child = ResearchJob.objects.get(parent__isnull=False)
+    assert child.model == 'claude-haiku-5-5' and child.cost == pytest.approx(0.0001 + 0.00025 + 0.03)
+    top = next(j for j in c.get('/api/v1/research/', **h).json()['jobs'] if j['kind'] == 'manager')
+    assert top['cost_usd'] == pytest.approx(round(engine.request_cost('claude-opus-5-5', 1000, 500, 3) + child.cost, 3))
+
+
+def test_haiku_long_prompt_tier():
+    from apps.research.engine import request_cost
+    assert request_cost('claude-haiku-5-5', 100_000, 0, 0) == pytest.approx(0.01)
+    assert request_cost('claude-haiku-5-5', 200_000, 0, 0) == pytest.approx(0.10)
