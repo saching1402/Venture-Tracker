@@ -7,6 +7,7 @@ LIST_FIELDS = [
     'latest_valuation_usd_bn', 'valuation_date', 'valuation_label', 'valuation_stale', 'legacy',
     'first_mark_date', 'step_up_x', 'revenue_usd_bn', 'revenue_metric', 'revenue_date', 'ev_rev_x',
     'growth', 'profitability', 'total_raised_usd_bn', 'founded', 'tracked_gp_ids', 'other_investors',
+    'research_status', 'added_via',
 ]
 
 

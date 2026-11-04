@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import Drawer from '../components/Drawer'
 import { Card, Fact, Lbl, Sources, Star, StatusPill, Tags } from '../components/ui'
 import ValuationChart from '../components/ValuationChart'
+import { ReresearchButton, ResearchBadge } from '../components/Research'
 import { api, errorText } from '../lib/api'
 import { money, shortName, xmult } from '../lib/format'
 import { go } from '../lib/route'
@@ -10,8 +11,10 @@ import type { CompanyDetail } from '../types'
 
 export default function CompanyDrawer({ id }: { id: string }) {
   const managers = useData(s => s.managers)
+  const rs = useData(s => s.coById[id]?.research_status ?? '')
   const { data: c, error, isLoading } = useQuery({
-    queryKey: ['company', id],
+    queryKey: ['company', id, rs],
+    refetchInterval: rs === 'queued' || rs === 'running' ? 8000 : false,
     queryFn: () => api.get<CompanyDetail>(`/companies/${encodeURIComponent(id)}/`).then(r => r.data),
   })
   if (isLoading) return <Drawer title="Loading…"><div className="empty-state">Loading company…</div></Drawer>
@@ -22,8 +25,10 @@ export default function CompanyDrawer({ id }: { id: string }) {
   const positions = [...c.gp_positions].sort((a, b) => (a.first_invest_year ?? 9999) - (b.first_invest_year ?? 9999))
 
   return (
-    <Drawer eyebrow={[c.sector, c.hq, c.founded ? `Founded ${c.founded}` : ''].filter(Boolean).join(' · ')} title={c.name}
-      link={c.website || undefined} actions={<Star kind="company" id={c.id} />}>
+    <Drawer eyebrow={[c.sector, c.hq, c.founded ? `Founded ${c.founded}` : ''].filter(Boolean).join(' · ')} title={<>{c.name}<ResearchBadge status={c.research_status} /></>}
+      link={c.website || undefined} actions={<><ReresearchButton kind="company" id={c.id} status={c.research_status} /><Star kind="company" id={c.id} /></>}>
+      {c.research_status && c.research_status !== 'failed' && <div className="card"><p className="prose">Researching this company on the web. Valuation history, revenue and investors fill in automatically.</p></div>}
+      {c.research_status === 'failed' && <div className="err-box">Research did not finish. Open Research in the header to see why and retry.</div>}
       <p className="prose">{c.description}</p>
       <div><StatusPill status={c.status} /> <Tags items={c.focus_tags} cls="focus" /></div>
       <div className="facts">

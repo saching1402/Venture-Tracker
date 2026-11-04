@@ -4,6 +4,8 @@ Context for AI assistants working on this repo. Keep it current.
 
 **What it is:** a tracker of venture/growth managers (GPs) and their portfolio companies for an institutional LP (Mindari suite). Same stack and Railway deployment pattern as the Dynamo repo (`saching1402/dynamo`).
 
+**Look:** white background, navy ink, gold accents, red for alerts/declines; fonts Bricolage Grotesque (display), IBM Plex Sans (body), IBM Plex Mono (numbers) — tokens in `frontend/src/index.css` `:root`.
+
 **Stack:** Django 5 + DRF + SimpleJWT + PostgreSQL (`backend/`), React 18 + TS + Vite + Tailwind + Zustand + React Query + Recharts (`frontend/`), deployed as ONE Railway service from the repo root (root `Dockerfile` builds the React app and copies it into Django as `frontend_dist`, served by WhiteNoise + `spa_index`) + Railway Postgres. `backend/` and `frontend/` Dockerfiles remain for a two-service setup.
 
 ## Data model
@@ -21,6 +23,12 @@ All money is **USD billions** (float). Dates are `YYYY-MM` or `YYYY-MM-DD` strin
 - `valuation_stale` = only an old mark exists (pre-2024, or a non-private company with no current mark). Excluded from totals.
 - `apps/importer/services.py::_derive` recomputes step-up, val/revenue (quarterly revenue ×4; >1000x dropped as unit error) and entry marks; keep it in sync with `pipeline/merge.py`.
 - Import is a full snapshot: companies absent from it are removed (logged). Snapshots < 70% of live company count are rejected unless `force=1`.
+
+## Auto-research (apps/research)
+- `POST /api/v1/research/` {kind, name, website?, include_portfolio?} or {kind, id} creates the row (`added_via='user'`, `research_status='queued'`) and a `ResearchJob`; `research_worker` (started in start.sh, `RESEARCH_CONCURRENCY` threads) claims jobs with `select_for_update(skip_locked)`.
+- `engine.ask_claude` uses the Messages API with `web_search_20250305`, follows `pause_turn`, and expects a final ```json block in the SCHEMA shape (prompts in `prompts.py`). Manager jobs spawn child company jobs; `recompute()` re-derives marks after linking.
+- Needs `ANTHROPIC_API_KEY`; model via `RESEARCH_MODEL` (default `claude-sonnet-5-5`). Only admin/analyst/staff can create jobs.
+- Snapshot imports never delete `added_via='user'` rows; `pipeline/merge.py` keeps firm ids it hasn't seen in its CANON list.
 
 ## Conventions
 - All data endpoints require JWT (`IsAuthenticated`). Import/export require `X-Import-Token` or staff.

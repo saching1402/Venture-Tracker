@@ -40,11 +40,14 @@ CANON = [
 ]
 CANON_IDS = {c for c, _ in CANON}
 
+KNOWN_IDS = set()  # firm ids present in the snapshot (includes managers added in the app)
+
+
 def canon_firm(s):
     if not s:
         return None
     t = str(s).strip().lower()
-    if t in CANON_IDS:
+    if t in CANON_IDS or t in KNOWN_IDS:
         return t
     t2 = re.sub(r"[_\-]+", " ", t)
     for cid, pat in CANON:
@@ -106,7 +109,9 @@ def dkey(d):
 
 # ---------------- firms ----------------
 firms = {}
-for f in load("firms_*.json"):
+_all_firms = load("firms_*.json")
+KNOWN_IDS.update(str(f.get("id")).strip().lower() for f in _all_firms if f.get("id"))
+for f in _all_firms:
     cid = canon_firm(f.get("id")) or canon_firm(f.get("name")) or slug(f.get("name", "x"))
     f["id"] = cid
     if cid in firms:  # keep richer

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import DataTable, { type Col } from '../components/DataTable'
+import { AddButton, ResearchBadge } from '../components/Research'
 import { Kpi, Select, Star, Tags } from '../components/ui'
 import { money, uniq } from '../lib/format'
 import { go } from '../lib/route'
@@ -13,7 +14,7 @@ export default function Managers() {
   const [stage, setStage] = useState('')
   const [focus, setFocus] = useState('')
 
-  const real = useMemo(() => managers.filter(m => !m.is_stub), [managers])
+  const real = useMemo(() => managers.filter(m => !m.is_stub || m.added_via === 'user'), [managers])
   const topByMgr = useMemo(() => {
     const out: Record<string, string[]> = {}
     for (const c of companies) {
@@ -29,7 +30,7 @@ export default function Managers() {
 
   const cols: Col<ManagerRow>[] = [
     { key: 'w', header: '', cell: m => <Star kind="manager" id={m.id} /> },
-    { key: 'name', header: 'Manager', sort: m => m.name, cell: m => <><div className="nm">{m.name}</div><div className="sub">{m.type}</div></> },
+    { key: 'name', header: 'Manager', sort: m => m.name, cell: m => <><div className="nm">{m.name}<ResearchBadge status={m.research_status} /></div><div className="sub">{m.type || (m.research_status ? 'Profile being researched…' : '')}</div></> },
     { key: 'hq', header: 'HQ', sort: m => m.hq, cell: m => m.hq.replace(/, USA$/, '') },
     { key: 'aum', header: 'AUM', numeric: true, sort: m => m.aum_usd_bn, cell: m => money(m.aum_usd_bn) },
     { key: 'fund', header: 'Latest fund', numeric: true, sort: m => m.latest_fund?.size_usd_bn,
@@ -56,6 +57,7 @@ export default function Managers() {
           <Select id="mtype" value={type} onChange={setType} options={uniq(real.map(m => m.type))} all="All types" />
           <Select id="mstage" value={stage} onChange={setStage} options={uniq(real.flatMap(m => m.stages))} all="All stages" />
           <Select id="mfocus" value={focus} onChange={setFocus} options={uniq(real.flatMap(m => m.focus_areas))} all="All focus areas" />
+          <AddButton kind="manager" />
           <span className="tbl-ct">{rows.length} managers</span>
         </div>
       </div>

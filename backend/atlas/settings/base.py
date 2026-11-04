@@ -40,6 +40,7 @@ LOCAL_APPS = [
     'apps.companies',
     'apps.tracking',
     'apps.importer',
+    'apps.research',
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -129,6 +130,12 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=['http://localhost:5173', 'http://localhost:3000'])
 CORS_ALLOW_CREDENTIALS = True
+
+# Auto-research (Add manager / Add company): Claude API + web search
+ANTHROPIC_API_KEY = env('ANTHROPIC_API_KEY', default='')
+RESEARCH_MODEL = env('RESEARCH_MODEL', default='claude-sonnet-5-5')
+RESEARCH_MAX_PORTFOLIO = env.int('RESEARCH_MAX_PORTFOLIO', default=25)  # new companies researched per added manager
+RESEARCH_CONCURRENCY = env.int('RESEARCH_CONCURRENCY', default=3)
 
 # Token the weekly refresh job sends in the X-Import-Token header (empty = import API disabled)
 IMPORT_TOKEN = env('IMPORT_TOKEN', default='')

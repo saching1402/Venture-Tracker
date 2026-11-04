@@ -39,6 +39,8 @@ class Company(models.Model):
     notes = models.TextField(blank=True)
     sources = models.JSONField(default=list, blank=True)
     last_verified = models.CharField(max_length=20, blank=True)
+    research_status = models.CharField(max_length=12, blank=True, help_text='queued / running / failed while auto-research is in progress')
+    added_via = models.CharField(max_length=12, default='snapshot', help_text='"user" when added in the app; never removed by snapshot imports')
     updated_at = models.DateTimeField(auto_now=True)
 
     managers = models.ManyToManyField(Manager, through='Position', related_name='companies')

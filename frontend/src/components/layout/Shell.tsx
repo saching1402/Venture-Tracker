@@ -14,13 +14,14 @@ import Method from '../../pages/Method'
 import Overlap from '../../pages/Overlap'
 import Rounds from '../../pages/Rounds'
 import Watchlist from '../../pages/Watchlist'
+import { ResearchTray } from '../Research'
 
 const PAGES = { managers: Managers, companies: Companies, rounds: Rounds, overlap: Overlap, watchlist: Watchlist, changes: Changes, method: Method }
 
 function Splash({ children }: { children: React.ReactNode }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: 14, background: 'var(--bg)' }}>
-      <div style={{ fontSize: 30, fontFamily: 'Playfair Display, serif', color: 'var(--navy)' }}>Venture GP Atlas</div>
+      <div style={{ fontSize: 30, fontFamily: 'var(--f-display)', color: 'var(--navy)' }}>Venture GP Atlas</div>
       {children}
     </div>
   )
@@ -60,11 +61,10 @@ function AppShell() {
         <div className="hdr-space" />
         <span className="hdr-asof">{meta?.managers} managers · {meta?.companies} companies · {money(meta?.combined_value_usd_bn)}&nbsp;&nbsp;·&nbsp;&nbsp;Data as of&nbsp;</span>
         <span className="hdr-date">{asof}</span>
-        <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,.15)', margin: '0 14px' }} />
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,.5)', marginRight: 8 }}>{email}</span>
-        <button onClick={logout} style={{ fontSize: 11, color: 'rgba(255,255,255,.6)', background: 'rgba(255,255,255,.08)', border: '1px solid rgba(255,255,255,.12)', borderRadius: 5, padding: '3px 10px', cursor: 'pointer', fontFamily: 'inherit' }}>
-          Sign out
-        </button>
+        <div className="hdr-div" style={{ width: 1, height: 18, background: 'var(--border)', margin: '0 14px' }} />
+        <ResearchTray />
+        <span className="hdr-email" style={{ fontSize: 11.5, color: 'var(--muted)', margin: '0 10px 0 12px' }}>{email}</span>
+        <button className="hdr-btn" onClick={logout}>Sign out</button>
       </div>
       <div id="app-tabnav-wrap">
         <div id="app-tabnav">

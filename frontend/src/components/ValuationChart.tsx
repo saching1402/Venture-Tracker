@@ -18,14 +18,14 @@ export default function ValuationChart({ rounds, latest, latestDate }: { rounds:
       <div style={{ width: '100%', height: 230 }}>
       <ResponsiveContainer>
         <LineChart data={pts} margin={{ top: 10, right: 16, left: 4, bottom: 4 }}>
-          <CartesianGrid stroke="#e5e0d8" vertical={false} />
-          <XAxis dataKey="d" tick={{ fontSize: 10, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: '#d4cec4' }} />
+          <CartesianGrid stroke="var(--border)" vertical={false} />
+          <XAxis dataKey="d" tick={{ fontSize: 10, fill: 'var(--muted)' }} tickLine={false} axisLine={{ stroke: 'var(--border2)' }} />
           <YAxis scale="log" domain={[ticks[0], ticks[ticks.length - 1]]} ticks={ticks} allowDataOverflow
-            tickFormatter={v => money(v as number)} tick={{ fontSize: 10, fill: '#64748b' }} tickLine={false} axisLine={false} width={56} />
+            tickFormatter={v => money(v as number)} tick={{ fontSize: 10, fill: 'var(--muted)' }} tickLine={false} axisLine={false} width={56} />
           <Tooltip formatter={(v: number) => [money(v), 'Post-money']} labelFormatter={(l, p) => `${l} · ${p?.[0]?.payload?.r ?? ''}`}
-            contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e5e0d8' }} />
-          <Line type="linear" dataKey="v" stroke="#0c1a2e" strokeWidth={2} dot={{ r: 3, fill: '#fff', stroke: '#0c1a2e' }}
-            activeDot={{ r: 5, fill: '#c9a262', stroke: '#0c1a2e' }} isAnimationActive={false} />
+            contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid var(--border)', fontFamily: 'var(--f-body)' }} />
+          <Line type="linear" dataKey="v" stroke="var(--navy)" strokeWidth={2} dot={{ r: 3, fill: '#fff', stroke: 'var(--navy)' }}
+            activeDot={{ r: 5, fill: 'var(--gold)', stroke: 'var(--navy)' }} isAnimationActive={false} />
         </LineChart>
       </ResponsiveContainer>
       </div>

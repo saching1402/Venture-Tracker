@@ -220,13 +220,14 @@ def import_payload(payload: dict, source: str = 'api', force: bool = False) -> d
                 events.append(ChangeEvent(date=asof, company=obj, company_name=obj.name, manager=m, type='new_position',
                                           detail=f'{m.name} now on cap table'))
 
-    removed = [s for s in before if s not in seen]
+    removed = [s for s in before if s not in seen and before[s].added_via != 'user']
     for s in removed:
         events.append(ChangeEvent(date=asof, company=None, company_name=before[s].name, type='removed',
                                   detail='Removed from tracker'))
     Company.objects.filter(slug__in=removed).delete()
     if firms:
-        Manager.objects.exclude(slug__in=list(mgr_by_slug)).filter(positions__isnull=True).delete()
+        (Manager.objects.exclude(slug__in=list(mgr_by_slug)).exclude(added_via='user')
+         .filter(positions__isnull=True).delete())
 
     if first_import:  # carry the snapshot's own history in on the very first load
         for ch in _l(payload.get('changes')):

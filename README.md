@@ -55,14 +55,24 @@ The repo root has a `Dockerfile` and `railway.toml`, so Railway builds it with n
    DJANGO_SUPERUSER_PASSWORD=at-least-12-characters
    SECRET_KEY=<openssl rand -hex 32>
    IMPORT_TOKEN=<openssl rand -hex 24>
+   ANTHROPIC_API_KEY=<key from console.anthropic.com>
    ```
-   Only the first three are required. Without `SECRET_KEY` a stable key is derived from the database URL; without `IMPORT_TOKEN` the weekly refresh cannot push data.
+   Only the first three are required. Without `SECRET_KEY` a stable key is derived from the database URL; without `IMPORT_TOKEN` the weekly refresh cannot push data; without `ANTHROPIC_API_KEY` the Add manager / Add company buttons are disabled.
 4. **Settings → Networking → Generate Domain** (port 8000 if asked).
 5. Open the domain and sign in with the superuser email and password. First boot takes 1–2 minutes: it migrates, creates the admin and loads `backend/data/tracker.json`. Add colleagues at `/admin/` → Users.
 
 `FORCE_REIMPORT=1` for one deploy reloads `backend/data/tracker.json` over the live data. `ALLOWED_HOSTS` defaults to `.railway.app`; add your own domain there if you attach one.
 
 **Two-service alternative:** `backend/` and `frontend/` each still have their own Dockerfile and Railway config. Set Root Directory to `/backend` and `/frontend` on two services, set `VITE_API_URL=https://<backend>/api/v1` on the frontend and `CORS_ALLOWED_ORIGINS=https://<frontend>` on the backend.
+
+## Adding managers and companies
+
+Analysts and admins see **+ Add manager** and **+ Add company**. The entry appears at once; a background worker (started by `start.sh`) asks Claude with web search for the same fields as the rest of the tracker and writes them in:
+
+- **Manager:** overview, AUM, funds, check sizes, stages, focus areas, key people, team, disclosed performance, best performers, exits, LP watch items, then its portfolio (up to `RESEARCH_MAX_PORTFOLIO` new companies). Companies already tracked are linked immediately; new ones are queued and researched one by one.
+- **Company:** valuation history by round, latest valuation, ARR/revenue, growth, margins, headcount, CEO, all notable investors, and positions for every tracked manager on its cap table.
+
+Progress, errors and approximate cost per job are under **Research** in the header (failed jobs can be retried); every profile also has a **Re-research** button. Rough cost with Sonnet: about $0.20–0.50 per company and $0.50 per manager profile, so a manager with 25 new portfolio companies is roughly $5–12. Rows added this way are marked `added_via=user` and are never removed by a weekly snapshot import. Viewer accounts cannot add (set the role in `/admin/`).
 
 ## Weekly refresh
 

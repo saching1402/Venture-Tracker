@@ -36,6 +36,7 @@ urlpatterns = [
     path('api/v1/companies/', include('apps.companies.urls')),
     path('api/v1/', include('apps.tracking.urls')),
     path('api/v1/', include('apps.importer.urls')),
+    path('api/v1/', include('apps.research.urls')),
 
     path('', spa_index, name='spa'),
 ]

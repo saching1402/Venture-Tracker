@@ -44,4 +44,7 @@ else
     echo "Data present — skipping seed import."
 fi
 
+echo "--- Starting research worker (Add manager / Add company) ---"
+python -u manage.py research_worker 2>&1 &
+
 wait $GUNICORN_PID

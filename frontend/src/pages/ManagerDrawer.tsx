@@ -2,18 +2,24 @@ import { useQuery } from '@tanstack/react-query'
 import DataTable from '../components/DataTable'
 import Drawer from '../components/Drawer'
 import { Card, Fact, Lbl, Sources, Star, StatusPill, Tags } from '../components/ui'
+import { ReresearchButton, ResearchBadge } from '../components/Research'
 import { api, errorText } from '../lib/api'
+import { useData } from '../store/data'
 import { money, xmult } from '../lib/format'
 import { go } from '../lib/route'
 import type { ManagerDetail } from '../types'
+
+const SEC_COLORS = ['var(--navy)', 'var(--gold)', 'var(--navy3)', 'var(--gold2)', 'var(--blue)', 'var(--red)', '#7d8aa3', '#d9c08a']
 
 function List({ items }: { items: string[] }) {
   return items.length ? <ul className="plain">{items.map(x => <li key={x}>{x}</li>)}</ul> : <p className="note">Not available.</p>
 }
 
 export default function ManagerDrawer({ id }: { id: string }) {
+  const rs = useData(s => s.mgrById[id]?.research_status ?? '')
   const { data: f, error, isLoading } = useQuery({
-    queryKey: ['manager', id],
+    queryKey: ['manager', id, rs],
+    refetchInterval: rs === 'queued' || rs === 'running' ? 8000 : false,
     queryFn: () => api.get<ManagerDetail>(`/managers/${encodeURIComponent(id)}/`).then(r => r.data),
   })
   if (isLoading) return <Drawer title="Loading…"><div className="empty-state">Loading manager…</div></Drawer>
@@ -26,9 +32,11 @@ export default function ManagerDrawer({ id }: { id: string }) {
   const secs = Object.entries(sec).sort((a, b) => b[1] - a[1])
 
   return (
-    <Drawer eyebrow={[f.type, f.founded ? `Founded ${f.founded}` : ''].filter(Boolean).join(' · ')} title={f.name} link={f.website || undefined}
-      actions={<Star kind="manager" id={f.id} />}>
-      {f.is_stub && <p className="note">This manager appears on tracked cap tables but has no profile yet; the next refresh fills it in.</p>}
+    <Drawer eyebrow={[f.type, f.founded ? `Founded ${f.founded}` : ''].filter(Boolean).join(' · ')} title={<>{f.name}<ResearchBadge status={f.research_status} /></>} link={f.website || undefined}
+      actions={<><ReresearchButton kind="manager" id={f.id} status={f.research_status} /><Star kind="manager" id={f.id} /></>}>
+      {f.research_status && f.research_status !== 'failed' && <div className="card"><p className="prose">Researching this manager on the web. The profile fills in automatically; its portfolio companies follow one by one (see Research in the header).</p></div>}
+      {f.research_status === 'failed' && <div className="err-box">Research did not finish. Open Research in the header to see why and retry.</div>}
+      {f.is_stub && !f.research_status && <p className="note">This manager appears on tracked cap tables but has no profile yet; use Re-research or wait for the next refresh.</p>}
       <div className="facts">
         <Fact k="AUM" big v={<>{money(f.aum_usd_bn)}<Lbl l={f.aum_label} /></>} />
         <Fact k="HQ" v={f.hq || '—'} />
@@ -69,7 +77,7 @@ export default function ManagerDrawer({ id }: { id: string }) {
       </div>
       <Card title="Sector mix of tracked holdings">
         <div className="secbar">
-          {secs.map(([s, n], i) => <div key={s} title={`${s}: ${n}`} style={{ width: `${(100 * n) / (f.holdings.length || 1)}%`, background: `color-mix(in srgb, var(--navy) ${92 - i * 10}%, var(--gold))` }} />)}
+          {secs.map(([s, n], i) => <div key={s} title={`${s}: ${n}`} style={{ width: `${(100 * n) / (f.holdings.length || 1)}%`, background: SEC_COLORS[i % SEC_COLORS.length] }} />)}
         </div>
         <div style={{ marginTop: 8 }}>{secs.map(([s, n]) => <span key={s} className="tag">{s} {n}</span>)}</div>
       </Card>

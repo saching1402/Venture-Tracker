@@ -24,10 +24,10 @@ export default function Login() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f0ede8', padding: 16 }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(180deg, var(--surface2), var(--surface))', padding: 16 }}>
       <div style={{ background: '#fff', borderRadius: 18, padding: '48px 44px 40px', width: '100%', maxWidth: 440, boxShadow: '0 8px 40px rgba(12,26,46,.10), 0 2px 8px rgba(12,26,46,.06)' }}>
         <div style={{ marginBottom: 30 }}>
-          <div style={{ fontFamily: 'Playfair Display, Georgia, serif', fontSize: 26, fontWeight: 700, color: 'var(--navy)', lineHeight: 1.25, marginBottom: 8 }}>
+          <div style={{ fontFamily: 'var(--f-display)', fontSize: 26, fontWeight: 700, color: 'var(--navy)', lineHeight: 1.25, marginBottom: 8 }}>
             Venture GP <span style={{ color: 'var(--gold)' }}>·</span> Atlas
           </div>
           <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '1.4px', color: 'var(--subtle)', textTransform: 'uppercase' }}>

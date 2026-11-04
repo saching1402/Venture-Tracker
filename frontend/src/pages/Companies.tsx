@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import DataTable, { type Col } from '../components/DataTable'
+import { AddButton, ResearchBadge } from '../components/Research'
 import { GpChips, Select, Star, StatusPill } from '../components/ui'
 import { clip, downloadCsv, money, num, uniq, xmult } from '../lib/format'
 import { go } from '../lib/route'
@@ -10,7 +11,7 @@ export function companyCols(): Col<CompanyRow>[] {
   return [
     { key: 'w', header: '', cell: c => <Star kind="company" id={c.id} /> },
     { key: 'name', header: 'Company', sort: c => c.name, wrap: true,
-      cell: c => <><div className="nm">{c.name}</div><div className="sub">{clip(c.description, 90)}</div></> },
+      cell: c => <><div className="nm">{c.name}<ResearchBadge status={c.research_status} /></div><div className="sub">{clip(c.description, 90) || (c.research_status ? 'Profile being researched…' : '')}</div></> },
     { key: 'sector', header: 'Sector', sort: c => c.sector, cell: c => <>{c.sector}<div className="sub">{c.focus_tags[0] ?? ''}</div></> },
     { key: 'status', header: 'Status', sort: c => c.status, cell: c => <StatusPill status={c.status} /> },
     { key: 'val', header: 'Valuation', numeric: true, sort: c => c.latest_valuation_usd_bn,
@@ -72,6 +73,7 @@ export default function Companies() {
             <input id="cl" type="checkbox" checked={f.legacy} onChange={e => set('legacy')(e.target.checked)} /> Include legacy exits
           </label>
           <button className="btn" onClick={exportCsv}>Export CSV</button>
+          <AddButton kind="company" />
           <span className="tbl-ct">{rows.length} companies · {money(total)}</span>
         </div>
       </div>

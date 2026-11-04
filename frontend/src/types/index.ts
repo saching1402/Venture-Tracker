@@ -18,6 +18,8 @@ export interface ManagerRow {
   n_companies: number
   is_stub: boolean
   recent_activity: string
+  research_status: ResearchStatus
+  added_via: string
 }
 
 export interface Holding {
@@ -64,6 +66,8 @@ export interface ManagerDetail {
   sources: string[]
   last_verified: string
   is_stub: boolean
+  research_status: ResearchStatus
+  added_via: string
   recent_funds: Fund[]
   key_people: KeyPerson[]
   holdings: Holding[]
@@ -95,6 +99,8 @@ export interface CompanyRow {
   founded: number | null
   tracked_gp_ids: string[]
   other_investors: string[]
+  research_status: ResearchStatus
+  added_via: string
 }
 
 export interface Round { date: string; round: string; post_money_usd_bn: number | null; lead: string }
@@ -140,3 +146,25 @@ export interface Meta {
 }
 
 export interface Watchlist { managers: string[]; companies: string[] }
+
+export type ResearchStatus = '' | 'queued' | 'running' | 'failed'
+
+export interface ResearchJob {
+  id: string
+  kind: 'manager' | 'company'
+  name: string
+  slug: string
+  status: 'queued' | 'running' | 'done' | 'failed'
+  error: string
+  summary: string
+  include_portfolio: boolean
+  children_total: number
+  children_done: number
+  children_failed: number
+  searches: number
+  cost_usd: number
+  created_at: string
+  finished_at: string | null
+}
+
+export interface ResearchState { enabled: boolean; can_research: boolean; active: number; jobs: ResearchJob[] }
