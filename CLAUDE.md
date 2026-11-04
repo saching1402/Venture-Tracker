@@ -30,6 +30,13 @@ All money is **USD billions** (float). Dates are `YYYY-MM` or `YYYY-MM-DD` strin
 - Needs `ANTHROPIC_API_KEY`. Model is chosen per job (Add dialog / Re-research) from `settings.RESEARCH_MODELS`, which also holds per-model prices; defaults `RESEARCH_MODEL` (manager, Sonnet), `RESEARCH_PORTFOLIO_MODEL` (fan-out, Haiku), `RESEARCH_COMPANY_MODEL` (Sonnet). Unknown model ids fall back to the default. `engine.request_cost` prices each API request; `ResearchJob.cost` accumulates it. Only admin/analyst/staff can create jobs.
 - Snapshot imports never delete `added_via='user'` rows; `pipeline/merge.py` keeps firm ids it hasn't seen in its CANON list.
 
+## Track record (apps/trackrecord)
+- `Investment` (amounts USD **millions**, valuations USD billions), `CashFlow` (negative = in, positive = out to LP), `InvestmentComment`, `SheetSettings` singleton, `ManagerAssessment` + `ManagerComment` (GP view).
+- Structures: direct / spv / coinvest / secondary (company rows) and l1 / l2 (fund rows, `manager` FK, vintage, commitment). `is_fund` drives which section and columns.
+- `metrics.compute` is the single source for UI and PDF: gross MOIC/IRR/DPI, net after fee + carry (scaled positive flows) unless `net_*_reported` / `dpi_reported` set; IRR suppressed (`irr_nm`) under one year.
+- API under `/api/v1/track-record/`: `investments/` (list returns investments + summaries + settings + can_edit; `POST {id}/comments/`), `settings/`, `prefill/?company=`, `pdf/?commentary=1&ids=`, `managers/<slug>/assessment/`, `managers/<slug>/comments/`.
+- Points lists are `[{text, severity: high|medium|low}]` (`serializers.clean_points`).
+
 ## Conventions
 - All data endpoints require JWT (`IsAuthenticated`). Import/export require `X-Import-Token` or staff.
 - Frontend loads the full manager + company lists once into Zustand; detail drawers fetch via React Query. Hash routes: `#managers`, `#companies`, `#gp-<id>`, `#co-<id>`.

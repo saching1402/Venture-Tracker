@@ -48,3 +48,23 @@ export function downloadCsv(filename: string, header: string[], rows: unknown[][
   a.remove()
   setTimeout(() => URL.revokeObjectURL(url), 2000)
 }
+
+/** USD millions → "$12.5m" / "$1.25bn" */
+export function usdm(v: number | null | undefined): string {
+  const n = num(v)
+  if (n === null) return '—'
+  if (n === 0) return '$0'
+  if (Math.abs(n) >= 1000) return `$${(n / 1000).toFixed(2)}bn`
+  if (Math.abs(n) >= 1) return `$${n.toFixed(1)}m`
+  return `$${Math.round(n * 1000)}k`
+}
+
+export const pct = (v: number | null | undefined, dp = 1): string => {
+  const n = num(v)
+  return n === null ? '—' : `${(n * 100).toFixed(dp)}%`
+}
+
+export const x2 = (v: number | null | undefined): string => {
+  const n = num(v)
+  return n === null ? '—' : `${n.toFixed(2)}x`
+}

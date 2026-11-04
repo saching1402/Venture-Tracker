@@ -3,6 +3,7 @@ import DataTable from '../components/DataTable'
 import Drawer from '../components/Drawer'
 import { Card, Fact, Lbl, Sources, Star, StatusPill, Tags } from '../components/ui'
 import { ReresearchButton, ResearchBadge } from '../components/Research'
+import ManagerView from '../components/ManagerView'
 import { api, errorText } from '../lib/api'
 import { useData } from '../store/data'
 import { money, xmult } from '../lib/format'
@@ -45,6 +46,7 @@ export default function ManagerDrawer({ id }: { id: string }) {
         <Fact k="Tracked holdings" v={`${f.holdings.length} · ${money(agg)}`} />
         <Fact k="Other offices" v={f.other_offices.join(', ') || '—'} />
       </div>
+      <ManagerView id={f.id} />
       <Card title="Overview">
         <p className="prose">{f.overview || '—'}</p>
         <div style={{ marginTop: 10 }}><Tags items={f.stages} /></div>

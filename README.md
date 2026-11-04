@@ -86,6 +86,18 @@ So a manager with 25 new portfolio companies is about $2 on the defaults. Change
 
 Rows added this way are marked `added_via=user` and are never removed by a weekly snapshot import. Viewer accounts cannot add (set the role in `/admin/`).
 
+## Track Record tab (your own investments)
+
+A record of where you have invested, for marketing sheets and IC packs:
+
+- **Direct, SPV, co-investment and secondary positions:** company (pick a tracked company to fill description, sector, round, lead investors and co-investors), vehicle, round, investment date, amount, entry post-money, ownership, current value and basis, realised proceeds, follow-on / distribution cash flows, fees and carry, available capacity, status.
+- **Fund commitments (L1 / L2):** GP (linked to the Managers tab), fund, vintage, commitment, called, distributed, NAV and GP-reported net TVPI / IRR / DPI.
+- **Metrics** (calculated on the server, `apps/trackrecord/metrics.py`): gross and net MOIC, IRR (XIRR on dated cash flows; *n.m.* under one year), DPI, RVPI, unfunded, implied mark versus the company's latest tracked valuation; pooled across the book and by section. Net is estimated from the stated fee and carry unless GP-reported figures are entered.
+- **Your view:** thesis, pros / cons / risks with high / medium / low severity, and a dated comment log on each investment. Managers get the same **Your view** panel on their profile, with your commitments to their funds.
+- **Download PDF** builds a navy / gold A4 landscape sheet (`apps/trackrecord/pdf.py`): summary strip, both tables, highlights, disclaimer. Tick *Include commentary* to add thesis, pros, cons, risks and comments; leave it off for external use. Title, subtitle, contact and disclaimer are under **Sheet settings**; each investment has an *Include on the marketing sheet* switch.
+
+Everyone signed in can view and download; admins and analysts can edit. Companies and managers referenced by the track record are never removed by snapshot imports.
+
 ## Weekly refresh
 
 A scheduled job researches new rounds, marks, market caps and manager news, then:

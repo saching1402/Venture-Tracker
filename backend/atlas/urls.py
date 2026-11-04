@@ -37,6 +37,7 @@ urlpatterns = [
     path('api/v1/', include('apps.tracking.urls')),
     path('api/v1/', include('apps.importer.urls')),
     path('api/v1/', include('apps.research.urls')),
+    path('api/v1/track-record/', include('apps.trackrecord.urls')),
 
     path('', spa_index, name='spa'),
 ]

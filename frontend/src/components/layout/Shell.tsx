@@ -14,9 +14,10 @@ import Method from '../../pages/Method'
 import Overlap from '../../pages/Overlap'
 import Rounds from '../../pages/Rounds'
 import Watchlist from '../../pages/Watchlist'
+import TrackRecord, { InvestmentDrawer } from '../../pages/TrackRecord'
 import { ResearchTray } from '../Research'
 
-const PAGES = { managers: Managers, companies: Companies, rounds: Rounds, overlap: Overlap, watchlist: Watchlist, changes: Changes, method: Method }
+const PAGES = { managers: Managers, companies: Companies, track: TrackRecord, rounds: Rounds, overlap: Overlap, watchlist: Watchlist, changes: Changes, method: Method }
 
 function Splash({ children }: { children: React.ReactNode }) {
   return (
@@ -80,6 +81,7 @@ function AppShell() {
       </div>
       {drawer?.kind === 'gp' && <ManagerDrawer key={drawer.id} id={drawer.id} />}
       {drawer?.kind === 'co' && <CompanyDrawer key={drawer.id} id={drawer.id} />}
+      {drawer?.kind === 'inv' && <InvestmentDrawer key={drawer.id} id={drawer.id} />}
     </div>
   )
 }

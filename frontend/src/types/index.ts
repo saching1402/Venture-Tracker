@@ -183,3 +183,91 @@ export interface ResearchState {
 }
 
 export interface AddOptions { model?: string; portfolio_model?: string; portfolio_limit?: number; include_portfolio?: boolean }
+
+// ── Track record ────────────────────────────────────────────────────────────
+export type Severity = 'high' | 'medium' | 'low'
+export interface Point { text: string; severity: Severity }
+export interface LpComment { id: number; author_name: string; text: string; created_at: string }
+export interface CashFlowRow { date: string; amount_usd_m: number | null; note: string }
+
+export interface InvMetrics {
+  invested_usd_m: number | null; realised_usd_m: number | null; current_usd_m: number | null
+  total_value_usd_m: number | null; gain_usd_m: number | null
+  gross_moic: number | null; gross_irr: number | null; dpi: number | null; rvpi: number | null
+  net_moic: number | null; net_irr: number | null; net_dpi: number | null; net_basis: 'reported' | 'estimate' | 'no fees'
+  fees_usd_m: number | null; carry_usd_m: number | null; holding_years: number | null; irr_nm: boolean
+  unfunded_usd_m: number | null; ownership_pct: number | null; implied_markup_x: number | null; suggested_value_usd_m: number | null
+}
+
+export type Structure = 'direct' | 'spv' | 'coinvest' | 'l1' | 'l2' | 'secondary'
+export type InvStatus = 'active' | 'partial' | 'realised' | 'written_off'
+
+export interface LpInvestment {
+  id: number
+  name: string
+  company_id: string | null
+  manager_id: string | null
+  manager_name: string
+  is_fund: boolean
+  vintage: number | null
+  description: string
+  sector: string
+  hq: string
+  structure: Structure
+  structure_label: string
+  vehicle: string
+  round: string
+  lead_investors: string[]
+  co_investors: string[]
+  invest_date: string
+  commitment_usd_m: number | null
+  invested_usd_m: number | null
+  entry_valuation_usd_bn: number | null
+  ownership_pct: number | null
+  current_value_usd_m: number | null
+  value_date: string | null
+  value_basis: string
+  realised_usd_m: number | null
+  mgmt_fee_pct: number | null
+  carry_pct: number | null
+  net_moic_reported: number | null
+  net_irr_reported: number | null
+  dpi_reported: number | null
+  capacity_usd_m: number | null
+  status: InvStatus
+  status_label: string
+  highlight: string
+  thesis: string
+  pros: Point[]
+  cons: Point[]
+  risks: Point[]
+  include_in_sheet: boolean
+  order: number
+  cashflows: CashFlowRow[]
+  comments: LpComment[]
+  metrics: InvMetrics
+}
+
+export interface TrSummary {
+  count: number; active?: number; invested_usd_m?: number; realised_usd_m?: number; current_usd_m?: number
+  total_value_usd_m?: number; gross_moic?: number | null; net_moic?: number | null; dpi?: number | null
+  gross_irr?: number | null; net_irr?: number | null; capacity_usd_m?: number; unfunded_usd_m?: number
+  best?: { name: string; gross_moic: number | null }
+}
+
+export interface SheetSettings { title: string; subtitle: string; prepared_by: string; contact: string; disclaimer: string; show_capacity: boolean }
+
+export interface TrackRecordData {
+  investments: LpInvestment[]
+  summary: TrSummary
+  summary_direct: TrSummary
+  summary_funds: TrSummary
+  sheet_summary: TrSummary
+  settings: SheetSettings
+  can_edit: boolean
+}
+
+export interface Assessment {
+  view: string; pros: Point[]; cons: Point[]; risks: Point[]; updated_by: string; updated_at: string | null
+  comments: LpComment[]; commitments: LpInvestment[]
+}
