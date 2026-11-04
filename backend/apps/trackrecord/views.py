@@ -41,6 +41,43 @@ def _summary_json(rows) -> dict:
     return summarise(rows)
 
 
+VIEWS = ('all', 'direct', 'funds')
+
+
+def apply_filters(invs: list[Investment], params) -> list[Investment]:
+    """Filters shared by the tab and the PDF: view (all / direct / funds), structure, status, sector, search."""
+    view = params.get('view') or params.get('kind') or 'all'
+    if view == 'direct':
+        invs = [i for i in invs if not i.is_fund]
+    elif view == 'funds':
+        invs = [i for i in invs if i.is_fund]
+    for field in ('structure', 'status', 'sector'):
+        wanted = {v for v in str(params.get(field) or '').split(',') if v}
+        if wanted:
+            invs = [i for i in invs if getattr(i, field) in wanted]
+    q = str(params.get('q') or '').strip().lower()
+    if q:
+        def hay(i: Investment) -> str:
+            return ' '.join([i.name, i.vehicle, i.round, i.sector, i.description, i.manager.name if i.manager_id else '',
+                             ' '.join(i.lead_investors or []), ' '.join(i.co_investors or [])]).lower()
+        invs = [i for i in invs if q in hay(i)]
+    return invs
+
+
+def facets(invs: list[Investment]) -> dict:
+    """Options for the filter bar, from the unfiltered book."""
+    return {
+        'structures': [{'id': k, 'label': v, 'count': sum(1 for i in invs if i.structure == k)}
+                       for k, v in Investment.STRUCTURES if any(i.structure == k for i in invs)],
+        'statuses': [{'id': k, 'label': v, 'count': sum(1 for i in invs if i.status == k)}
+                     for k, v in Investment.STATUSES if any(i.status == k for i in invs)],
+        'sectors': sorted({i.sector for i in invs if i.sector}),
+        'total': len(invs),
+        'direct': sum(1 for i in invs if not i.is_fund),
+        'funds': sum(1 for i in invs if i.is_fund),
+    }
+
+
 class InvestmentViewSet(viewsets.ModelViewSet):
     serializer_class = InvestmentSerializer
     permission_classes = [ReadOrEdit]
@@ -50,7 +87,8 @@ class InvestmentViewSet(viewsets.ModelViewSet):
         return _queryset()
 
     def list(self, request, *args, **kwargs):
-        qs = list(self.get_queryset())
+        everything = list(self.get_queryset().select_related('manager'))
+        qs = apply_filters(everything, request.query_params)
         sheet = [i for i in qs if i.include_in_sheet]
         rows = _rows(qs)
         return Response({
@@ -62,6 +100,7 @@ class InvestmentViewSet(viewsets.ModelViewSet):
             'sheet_summary': _summary_json(_rows(sheet)),
             'settings': SheetSettingsSerializer(SheetSettings.get()).data,
             'can_edit': can_edit(request.user),
+            'facets': facets(everything),
         })
 
     @action(detail=True, methods=['post'])
@@ -121,14 +160,15 @@ def prefill(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def pdf(request):
-    """Marketing sheet PDF. ?kind=all|direct|funds; ?commentary=1 adds pros/cons/risks/comments; ?ids=1,2 limits rows."""
-    kind = request.query_params.get('kind', 'all')
-    kind = kind if kind in ('all', 'direct', 'funds') else 'all'
+    """Marketing sheet PDF for what the tab shows: same filters as the list (view / kind, structure, status,
+    sector, q). ?commentary=1 adds pros/cons/risks/comments; ?ids=1,2 limits rows."""
+    kind = request.query_params.get('view') or request.query_params.get('kind') or 'all'
+    kind = kind if kind in VIEWS else 'all'
     qs = _queryset().select_related('manager__assessment').filter(include_in_sheet=True)
     ids = [int(x) for x in request.query_params.get('ids', '').split(',') if x.strip().isdigit()]
     if ids:
-        qs = _queryset().filter(id__in=ids)
-    rows = _rows(list(qs))
+        qs = _queryset().select_related('manager__assessment').filter(id__in=ids)
+    rows = _rows(apply_filters(list(qs), request.query_params))
     body = render_pdf(rows, summarise(rows), SheetSettings.get(),
                       commentary=request.query_params.get('commentary') == '1', kind=kind)
     name = {'all': 'track-record', 'direct': 'direct-investments', 'funds': 'fund-programme'}[kind]

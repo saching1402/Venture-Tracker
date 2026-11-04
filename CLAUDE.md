@@ -36,7 +36,7 @@ All money is **USD billions** (float). Dates are `YYYY-MM` or `YYYY-MM-DD` strin
 - `metrics.compute` is the single source for UI and PDF: gross MOIC/IRR/DPI, net after fee + carry (scaled positive flows) unless `net_*_reported` / `dpi_reported` set; IRR suppressed (`irr_nm`) under one year.
 - API under `/api/v1/track-record/`: `investments/` (list returns investments + summaries + settings + can_edit; `POST {id}/comments/`), `settings/`, `prefill/?company=`, `pdf/?commentary=1&ids=`, `managers/<slug>/assessment/`, `managers/<slug>/comments/`.
 - Points lists are `[{text, severity: high|medium|low}]` (`serializers.clean_points`).
-- PDF kinds: `pdf/?kind=all|direct|funds`. `metrics.fund_programme` builds the fund sheet (totals, `by_vintage`, `by_strategy` via manager.type); bucket net IRR = paid-in-weighted average of fund net IRRs so it reconciles with fund rows.
+- `views.apply_filters` (view=all|direct|funds, structure, status, sector, q) is shared by `investments/` and `pdf/`; the list also returns `facets` from the unfiltered book. PDF kinds: `pdf/?kind=all|direct|funds` (or `view=`). `metrics.fund_programme` builds the fund sheet (totals, `by_vintage`, `by_strategy` via manager.type); bucket net IRR = paid-in-weighted average of fund net IRRs so it reconciles with fund rows.
 
 ## Conventions
 - All data endpoints require JWT (`IsAuthenticated`). Import/export require `X-Import-Token` or staff.

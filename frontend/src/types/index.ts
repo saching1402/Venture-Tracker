@@ -266,7 +266,7 @@ export interface FundBucket {
   rvpi: number | null; net_irr: number | null; vintage?: number; strategy?: string
 }
 
-export interface FundProgramme extends Partial<FundBucket> { count: number; gps?: number; by_vintage: FundBucket[]; by_strategy: FundBucket[] }
+export interface FundProgramme extends Partial<FundBucket> { count: number; gps?: number; capacity_usd_m?: number; by_vintage: FundBucket[]; by_strategy: FundBucket[] }
 
 export interface TrackRecordData {
   investments: LpInvestment[]
@@ -275,6 +275,12 @@ export interface TrackRecordData {
   summary_funds: TrSummary
   sheet_summary: TrSummary
   fund_programme: FundProgramme
+  facets: {
+    structures: { id: string; label: string; count: number }[]
+    statuses: { id: string; label: string; count: number }[]
+    sectors: string[]
+    total: number; direct: number; funds: number
+  }
   settings: SheetSettings
   can_edit: boolean
 }

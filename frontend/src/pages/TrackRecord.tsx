@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { CommentsLog, PointsEditor, PointsView } from '../components/Commentary'
 import DataTable, { type Col } from '../components/DataTable'
@@ -11,9 +11,23 @@ import type { FundBucket, LpInvestment, Point, SheetSettings, TrackRecordData, T
 import InvestmentForm from './InvestmentForm'
 
 export const TR_KEY = ['track-record']
+export type SheetKind = 'all' | 'direct' | 'funds'
 
-export function useTrackRecord() {
-  return useQuery({ queryKey: TR_KEY, queryFn: () => api.get<TrackRecordData>('/track-record/investments/').then(r => r.data) })
+export interface TrFilters { view: SheetKind; structure: string; status: string; sector: string; q: string }
+export const NO_FILTERS: TrFilters = { view: 'all', structure: '', status: '', sector: '', q: '' }
+
+function qs(f: TrFilters): string {
+  const p = new URLSearchParams()
+  Object.entries(f).forEach(([k, v]) => { if (v && !(k === 'view' && v === 'all')) p.set(k, v) })
+  return p.toString()
+}
+
+export function useTrackRecord(f: TrFilters = NO_FILTERS) {
+  return useQuery({
+    queryKey: [...TR_KEY, f],
+    queryFn: () => api.get<TrackRecordData>(`/track-record/investments/?${qs(f)}`).then(r => r.data),
+    placeholderData: keepPreviousData,
+  })
 }
 
 const irr = (i: LpInvestment, k: 'gross_irr' | 'net_irr') => (i.metrics.irr_nm ? 'n.m.' : pct(i.metrics[k]))
@@ -29,6 +43,20 @@ function Kpis({ s, showCapacity }: { s: TrSummary; showCapacity: boolean }) {
       <Kpi label="Gross / net IRR" value={`${pct(s.gross_irr)} · ${pct(s.net_irr)}`} sub="Pooled XIRR on dated cash flows" dark />
       <Kpi label="DPI" value={x2(s.dpi)} sub="Realised ÷ invested" />
       {showCapacity && <Kpi label="Available capacity" value={usdm(s.capacity_usd_m)} sub="For co-investors" />}
+    </div>
+  )
+}
+
+function FundKpis({ fp, showCapacity }: { fp: TrackRecordData['fund_programme']; showCapacity: boolean }) {
+  return (
+    <div className="atl-kpis">
+      <Kpi label="Funds · GPs" value={`${fp.count} · ${fp.gps ?? 0}`} sub={`Unfunded ${usdm(fp.unfunded_usd_m)}`} />
+      <Kpi label="Commitments" value={usdm(fp.commitment_usd_m)} sub={`${pct(fp.pct_called, 0)} called`} />
+      <Kpi label="Paid-in" value={usdm(fp.called_usd_m)} sub={`Distributed ${usdm(fp.distributed_usd_m)}`} />
+      <Kpi label="NAV" value={usdm(fp.nav_usd_m)} sub={`Total value ${usdm(fp.total_value_usd_m)}`} />
+      <Kpi label="Net TVPI" value={x2(fp.tvpi)} sub={`DPI ${x2(fp.dpi)} · RVPI ${x2(fp.rvpi)}`} dark gold />
+      <Kpi label="Net IRR" value={pct(fp.net_irr)} sub="Paid-in-weighted fund net IRRs" dark />
+      {showCapacity && <Kpi label="Available capacity" value={usdm(fp.capacity_usd_m)} sub="For co-investors" />}
     </div>
   )
 }
@@ -100,11 +128,11 @@ function fundCols(): Col<LpInvestment>[] {
   ]
 }
 
-type SheetKind = 'all' | 'direct' | 'funds'
 const SHEET_NAME: Record<SheetKind, string> = { all: 'track-record', direct: 'direct-investments', funds: 'fund-programme' }
 
-async function downloadPdf(commentary: boolean, kind: SheetKind) {
-  const res = await api.get(`/track-record/pdf/?kind=${kind}&commentary=${commentary ? 1 : 0}`, { responseType: 'blob' })
+async function downloadPdf(commentary: boolean, f: TrFilters) {
+  const kind = f.view
+  const res = await api.get(`/track-record/pdf/?${qs(f)}&kind=${kind}&commentary=${commentary ? 1 : 0}`, { responseType: 'blob' })
   const url = URL.createObjectURL(res.data as Blob)
   const a = document.createElement('a')
   a.href = url
@@ -145,21 +173,40 @@ function SettingsDialog({ settings, onClose }: { settings: SheetSettings; onClos
   )
 }
 
+const VIEW_LABEL: Record<SheetKind, string> = { all: 'All investments', direct: 'Directs & co-investments', funds: 'Funds' }
+
 export default function TrackRecord() {
-  const { data, isLoading, error } = useTrackRecord()
+  const [f, setF] = useState<TrFilters>(() => {
+    try { return { ...NO_FILTERS, view: (localStorage.getItem('atlas_tr_view') as SheetKind) || 'all' } } catch { return NO_FILTERS }
+  })
+  const [qText, setQText] = useState('')
+  const { data, isLoading, error, isFetching } = useTrackRecord(f)
+  const setFilter = <K extends keyof TrFilters>(k: K, v: TrFilters[K]) => {
+    setF(p => ({ ...p, [k]: v }))
+    if (k === 'view') { try { localStorage.setItem('atlas_tr_view', String(v)) } catch { /* ignore */ } }
+  }
+  // search is applied after a short pause so typing stays smooth
+  const [qTimer, setQTimer] = useState<ReturnType<typeof setTimeout> | null>(null)
+  const onSearch = (v: string) => {
+    setQText(v)
+    if (qTimer) clearTimeout(qTimer)
+    setQTimer(setTimeout(() => setFilter('q', v.trim()), 300))
+  }
   const qc = useQueryClient()
   const [adding, setAdding] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [commentary, setCommentary] = useState(false)
   const [pdfBusy, setPdfBusy] = useState(false)
   const [pdfErr, setPdfErr] = useState<string | null>(null)
-  const [sheet, setSheet] = useState<SheetKind>('all')
-  const getPdf = async (kind: SheetKind) => { setPdfBusy(true); setPdfErr(null); try { await downloadPdf(commentary, kind) } catch (e) { setPdfErr(errorText(e)) } setPdfBusy(false) }
+  const getPdf = async (view: SheetKind = f.view) => { setPdfBusy(true); setPdfErr(null); try { await downloadPdf(commentary, { ...f, view }) } catch (e) { setPdfErr(errorText(e)) } setPdfBusy(false) }
 
   if (isLoading) return <div className="empty-state">Loading your track record…</div>
   if (error || !data) return <div className="err-box">{errorText(error)}</div>
   const directs = data.investments.filter(i => !i.is_fund)
   const funds = data.investments.filter(i => i.is_fund)
+  const fc = data.facets
+  const filtered = !!(f.structure || f.status || f.sector || f.q)
+  const structOpts = fc.structures.filter(o => f.view === 'all' || (f.view === 'funds') === ['l1', 'l2'].includes(o.id))
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -172,22 +219,53 @@ export default function TrackRecord() {
           <label className="chk" title="Adds thesis, pros, cons, risks and comments to the PDF. Leave off for external sheets.">
             <input id="tr-commentary" type="checkbox" checked={commentary} onChange={e => setCommentary(e.target.checked)} /> Include commentary
           </label>
-          <select id="tr-sheet" aria-label="Which sheet to download" className="tbl-sel" value={sheet} onChange={e => setSheet(e.target.value as SheetKind)}>
-            <option value="all">Full track record</option>
-            <option value="direct">Direct &amp; co-investments only</option>
-            <option value="funds">Fund programme</option>
-          </select>
-          <button className="btn btn-gold" disabled={pdfBusy || !data.investments.length} onClick={() => void getPdf(sheet)}>
-            {pdfBusy ? 'Preparing PDF…' : 'Download PDF'}
+          <button className="btn btn-gold" disabled={pdfBusy || !data.investments.length} onClick={() => void getPdf()}
+            title="Downloads exactly what is shown: the selected view and filters">
+            {pdfBusy ? 'Preparing PDF…' : `Download PDF · ${f.view === 'funds' ? 'Fund programme' : VIEW_LABEL[f.view]}`}
           </button>
           {data.can_edit && <button className="btn" onClick={() => setSettingsOpen(true)}>Sheet settings</button>}
           {data.can_edit && <button className="btn btn-primary" onClick={() => setAdding(true)}>+ Add investment</button>}
         </div>
       </div>
       {pdfErr && <div className="err-box">{pdfErr}</div>}
-      <Kpis s={data.summary} showCapacity={data.settings.show_capacity} />
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
+        <div className="toggle-bar" role="tablist" aria-label="View" style={{ marginBottom: 0 }}>
+          {(['all', 'direct', 'funds'] as SheetKind[]).map(v => (
+            <button key={v} role="tab" aria-selected={f.view === v} className={`tog-btn${f.view === v ? ' on' : ''}`}
+              onClick={() => { setFilter('view', v); setFilter('structure', '') }}>
+              {VIEW_LABEL[v]} <span className="note">{v === 'all' ? fc.total : v === 'direct' ? fc.direct : fc.funds}</span>
+            </button>
+          ))}
+        </div>
+        <input id="tr-q" type="search" className="tbl-search" placeholder="Search name, GP, investor…" value={qText} onChange={e => onSearch(e.target.value)} />
+        <select id="tr-structure-f" aria-label="Structure" className="tbl-sel" value={f.structure} onChange={e => setFilter('structure', e.target.value)}>
+          <option value="">Any structure</option>
+          {structOpts.map(o => <option key={o.id} value={o.id}>{o.label} ({o.count})</option>)}
+        </select>
+        <select id="tr-status-f" aria-label="Status" className="tbl-sel" value={f.status} onChange={e => setFilter('status', e.target.value)}>
+          <option value="">Any status</option>
+          {fc.statuses.map(o => <option key={o.id} value={o.id}>{o.label} ({o.count})</option>)}
+        </select>
+        {f.view !== 'funds' && !!fc.sectors.length && (
+          <select id="tr-sector-f" aria-label="Sector" className="tbl-sel" value={f.sector} onChange={e => setFilter('sector', e.target.value)}>
+            <option value="">Any sector</option>
+            {fc.sectors.map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+        )}
+        {filtered && <button className="pb" onClick={() => { setQText(''); setF(p => ({ ...NO_FILTERS, view: p.view })) }}>Clear filters</button>}
+        <span className="tbl-ct">{isFetching ? 'Updating…' : `Showing ${data.investments.length} of ${fc.total}`}</span>
+      </div>
+      {f.view === 'funds' ? <FundKpis fp={data.fund_programme} showCapacity={data.settings.show_capacity} />
+        : <Kpis s={data.summary} showCapacity={data.settings.show_capacity} />}
 
-      {!data.investments.length && (
+      {!data.investments.length && fc.total > 0 && (
+        <div className="card empty-state" style={{ minHeight: 140 }}>
+          <div className="sec-title">Nothing matches</div>
+          <p>No {f.view === 'funds' ? 'fund commitments' : f.view === 'direct' ? 'direct or co-investments' : 'investments'} match these filters.</p>
+          <button className="pb" onClick={() => { setQText(''); setF({ ...NO_FILTERS }) }}>Show all investments</button>
+        </div>
+      )}
+      {!fc.total && (
         <div className="card empty-state" style={{ minHeight: 200 }}>
           <div className="sec-title">No investments yet</div>
           <p style={{ maxWidth: 520 }}>Add your direct investments, SPVs, co-investments and fund commitments. Gross and net MOIC, IRR and DPI are calculated for each one and pooled across the book, and the Download PDF button turns it into a marketing sheet.</p>
@@ -201,8 +279,8 @@ export default function TrackRecord() {
       )}
       {!!funds.length && (
         <Card title={`Fund commitments (${funds.length})`}
-          right={<button className="pb" disabled={pdfBusy} onClick={() => void getPdf('funds')}>Download fund programme PDF</button>}>
-          <FundProgrammeSummary fp={data.fund_programme} />
+          right={f.view !== 'funds' ? <button className="pb" disabled={pdfBusy} onClick={() => void getPdf('funds')}>Download fund programme PDF</button> : undefined}>
+          {f.view !== 'funds' && <FundProgrammeSummary fp={data.fund_programme} />}
           <DataTable rows={funds} cols={fundCols()} rowKey={i => String(i.id)} onRowClick={i => go(`inv-${i.id}`)} initialSort={{ key: 'vin', dir: -1 }} />
           {data.fund_programme.by_vintage.length > 1 && (
             <>

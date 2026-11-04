@@ -129,3 +129,21 @@ def test_fund_programme_sheet(setup):
     for kind, name in (('funds', 'fund-programme'), ('direct', 'direct-investments'), ('all', 'track-record')):
         r = c.get(f'/api/v1/track-record/pdf/?kind={kind}&commentary=1', **h)
         assert r.status_code == 200 and r.content[:4] == b'%PDF' and name in r['Content-Disposition']
+
+
+def test_view_filters(setup):
+    c, h = login('a@example.com')
+    c.post('/api/v1/track-record/investments/', DIRECT, content_type='application/json', **h)
+    c.post('/api/v1/track-record/investments/', FUND, content_type='application/json', **h)
+    base = '/api/v1/track-record/investments/'
+    allv = c.get(base, **h).json()
+    assert allv['summary']['count'] == 2 and allv['facets'] == allv['facets'] | {'total': 2, 'direct': 1, 'funds': 1}
+    funds = c.get(base + '?view=funds', **h).json()
+    assert [i['name'] for i in funds['investments']] == ['Lux Ventures VIII'] and funds['summary']['count'] == 1
+    direct = c.get(base + '?view=direct', **h).json()
+    assert [i['name'] for i in direct['investments']] == ['Anthropic'] and direct['facets']['total'] == 2
+    assert c.get(base + '?structure=l1,spv', **h).json()['summary']['count'] == 2
+    assert c.get(base + '?q=menlo', **h).json()['summary']['count'] == 1           # matches co-investor
+    assert c.get(base + '?status=realised', **h).json()['summary']['count'] == 0
+    r = c.get('/api/v1/track-record/pdf/?view=funds&q=lux', **h)
+    assert r.status_code == 200 and 'fund-programme' in r['Content-Disposition']
