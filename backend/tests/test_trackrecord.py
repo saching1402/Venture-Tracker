@@ -110,3 +110,22 @@ def test_manager_assessment(setup):
     assert vc.get('/api/v1/track-record/managers/lux/assessment/', **vh).json()['view'].startswith('Core')
     assert vc.delete(f'/api/v1/track-record/manager-comments/{cid}/', **vh).status_code == 403
     assert c.delete(f'/api/v1/track-record/manager-comments/{cid}/', **h).status_code == 204
+
+
+def test_fund_programme_sheet(setup):
+    c, h = login('a@example.com')
+    c.post('/api/v1/track-record/investments/', DIRECT, content_type='application/json', **h)
+    c.post('/api/v1/track-record/investments/', FUND, content_type='application/json', **h)
+    c.post('/api/v1/track-record/investments/', dict(FUND, name='DCVC VII', manager_id='dcvc', vehicle='DCVC Fund VII', vintage=2023,
+                                                    invest_date='2023-06-01', commitment_usd_m=20, invested_usd_m=9,
+                                                    current_value_usd_m=10.4, realised_usd_m=0, net_moic_reported=None,
+                                                    net_irr_reported=None, dpi_reported=None),
+           content_type='application/json', **h)
+    fp = c.get('/api/v1/track-record/investments/', **h).json()['fund_programme']
+    assert fp['count'] == 2 and fp['gps'] == 2 and fp['commitment_usd_m'] == 45 and fp['called_usd_m'] == 24
+    assert fp['tvpi'] == pytest.approx((2 + 21 + 10.4) / 24, abs=1e-3) and fp['pct_called'] == pytest.approx(24 / 45, abs=1e-4)
+    assert [b['vintage'] for b in fp['by_vintage']] == [2022, 2023]
+    assert fp['by_vintage'][0]['net_irr'] == pytest.approx(0.145)  # single fund: equals its GP-reported IRR
+    for kind, name in (('funds', 'fund-programme'), ('direct', 'direct-investments'), ('all', 'track-record')):
+        r = c.get(f'/api/v1/track-record/pdf/?kind={kind}&commentary=1', **h)
+        assert r.status_code == 200 and r.content[:4] == b'%PDF' and name in r['Content-Disposition']

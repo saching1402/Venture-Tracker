@@ -22,6 +22,8 @@ class SheetSettings(models.Model):
         'Net figures are estimated after the stated fees and carry unless marked as reported. Past performance is not '
         'indicative of future results.'))
     show_capacity = models.BooleanField(default=True)
+    fund_title = models.CharField(max_length=200, default='Fund Programme Track Record')
+    fund_subtitle = models.CharField(max_length=300, blank=True, default='Primary and secondary fund commitments by vintage and strategy')
 
     class Meta:
         db_table = 'trackrecord_settings'

@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from apps.companies.models import Company
 from apps.research.views import can_research as can_edit
 
-from .metrics import compute, summarise
+from .metrics import compute, fund_programme, summarise
 from apps.managers.models import Manager
 
 from .models import Investment, InvestmentComment, ManagerAssessment, ManagerComment, SheetSettings
@@ -58,6 +58,7 @@ class InvestmentViewSet(viewsets.ModelViewSet):
             'summary': _summary_json(rows),
             'summary_direct': _summary_json([r for r in rows if not r[0].is_fund]),
             'summary_funds': _summary_json([r for r in rows if r[0].is_fund]),
+            'fund_programme': {k: v for k, v in fund_programme(rows).items()},
             'sheet_summary': _summary_json(_rows(sheet)),
             'settings': SheetSettingsSerializer(SheetSettings.get()).data,
             'can_edit': can_edit(request.user),
@@ -120,16 +121,19 @@ def prefill(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def pdf(request):
-    """Marketing sheet PDF. ?commentary=1 adds pros/cons/risks/comments; ?ids=1,2 limits the investments."""
-    qs = _queryset().filter(include_in_sheet=True)
+    """Marketing sheet PDF. ?kind=all|direct|funds; ?commentary=1 adds pros/cons/risks/comments; ?ids=1,2 limits rows."""
+    kind = request.query_params.get('kind', 'all')
+    kind = kind if kind in ('all', 'direct', 'funds') else 'all'
+    qs = _queryset().select_related('manager__assessment').filter(include_in_sheet=True)
     ids = [int(x) for x in request.query_params.get('ids', '').split(',') if x.strip().isdigit()]
     if ids:
         qs = _queryset().filter(id__in=ids)
     rows = _rows(list(qs))
     body = render_pdf(rows, summarise(rows), SheetSettings.get(),
-                      commentary=request.query_params.get('commentary') == '1')
+                      commentary=request.query_params.get('commentary') == '1', kind=kind)
+    name = {'all': 'track-record', 'direct': 'direct-investments', 'funds': 'fund-programme'}[kind]
     resp = HttpResponse(body, content_type='application/pdf')
-    resp['Content-Disposition'] = f'attachment; filename="track-record-{dt.date.today().isoformat()}.pdf"'
+    resp['Content-Disposition'] = f'attachment; filename="{name}-{dt.date.today().isoformat()}.pdf"'
     return resp
 
 

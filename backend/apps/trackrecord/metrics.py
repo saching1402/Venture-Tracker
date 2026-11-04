@@ -158,3 +158,45 @@ def summarise(rows: list[tuple]) -> dict:
         'by_structure': by_structure,
         'best': {'name': best[0].name, 'gross_moic': best[1]['gross_moic']},
     }
+
+
+def _bucket(rows: list[tuple]) -> dict:
+    com = sum(i.commitment_usd_m or 0 for i, _ in rows)
+    called = sum(m['invested_usd_m'] or 0 for _, m in rows)
+    dist = sum(m['realised_usd_m'] or 0 for _, m in rows)
+    nav = sum(m['current_usd_m'] or 0 for _, m in rows)
+    # Paid-in-weighted average of each fund's net IRR (GP-reported where entered), so buckets reconcile with fund rows
+    w = [(m['invested_usd_m'] or 0, m['net_irr']) for _, m in rows if m['net_irr'] is not None and m['invested_usd_m']]
+    wsum = sum(a for a, _ in w)
+    return {
+        'count': len(rows),
+        'commitment_usd_m': round(com, 3), 'called_usd_m': round(called, 3), 'distributed_usd_m': round(dist, 3),
+        'nav_usd_m': round(nav, 3), 'total_value_usd_m': round(dist + nav, 3),
+        'unfunded_usd_m': round(sum(m['unfunded_usd_m'] or 0 for _, m in rows), 3),
+        'pct_called': round(called / com, 4) if com else None,
+        'tvpi': round((dist + nav) / called, 3) if called else None,
+        'dpi': round(dist / called, 3) if called else None,
+        'rvpi': round(nav / called, 3) if called else None,
+        'net_irr': _r(sum(a * r for a, r in w) / wsum) if wsum else None,
+        'irr_coverage': round(wsum / called, 3) if called else None,
+    }
+
+
+def fund_programme(rows: list[tuple]) -> dict:
+    """LP fund-programme view: totals, by vintage, by strategy. NAV is taken as net (GP-reported)."""
+    funds = [r for r in rows if r[0].is_fund]
+    if not funds:
+        return {'count': 0, 'by_vintage': [], 'by_strategy': []}
+    total = _bucket(funds)
+    total['gps'] = len({i.manager_id or i.name for i, _ in funds})
+    total['capacity_usd_m'] = round(sum(i.capacity_usd_m or 0 for i, _ in funds), 3)
+    vint: dict[int, list] = {}
+    strat: dict[str, list] = {}
+    for inv, m in funds:
+        vint.setdefault(inv.vintage or inv.invest_date.year, []).append((inv, m))
+        label = (inv.manager.type if inv.manager_id and inv.manager.type else '') or inv.get_structure_display()
+        strat.setdefault(label, []).append((inv, m))
+    total['by_vintage'] = [dict(_bucket(v), vintage=k) for k, v in sorted(vint.items())]
+    total['by_strategy'] = sorted((dict(_bucket(v), strategy=k) for k, v in strat.items()),
+                                  key=lambda b: -b['commitment_usd_m'])
+    return total

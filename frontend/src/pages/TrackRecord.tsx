@@ -7,7 +7,7 @@ import { Card, Fact, GpChips, Kpi } from '../components/ui'
 import { api, errorText } from '../lib/api'
 import { money, pct, usdm, x2 } from '../lib/format'
 import { closeDrawer, go } from '../lib/route'
-import type { LpInvestment, Point, SheetSettings, TrackRecordData, TrSummary } from '../types'
+import type { FundBucket, LpInvestment, Point, SheetSettings, TrackRecordData, TrSummary } from '../types'
 import InvestmentForm from './InvestmentForm'
 
 export const TR_KEY = ['track-record']
@@ -30,6 +30,38 @@ function Kpis({ s, showCapacity }: { s: TrSummary; showCapacity: boolean }) {
       <Kpi label="DPI" value={x2(s.dpi)} sub="Realised ÷ invested" />
       {showCapacity && <Kpi label="Available capacity" value={usdm(s.capacity_usd_m)} sub="For co-investors" />}
     </div>
+  )
+}
+
+function FundProgrammeSummary({ fp }: { fp: TrackRecordData['fund_programme'] }) {
+  return (
+    <div className="facts" style={{ marginBottom: 12 }}>
+      <div><div className="k">Funds · GPs</div><div className="v big">{fp.count} · {fp.gps ?? 0}</div></div>
+      <div><div className="k">Commitments</div><div className="v big">{usdm(fp.commitment_usd_m)}</div></div>
+      <div><div className="k">Paid-in · % called</div><div className="v big">{usdm(fp.called_usd_m)} · {pct(fp.pct_called, 0)}</div></div>
+      <div><div className="k">Distributed · NAV</div><div className="v big">{usdm(fp.distributed_usd_m)} · {usdm(fp.nav_usd_m)}</div></div>
+      <div><div className="k">Net TVPI · DPI · RVPI</div><div className="v big">{x2(fp.tvpi)} · {x2(fp.dpi)} · {x2(fp.rvpi)}</div></div>
+      <div><div className="k">Net IRR · unfunded</div><div className="v big">{pct(fp.net_irr)} · {usdm(fp.unfunded_usd_m)}</div></div>
+    </div>
+  )
+}
+
+function BucketTable({ rows, label, k }: { rows: FundBucket[]; label: string; k: 'vintage' | 'strategy' }) {
+  return (
+    <DataTable rows={rows} rowKey={b => String(b[k])} pageSize={50}
+      cols={[
+        { key: 'k', header: label, sort: b => b[k] ?? '', cell: b => <span className="nm">{b[k]}</span> },
+        { key: 'n', header: 'Funds', numeric: true, sort: b => b.count, cell: b => b.count },
+        { key: 'com', header: 'Commitment', numeric: true, sort: b => b.commitment_usd_m, cell: b => usdm(b.commitment_usd_m) },
+        { key: 'called', header: 'Paid-in', numeric: true, sort: b => b.called_usd_m, cell: b => <>{usdm(b.called_usd_m)}<div className="sub">{pct(b.pct_called, 0)} called</div></> },
+        { key: 'dist', header: 'Distributed', numeric: true, sort: b => b.distributed_usd_m, cell: b => usdm(b.distributed_usd_m) },
+        { key: 'nav', header: 'NAV', numeric: true, sort: b => b.nav_usd_m, cell: b => usdm(b.nav_usd_m) },
+        { key: 'tvpi', header: 'TVPI', numeric: true, sort: b => b.tvpi, cell: b => x2(b.tvpi) },
+        { key: 'dpi', header: 'DPI', numeric: true, sort: b => b.dpi, cell: b => x2(b.dpi) },
+        { key: 'rvpi', header: 'RVPI', numeric: true, sort: b => b.rvpi, cell: b => x2(b.rvpi) },
+        { key: 'irr', header: 'Net IRR', numeric: true, sort: b => b.net_irr, cell: b => pct(b.net_irr) },
+        { key: 'unf', header: 'Unfunded', numeric: true, sort: b => b.unfunded_usd_m, cell: b => usdm(b.unfunded_usd_m) },
+      ]} />
   )
 }
 
@@ -68,12 +100,15 @@ function fundCols(): Col<LpInvestment>[] {
   ]
 }
 
-async function downloadPdf(commentary: boolean) {
-  const res = await api.get(`/track-record/pdf/?commentary=${commentary ? 1 : 0}`, { responseType: 'blob' })
+type SheetKind = 'all' | 'direct' | 'funds'
+const SHEET_NAME: Record<SheetKind, string> = { all: 'track-record', direct: 'direct-investments', funds: 'fund-programme' }
+
+async function downloadPdf(commentary: boolean, kind: SheetKind) {
+  const res = await api.get(`/track-record/pdf/?kind=${kind}&commentary=${commentary ? 1 : 0}`, { responseType: 'blob' })
   const url = URL.createObjectURL(res.data as Blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `track-record-${new Date().toISOString().slice(0, 10)}.pdf`
+  a.download = `${SHEET_NAME[kind]}-${new Date().toISOString().slice(0, 10)}.pdf`
   document.body.appendChild(a)
   a.click()
   a.remove()
@@ -91,9 +126,9 @@ function SettingsDialog({ settings, onClose }: { settings: SheetSettings; onClos
         onSubmit={async e => { e.preventDefault(); try { await api.put('/track-record/settings/', s); await qc.invalidateQueries({ queryKey: TR_KEY }); onClose() } catch (e2) { setErr(errorText(e2)) } }}>
         <div className="modal-header"><div className="modal-title">Marketing sheet settings</div><button type="button" className="btn" onClick={onClose}>Cancel</button></div>
         <div className="modal-body">
-          {(['title', 'subtitle', 'prepared_by', 'contact'] as const).map(k => (
+          {(['title', 'subtitle', 'fund_title', 'fund_subtitle', 'prepared_by', 'contact'] as const).map(k => (
             <div className="form-group" key={k}>
-              <label className="form-label" htmlFor={`ss-${k}`}>{k.replace('_', ' ')}</label>
+              <label className="form-label" htmlFor={`ss-${k}`}>{{ title: 'Track record title', subtitle: 'Track record subtitle', fund_title: 'Fund programme title', fund_subtitle: 'Fund programme subtitle', prepared_by: 'Prepared by', contact: 'Contact' }[k]}</label>
               <input id={`ss-${k}`} className="form-input" style={{ width: '100%' }} value={s[k]} onChange={f(k)} />
             </div>
           ))}
@@ -118,6 +153,8 @@ export default function TrackRecord() {
   const [commentary, setCommentary] = useState(false)
   const [pdfBusy, setPdfBusy] = useState(false)
   const [pdfErr, setPdfErr] = useState<string | null>(null)
+  const [sheet, setSheet] = useState<SheetKind>('all')
+  const getPdf = async (kind: SheetKind) => { setPdfBusy(true); setPdfErr(null); try { await downloadPdf(commentary, kind) } catch (e) { setPdfErr(errorText(e)) } setPdfBusy(false) }
 
   if (isLoading) return <div className="empty-state">Loading your track record…</div>
   if (error || !data) return <div className="err-box">{errorText(error)}</div>
@@ -135,8 +172,12 @@ export default function TrackRecord() {
           <label className="chk" title="Adds thesis, pros, cons, risks and comments to the PDF. Leave off for external sheets.">
             <input id="tr-commentary" type="checkbox" checked={commentary} onChange={e => setCommentary(e.target.checked)} /> Include commentary
           </label>
-          <button className="btn btn-gold" disabled={pdfBusy || !data.investments.length}
-            onClick={async () => { setPdfBusy(true); setPdfErr(null); try { await downloadPdf(commentary) } catch (e) { setPdfErr(errorText(e)) } setPdfBusy(false) }}>
+          <select id="tr-sheet" aria-label="Which sheet to download" className="tbl-sel" value={sheet} onChange={e => setSheet(e.target.value as SheetKind)}>
+            <option value="all">Full track record</option>
+            <option value="direct">Direct &amp; co-investments only</option>
+            <option value="funds">Fund programme</option>
+          </select>
+          <button className="btn btn-gold" disabled={pdfBusy || !data.investments.length} onClick={() => void getPdf(sheet)}>
             {pdfBusy ? 'Preparing PDF…' : 'Download PDF'}
           </button>
           {data.can_edit && <button className="btn" onClick={() => setSettingsOpen(true)}>Sheet settings</button>}
@@ -159,8 +200,23 @@ export default function TrackRecord() {
         </Card>
       )}
       {!!funds.length && (
-        <Card title={`Fund commitments (${funds.length})`} right={<span className="note">{x2(data.summary_funds.net_moic)} net · {pct(data.summary_funds.net_irr)} net IRR</span>}>
+        <Card title={`Fund commitments (${funds.length})`}
+          right={<button className="pb" disabled={pdfBusy} onClick={() => void getPdf('funds')}>Download fund programme PDF</button>}>
+          <FundProgrammeSummary fp={data.fund_programme} />
           <DataTable rows={funds} cols={fundCols()} rowKey={i => String(i.id)} onRowClick={i => go(`inv-${i.id}`)} initialSort={{ key: 'vin', dir: -1 }} />
+          {data.fund_programme.by_vintage.length > 1 && (
+            <>
+              <div className="card-title" style={{ marginTop: 6 }}>By vintage</div>
+              <BucketTable rows={data.fund_programme.by_vintage} label="Vintage" k="vintage" />
+            </>
+          )}
+          <p className="note" style={{ marginTop: 6 }}>Programme, vintage and strategy net IRRs are paid-in-weighted averages of fund net IRRs (GP-reported where entered). For funds without a reported IRR, add capital calls and distributions as dated cash flows for an accurate figure.</p>
+          {data.fund_programme.by_strategy.length > 1 && (
+            <>
+              <div className="card-title" style={{ marginTop: 6 }}>By strategy</div>
+              <BucketTable rows={data.fund_programme.by_strategy} label="Strategy" k="strategy" />
+            </>
+          )}
         </Card>
       )}
       <p className="note">Net figures marked GP are reported by the manager; EST are estimated after the stated fees and carry. IRR is n.m. for positions held under a year. Amounts in USD.</p>

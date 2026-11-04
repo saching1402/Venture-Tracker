@@ -255,7 +255,18 @@ export interface TrSummary {
   best?: { name: string; gross_moic: number | null }
 }
 
-export interface SheetSettings { title: string; subtitle: string; prepared_by: string; contact: string; disclaimer: string; show_capacity: boolean }
+export interface SheetSettings {
+  title: string; subtitle: string; prepared_by: string; contact: string; disclaimer: string; show_capacity: boolean
+  fund_title: string; fund_subtitle: string
+}
+
+export interface FundBucket {
+  count: number; commitment_usd_m: number; called_usd_m: number; distributed_usd_m: number; nav_usd_m: number
+  total_value_usd_m: number; unfunded_usd_m: number; pct_called: number | null; tvpi: number | null; dpi: number | null
+  rvpi: number | null; net_irr: number | null; vintage?: number; strategy?: string
+}
+
+export interface FundProgramme extends Partial<FundBucket> { count: number; gps?: number; by_vintage: FundBucket[]; by_strategy: FundBucket[] }
 
 export interface TrackRecordData {
   investments: LpInvestment[]
@@ -263,6 +274,7 @@ export interface TrackRecordData {
   summary_direct: TrSummary
   summary_funds: TrSummary
   sheet_summary: TrSummary
+  fund_programme: FundProgramme
   settings: SheetSettings
   can_edit: boolean
 }
