@@ -9,12 +9,14 @@ Same stack and Railway layout as the Mindari / Dynamo portfolio suite:
 | Frontend | React 18 + TypeScript + Vite, Tailwind, Zustand, React Query, Recharts (Mindari navy/gold design) |
 | Backend | Django 5 + Django REST Framework + SimpleJWT |
 | Database | PostgreSQL (Railway add-on) |
-| Hosting | Railway: two Docker services + Postgres |
+| Hosting | Railway: one Docker service (frontend built into Django) + Postgres |
 
 ## Repository layout
 
 ```
-backend/            Django API (Railway service #1)
+Dockerfile          single-service build: React app compiled, then served by Django
+railway.toml        Railway config for the root build
+backend/            Django API
   atlas/            project settings, urls, wsgi
   apps/users        email login, roles (admin / analyst / viewer)
   apps/managers     Manager, Fund, KeyPerson
@@ -22,7 +24,7 @@ backend/            Django API (Railway service #1)
   apps/tracking     Snapshot (refresh log), ChangeEvent, WatchItem (per user)
   apps/importer     tracker.json import/export, management command, token-protected API
   data/tracker.json seed snapshot, loaded automatically on first deploy
-frontend/           React SPA (Railway service #2), served by a dependency-free Node server
+frontend/           React SPA (also deployable on its own via frontend/Dockerfile)
 pipeline/           weekly refresh tooling: merge.py (builds tracker.json), SCHEMA.md, push_snapshot.py
 ```
 
@@ -40,24 +42,27 @@ pipeline/           weekly refresh tooling: merge.py (builds tracker.json), SCHE
 | `POST import/`, `GET export/` | Snapshot in/out for the refresh job: `X-Import-Token` header or staff login |
 | `GET /health/` | Railway healthcheck (public) |
 
-## Deploy on Railway
+## Deploy on Railway (one service)
 
-1. **New project → Deploy from GitHub repo** → pick this repo. Create **two services** from it:
-   - `backend`: Settings → Root Directory `backend` (uses `backend/railway.toml` + Dockerfile).
-   - `frontend`: Settings → Root Directory `frontend` (uses `frontend/railway.json` + Dockerfile).
-2. **Add PostgreSQL** (New → Database → PostgreSQL).
-3. **Backend variables**
-   - `DATABASE_URL` = `${{Postgres.DATABASE_URL}}`
-   - `SECRET_KEY` = output of `openssl rand -hex 32`
-   - `ALLOWED_HOSTS` = `.railway.app`
-   - `CORS_ALLOWED_ORIGINS` = the frontend URL, e.g. `https://venture-tracker-frontend.up.railway.app`
-   - `DJANGO_SUPERUSER_EMAIL`, `DJANGO_SUPERUSER_PASSWORD` (≥12 chars): first admin, created on boot
-   - `IMPORT_TOKEN` = output of `openssl rand -hex 32` (used by the weekly refresh)
-4. **Frontend variables**: `VITE_API_URL` = `https://<backend-domain>/api/v1` (build-time; redeploy after changing).
-5. Generate a public domain for each service (Settings → Networking). On first boot the backend migrates, creates the admin and loads `data/tracker.json`.
-6. Sign in at the frontend URL. Add colleagues at `https://<backend-domain>/admin/` → Users.
+The repo root has a `Dockerfile` and `railway.toml`, so Railway builds it with no extra settings: the React app is compiled and served by Django from the same address, with the API under `/api/v1/`.
 
-`FORCE_REIMPORT=1` on the backend for one deploy reloads `data/tracker.json` over the live data.
+1. On the project canvas, **+ Create → GitHub Repo → Venture-Tracker**. Leave Root Directory empty.
+2. **+ Create → Database → PostgreSQL**.
+3. Open the Venture-Tracker service → **Variables** → **Raw Editor**, paste and edit:
+   ```
+   DATABASE_URL=${{Postgres.DATABASE_URL}}
+   DJANGO_SUPERUSER_EMAIL=you@example.com
+   DJANGO_SUPERUSER_PASSWORD=at-least-12-characters
+   SECRET_KEY=<openssl rand -hex 32>
+   IMPORT_TOKEN=<openssl rand -hex 24>
+   ```
+   Only the first three are required. Without `SECRET_KEY` a stable key is derived from the database URL; without `IMPORT_TOKEN` the weekly refresh cannot push data.
+4. **Settings → Networking → Generate Domain** (port 8000 if asked).
+5. Open the domain and sign in with the superuser email and password. First boot takes 1–2 minutes: it migrates, creates the admin and loads `backend/data/tracker.json`. Add colleagues at `/admin/` → Users.
+
+`FORCE_REIMPORT=1` for one deploy reloads `backend/data/tracker.json` over the live data. `ALLOWED_HOSTS` defaults to `.railway.app`; add your own domain there if you attach one.
+
+**Two-service alternative:** `backend/` and `frontend/` each still have their own Dockerfile and Railway config. Set Root Directory to `/backend` and `/frontend` on two services, set `VITE_API_URL=https://<backend>/api/v1` on the frontend and `CORS_ALLOWED_ORIGINS=https://<frontend>` on the backend.
 
 ## Weekly refresh
 
@@ -83,7 +88,7 @@ python manage.py createsuperuser && python manage.py runserver
 pytest -q
 
 cd ../frontend && npm install
-VITE_API_URL=http://localhost:8000/api/v1 npm run dev
+npm run dev   # Vite proxies /api to the Django server on :8000
 ```
 
 Data notes: figures carry HARD / REPORTED / ESTIMATE labels; nulls mean unverified. Not investment advice.

@@ -14,7 +14,8 @@ export default function ValuationChart({ rounds, latest, latestDate }: { rounds:
   const ticks: number[] = []
   for (let e = Math.floor(Math.log10(lo)); e <= Math.ceil(Math.log10(hi)); e++) ticks.push(10 ** e)
   return (
-    <div style={{ width: '100%', height: 230 }}>
+    <div style={{ width: '100%' }}>
+      <div style={{ width: '100%', height: 230 }}>
       <ResponsiveContainer>
         <LineChart data={pts} margin={{ top: 10, right: 16, left: 4, bottom: 4 }}>
           <CartesianGrid stroke="#e5e0d8" vertical={false} />
@@ -23,11 +24,12 @@ export default function ValuationChart({ rounds, latest, latestDate }: { rounds:
             tickFormatter={v => money(v as number)} tick={{ fontSize: 10, fill: '#64748b' }} tickLine={false} axisLine={false} width={56} />
           <Tooltip formatter={(v: number) => [money(v), 'Post-money']} labelFormatter={(l, p) => `${l} · ${p?.[0]?.payload?.r ?? ''}`}
             contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e5e0d8' }} />
-          <Line type="monotone" dataKey="v" stroke="#0c1a2e" strokeWidth={2} dot={{ r: 3, fill: '#fff', stroke: '#0c1a2e' }}
+          <Line type="linear" dataKey="v" stroke="#0c1a2e" strokeWidth={2} dot={{ r: 3, fill: '#fff', stroke: '#0c1a2e' }}
             activeDot={{ r: 5, fill: '#c9a262', stroke: '#0c1a2e' }} isAnimationActive={false} />
         </LineChart>
       </ResponsiveContainer>
-      <p className="note">Log scale. Post-money by round.</p>
+      </div>
+      <p className="note" style={{ marginTop: 4 }}>Log scale. Post-money by round.</p>
     </div>
   )
 }

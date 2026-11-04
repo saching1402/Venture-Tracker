@@ -11,5 +11,7 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    // dev: forward API calls to the local Django server
+    proxy: { '/api': 'http://localhost:8000', '/admin': 'http://localhost:8000', '/static': 'http://localhost:8000' },
   },
 })

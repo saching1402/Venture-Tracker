@@ -76,8 +76,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'atlas.wsgi.application'
 
+# Railway: reference the Postgres add-on (DATABASE_URL=${{Postgres.DATABASE_URL}}).
+# Without it the app falls back to SQLite inside the container, which is wiped on every deploy.
+DATABASE_URL_SET = bool(os.environ.get('DATABASE_URL'))
 DATABASES = {
-    'default': env.db('DATABASE_URL', default='postgresql://postgres:postgres@localhost:5432/atlas')
+    'default': env.db('DATABASE_URL', default=f'sqlite:///{BASE_DIR / "db.sqlite3"}')
 }
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -130,6 +133,10 @@ CORS_ALLOW_CREDENTIALS = True
 # Token the weekly refresh job sends in the X-Import-Token header (empty = import API disabled)
 IMPORT_TOKEN = env('IMPORT_TOKEN', default='')
 DATA_UPLOAD_MAX_MEMORY_SIZE = 30 * 1024 * 1024  # tracker.json snapshots are ~2 MB
+
+# Built React app (copied in by the root Dockerfile); served at / by WhiteNoise + spa_index
+FRONTEND_DIST = BASE_DIR / 'frontend_dist'
+WHITENOISE_ROOT = FRONTEND_DIST if FRONTEND_DIST.exists() else None
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'

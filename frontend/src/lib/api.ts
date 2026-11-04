@@ -5,7 +5,7 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios'
 import { useAuthStore } from '../store/auth'
 
-export const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1').replace(/\/$/, '')
+export const API_BASE = (import.meta.env.VITE_API_URL || '/api/v1').replace(/\/$/, '')
 
 export const api = axios.create({ baseURL: API_BASE, timeout: 60_000 })
 

@@ -4,7 +4,7 @@ Context for AI assistants working on this repo. Keep it current.
 
 **What it is:** a tracker of venture/growth managers (GPs) and their portfolio companies for an institutional LP (Mindari suite). Same stack and Railway deployment pattern as the Dynamo repo (`saching1402/dynamo`).
 
-**Stack:** Django 5 + DRF + SimpleJWT + PostgreSQL (`backend/`), React 18 + TS + Vite + Tailwind + Zustand + React Query + Recharts (`frontend/`), two Railway Docker services + Railway Postgres.
+**Stack:** Django 5 + DRF + SimpleJWT + PostgreSQL (`backend/`), React 18 + TS + Vite + Tailwind + Zustand + React Query + Recharts (`frontend/`), deployed as ONE Railway service from the repo root (root `Dockerfile` builds the React app and copies it into Django as `frontend_dist`, served by WhiteNoise + `spa_index`) + Railway Postgres. `backend/` and `frontend/` Dockerfiles remain for a two-service setup.
 
 ## Data model
 - `Manager` (slug id, AUM, stages, focus_areas, performance text + label, funds, key people)
@@ -25,4 +25,6 @@ All money is **USD billions** (float). Dates are `YYYY-MM` or `YYYY-MM-DD` strin
 ## Conventions
 - All data endpoints require JWT (`IsAuthenticated`). Import/export require `X-Import-Token` or staff.
 - Frontend loads the full manager + company lists once into Zustand; detail drawers fetch via React Query. Hash routes: `#managers`, `#companies`, `#gp-<id>`, `#co-<id>`.
+- Frontend calls the API same-origin at `/api/v1` unless `VITE_API_URL` is set at build time.
+- Without `SECRET_KEY`, production derives a stable key from `DATABASE_URL` (all gunicorn workers must share one key).
 - Commit format: `type(scope): message`.

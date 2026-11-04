@@ -6,7 +6,7 @@
 import axios from 'axios'
 import { create } from 'zustand'
 
-const BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1').replace(/\/$/, '')
+const BASE = (import.meta.env.VITE_API_URL || '/api/v1').replace(/\/$/, '')
 const KEY = 'atlas_refresh'
 
 function readRefresh(): string | null {

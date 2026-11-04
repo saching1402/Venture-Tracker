@@ -5,6 +5,10 @@
 #   5. wait on gunicorn
 
 echo "=== Venture GP Atlas backend starting ==="
+if [ -z "$SECRET_KEY" ] && [ -z "$DATABASE_URL" ] && [ -z "$RAILWAY_SERVICE_ID" ]; then
+    # share one temporary key across all gunicorn workers in this container
+    export SECRET_KEY="$(python -c 'import secrets; print(secrets.token_hex(32))')"
+fi
 python -u manage.py migrate --noinput 2>&1 || echo "!!! migrate failed"
 
 python -u manage.py shell 2>&1 << 'PYEOF'
