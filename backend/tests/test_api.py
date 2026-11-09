@@ -75,3 +75,12 @@ def test_watchlist_round_trip(seeded, auth):
     assert r.json()['companies'] == ['anthropic']
     r = c.post('/api/v1/watchlist/', {'kind': 'company', 'id': 'anthropic', 'on': False}, content_type='application/json', **auth)
     assert r.json()['companies'] == []
+
+
+@override_settings(IMPORT_TOKEN='t0ken')
+def test_pipeline_files_need_token(db):
+    c = Client()
+    assert c.get('/api/v1/pipeline/merge.py').status_code == 401
+    r = c.get('/api/v1/pipeline/merge.py', HTTP_X_IMPORT_TOKEN='t0ken')
+    assert r.status_code == 200 and b'KNOWN_IDS' in b''.join(r.streaming_content)
+    assert c.get('/api/v1/pipeline/secrets.txt', HTTP_X_IMPORT_TOKEN='t0ken').status_code == 404

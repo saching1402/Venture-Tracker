@@ -23,6 +23,7 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/ ./
+COPY pipeline/ ./pipeline/
 COPY --from=web /web/dist ./frontend_dist
 RUN python manage.py collectstatic --noinput
 

@@ -101,17 +101,14 @@ Everyone signed in can view and download; admins and analysts can edit. Companie
 
 ## Weekly refresh
 
-A scheduled job researches new rounds, marks, market caps and manager news, then:
+A scheduled job (Mondays 07:35 Abu Dhabi) keeps the site current. It needs `IMPORT_TOKEN` set on the Railway service.
 
-```bash
-export ATLAS_API=https://<backend-domain>/api/v1 ATLAS_IMPORT_TOKEN=...
-python3 pipeline/push_snapshot.py export data/tracker_prev.json   # what is live now
-# … research writes batch files, then:
-python3 pipeline/merge.py --prev data/tracker_prev.json --out site/tracker.json
-python3 pipeline/push_snapshot.py import site/tracker.json        # upsert + change log
-```
+1. `GET /api/v1/export/` with the `X-Import-Token` header: the live snapshot, including managers and companies added in the app.
+2. `GET /api/v1/pipeline/merge.py` and `/api/v1/pipeline/SCHEMA.md`: the current merge script and data schema.
+3. Research new rounds, marks, market caps and manager news into batch files; `python3 merge.py --prev tracker_prev.json --out tracker.json`.
+4. `POST /api/v1/import/?source=weekly-refresh` with the new snapshot. The importer refuses a snapshot with fewer than 70% of the live companies (`?force=1` overrides), recomputes step-ups, valuation/revenue and entry-mark markups, never removes rows added in the app or referenced by the track record, and records every change in the Change Log.
 
-The importer refuses a snapshot with fewer than 70% of the live companies (pass `?force=1` to override), recomputes step-ups, valuation/revenue and entry-mark markups, and records every change in the Change Log.
+`pipeline/push_snapshot.py export|import <file>` does steps 1 and 4 from a shell (`ATLAS_API`, `ATLAS_IMPORT_TOKEN`).
 
 ## Local development
 

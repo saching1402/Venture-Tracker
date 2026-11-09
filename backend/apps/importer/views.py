@@ -5,8 +5,10 @@ Authorised by either the X-Import-Token header (matches IMPORT_TOKEN env var)
 or a signed-in staff user. With IMPORT_TOKEN unset, only staff can use them.
 """
 import hmac
+from pathlib import Path
 
 from django.conf import settings
+from django.http import FileResponse, Http404
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from rest_framework.permissions import AllowAny, BasePermission
@@ -50,3 +52,26 @@ import_snapshot.cls.throttle_scope = 'import'
 @permission_classes([ImportTokenOrStaff])
 def export_snapshot(request):
     return Response(export_payload())
+
+
+PIPELINE_FILES = {'merge.py': 'text/x-python', 'SCHEMA.md': 'text/markdown', 'push_snapshot.py': 'text/x-python'}
+
+
+def _pipeline_dir() -> Path:
+    here = Path(settings.BASE_DIR)
+    for d in (here / 'pipeline', here.parent / 'pipeline'):   # Docker image / local checkout
+        if d.is_dir():
+            return d
+    raise Http404('Pipeline files are not available on this server.')
+
+
+@api_view(['GET'])
+@permission_classes([ImportTokenOrStaff])
+def pipeline_file(request, name):
+    """The weekly refresh downloads the current merge script and schema from the site."""
+    if name not in PIPELINE_FILES:
+        raise Http404('Unknown pipeline file.')
+    path = _pipeline_dir() / name
+    if not path.exists():
+        raise Http404('Pipeline file missing.')
+    return FileResponse(open(path, 'rb'), content_type=f'{PIPELINE_FILES[name]}; charset=utf-8')
