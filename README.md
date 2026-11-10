@@ -86,6 +86,14 @@ So a manager with 25 new portfolio companies is about $2 on the defaults. Change
 
 Rows added this way are marked `added_via=user` and are never removed by a weekly snapshot import. Viewer accounts cannot add (set the role in `/admin/`).
 
+## Shortlisted tab (names you'll back across rounds)
+
+Split into **Directs / Co-investments** and **Funds**. Each item carries **your priority** and **Claude's priority** (L1 = most important, L2, L3); the table flags where they differ (≠). Every change to either is kept in the item's **priority log** with the date, who made it and the reason.
+
+- **Refresh** (per row, in the drawer, or **Refresh all / in view**) runs web research on the shared research worker: latest valuation, rounds and tenders, ARR / revenue, status, news (de-duplicated, with importance and category), catalysts and risks, next-round or next-fund signals, and Claude's priority with its rationale. New figures are written back to the tracker (and the Change Log); each refresh adds a row to the **progress log**.
+- **+ Add to shortlist** takes a tracked company / manager or a new name. A new name is researched first (full profile) and then refreshed automatically.
+- Dismissed headlines stay hidden. Shortlisted companies and managers are never removed by snapshot imports.
+
 ## Track Record tab (your own investments)
 
 A record of where you have invested, for marketing sheets and IC packs:

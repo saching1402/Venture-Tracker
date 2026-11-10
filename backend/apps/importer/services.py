@@ -221,6 +221,7 @@ def import_payload(payload: dict, source: str = 'api', force: bool = False) -> d
                                           detail=f'{m.name} now on cap table'))
 
     kept = set(Company.objects.filter(lp_investments__isnull=False).values_list('slug', flat=True))  # in the track record
+    kept |= set(Company.objects.filter(shortlist_items__isnull=False).values_list('slug', flat=True))  # shortlisted
     removed = [s for s in before if s not in seen and before[s].added_via != 'user' and s not in kept]
     for s in removed:
         events.append(ChangeEvent(date=asof, company=None, company_name=before[s].name, type='removed',
@@ -228,7 +229,7 @@ def import_payload(payload: dict, source: str = 'api', force: bool = False) -> d
     Company.objects.filter(slug__in=removed).delete()
     if firms:
         (Manager.objects.exclude(slug__in=list(mgr_by_slug)).exclude(added_via='user')
-         .filter(positions__isnull=True, lp_investments__isnull=True, assessment__isnull=True).delete())
+         .filter(positions__isnull=True, lp_investments__isnull=True, assessment__isnull=True, shortlist_items__isnull=True).delete())
 
     if first_import:  # carry the snapshot's own history in on the very first load
         for ch in _l(payload.get('changes')):

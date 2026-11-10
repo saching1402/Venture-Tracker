@@ -6,14 +6,14 @@ from django.db import models
 
 
 class ResearchJob(models.Model):
-    KINDS = [('manager', 'Manager'), ('company', 'Company')]
+    KINDS = [('manager', 'Manager'), ('company', 'Company'), ('shortlist', 'Shortlist refresh')]
     STATUSES = [('queued', 'Queued'), ('running', 'Running'), ('done', 'Done'), ('failed', 'Failed')]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     kind = models.CharField(max_length=10, choices=KINDS)
     name = models.CharField(max_length=255, help_text='Name as typed by the user')
     website = models.CharField(max_length=500, blank=True)
-    slug = models.SlugField(max_length=96, help_text='Target manager / company slug')
+    slug = models.SlugField(max_length=96, help_text='Target manager / company slug (shortlist item id for refreshes)')
     include_portfolio = models.BooleanField(default=False, help_text='Manager jobs: also research its portfolio companies')
     position = models.JSONField(default=dict, blank=True, help_text='Company jobs spawned by a manager job: the position to record')
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='children')

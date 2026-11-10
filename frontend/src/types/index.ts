@@ -151,7 +151,7 @@ export type ResearchStatus = '' | 'queued' | 'running' | 'failed'
 
 export interface ResearchJob {
   id: string
-  kind: 'manager' | 'company'
+  kind: 'manager' | 'company' | 'shortlist'
   name: string
   slug: string
   status: 'queued' | 'running' | 'done' | 'failed'
@@ -289,3 +289,31 @@ export interface Assessment {
   view: string; pros: Point[]; cons: Point[]; risks: Point[]; updated_by: string; updated_at: string | null
   comments: LpComment[]; commitments: LpInvestment[]
 }
+
+// ── Shortlist ────────────────────────────────────────────────────────────────
+export type Level = 'L1' | 'L2' | 'L3' | ''
+export interface SlNews { id: number; date: string; headline: string; summary: string; category: string; importance: Severity; source: string; url: string; found_at: string }
+export interface SlChange { id: number; track: 'mine' | 'claude'; old: Level; new: Level; note: string; changed_by: string; changed_at: string }
+export interface SlMark { as_of: string; valuation_usd_bn: number | null; valuation_date: string; revenue_usd_bn: number | null; revenue_metric: string; revenue_date: string; aum_usd_bn: number | null; note: string }
+export interface SlCompany {
+  id: string; name: string; website: string; hq: string; sector: string; description: string; status: string
+  latest_valuation_usd_bn: number | null; valuation_date: string; valuation_label: Label; valuation_basis: string; total_raised_usd_bn: number | null
+  revenue_metric: string; revenue_usd_bn: number | null; revenue_date: string; revenue_label: Label; growth: string; profitability: string
+  step_up_x: number | null; ev_rev_x: number | null; research_status: ResearchStatus; rounds: Round[]; tracked_gp_ids: string[]
+}
+export interface SlManager {
+  id: string; name: string; website: string; hq: string; type: string; overview: string
+  aum_usd_bn: number | null; aum_date: string; aum_label: Label; stages: string[]; focus_areas: string[]
+  performance: string; performance_label: Label; research_status: ResearchStatus; funds: Fund[]
+}
+export interface SlItem {
+  id: number; kind: 'company' | 'fund'; name: string
+  my_priority: Level; my_priority_since: string | null; claude_priority: Level; claude_priority_since: string | null; claude_rationale: string
+  thesis: string; rounds_plan: string; target_allocation_usd_m: number | null
+  brief: string; momentum: 'up' | 'flat' | 'down' | ''; performance: string; next_round: string
+  catalysts: Point[]; risks: Point[]; sources: string[]
+  research_status: ResearchStatus; last_refreshed_at: string | null; last_error: string; added_at: string; added_by: string
+  company: SlCompany | null; manager: SlManager | null
+  news: SlNews[]; priority_log: SlChange[]; marks: SlMark[]
+}
+export interface ShortlistData { items: SlItem[]; can_edit: boolean; enabled: boolean; active: number; models: ResearchModel[]; defaults: { manager: string; portfolio: string; company: string } }

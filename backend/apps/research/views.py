@@ -11,7 +11,7 @@ from apps.managers.models import Manager
 
 from apps.importer.services import _i
 
-from .engine import find_company, find_manager, unique_slug
+from .engine import _target, find_company, find_manager, unique_slug
 from .models import ResearchJob
 
 
@@ -135,6 +135,6 @@ def retry(request, job_id):
         if j.status == 'failed':
             j.status, j.error, j.finished_at = 'queued', '', None
             j.save(update_fields=['status', 'error', 'finished_at'])
-            (Manager if j.kind == 'manager' else Company).objects.filter(slug=j.slug).update(research_status='queued')
+            _target(j).update(research_status='queued')
             retried += 1
     return Response({'retried': retried})

@@ -273,15 +273,31 @@ def _record_usage(job: ResearchJob, usage: dict) -> None:
 
 # ── job lifecycle ─────────────────────────────────────────────────────────────
 def _target(job: ResearchJob):
+    if job.kind == 'shortlist':
+        from apps.shortlist.models import ShortlistItem
+        return ShortlistItem.objects.filter(id=int(job.slug) if job.slug.isdigit() else 0)
     return (Manager if job.kind == 'manager' else Company).objects.filter(slug=job.slug)
+
+
+def _run(job: ResearchJob) -> str:
+    if job.kind == 'shortlist':
+        from apps.shortlist.engine import run_refresh
+        return run_refresh(job)
+    return run_manager(job) if job.kind == 'manager' else run_company(job)
 
 
 def run_job(job: ResearchJob) -> None:
     _target(job).update(research_status='running')
     try:
-        job.summary = run_manager(job) if job.kind == 'manager' else run_company(job)
+        job.summary = _run(job)
         job.status, job.error = 'done', ''
         _target(job).update(research_status='')
+        if job.kind == 'shortlist':
+            job.finished_at = timezone.now()
+            job.save()
+            return
+        from apps.shortlist.engine import after_profile
+        after_profile(job)
         ChangeEvent.objects.create(
             date=timezone.localdate(), type='added' if not job.parent_id else 'new_position',
             company=Company.objects.filter(slug=job.slug).first() if job.kind == 'company' else None,
@@ -298,6 +314,8 @@ def run_job(job: ResearchJob) -> None:
             msg = 'The Claude API was busy or rate-limited. Retry in a few minutes.'
         job.status, job.error = 'failed', msg[:2000]
         _target(job).update(research_status='failed')
+        if job.kind == 'shortlist':
+            _target(job).update(last_error=msg[:2000])
     job.finished_at = timezone.now()
     job.save()
 

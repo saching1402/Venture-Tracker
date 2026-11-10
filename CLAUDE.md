@@ -38,6 +38,14 @@ All money is **USD billions** (float). Dates are `YYYY-MM` or `YYYY-MM-DD` strin
 - Points lists are `[{text, severity: high|medium|low}]` (`serializers.clean_points`).
 - `views.apply_filters` (view=all|direct|funds, structure, status, sector, q) is shared by `investments/` and `pdf/`; the list also returns `facets` from the unfiltered book. PDF kinds: `pdf/?kind=all|direct|funds` (or `view=`). `metrics.fund_programme` builds the fund sheet (totals, `by_vintage`, `by_strategy` via manager.type); bucket net IRR = paid-in-weighted average of fund net IRRs so it reconciles with fund rows.
 
+## Shortlist (apps/shortlist)
+- `ShortlistItem` (kind company|fund, FK company or manager, `my_priority` / `claude_priority` L1-L3 with `*_since`, `claude_rationale`, thesis, rounds_plan, target_allocation_usd_m, and refresh outputs: brief, momentum, performance, next_round, catalysts/risks points, sources), `PriorityChange` (track mine|claude, old→new, note, who, when; every change logged), `NewsItem` (de-duplicated by url/headline; `hidden` = dismissed, never re-added), `ShortlistMark` (one row per refresh: valuation/revenue or AUM).
+- Refresh = `ResearchJob(kind='shortlist', slug=<item id>)` on the shared research worker → `shortlist.engine.run_refresh`: writes newer valuation/revenue/rounds/status back to `Company` (or AUM/funds/performance to `Manager`), lifts a stale headline valuation to a newer priced round, logs ChangeEvents, adds news, sets Claude's priority (logged when it moves).
+- Adding an untracked name creates the company/manager row + a profile ResearchJob; `research.engine.run_job` then calls `after_profile` to queue the first refresh.
+- API `/api/v1/shortlist/`: GET (items + can_edit + model menu), POST add, `<id>/` PATCH (my_priority + note, thesis, rounds_plan, target) / DELETE, `<id>/refresh/`, `refresh/` (kind, priority, ids), `news/<id>/` DELETE (dismiss). Edits need admin/analyst.
+- Migration `0002_seed_shortlist` seeds Anthropic, OpenAI, Anduril, Physical Intelligence, Baseten, Fireworks (my priority L1; Claude's initial view) and queues a first refresh when ANTHROPIC_API_KEY is set. Snapshot imports never delete shortlisted companies/managers.
+- Frontend: `pages/Shortlist.tsx` (tab `#shortlist`, drawer `#sl-<id>`).
+
 ## Conventions
 - All data endpoints require JWT (`IsAuthenticated`). Import/export require `X-Import-Token` or staff.
 - Frontend loads the full manager + company lists once into Zustand; detail drawers fetch via React Query. Hash routes: `#managers`, `#companies`, `#gp-<id>`, `#co-<id>`.
