@@ -9,6 +9,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis, ZAxis } from 'recharts'
 import { PointsView } from '../components/Commentary'
 import Drawer from '../components/Drawer'
+import { Logo } from '../components/Logo'
 import { Card, Kpi } from '../components/ui'
 import { api, errorText } from '../lib/api'
 import { clip, money } from '../lib/format'
@@ -52,15 +53,6 @@ export function SignalBadge({ s }: { s: string }) {
   return m ? <span className={`sig ${m.cls}`}>{m.label}</span> : null
 }
 const DeployTag = ({ d }: { d: Deploy }) => d ? <span className={`dep dep-${d}`}>{d}</span> : <span className="note">—</span>
-
-function Logo({ domain, name, size = 28 }: { domain: string; name: string; size?: number }) {
-  const [bad, setBad] = useState(!domain)
-  const initials = name.replace(/[^A-Za-z0-9 ]/g, '').split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase()
-  if (bad) return <span className="logo logo-ph" style={{ width: size, height: size, fontSize: size * 0.38 }} aria-hidden>{initials || '?'}</span>
-  return <img className="logo" src={`https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`} alt="" width={size} height={size}
-    loading="lazy" referrerPolicy="no-referrer" onError={() => setBad(true)}
-    onLoad={e => { if ((e.currentTarget as HTMLImageElement).naturalWidth <= 16) setBad(true) }} />
-}
 
 const inStage = (c: TrCompany, s: StageView) => s === 'all' || c.stage === s
 const deployFor = (t: TrTheme, s: StageView): Deploy[] => s === 'early' ? [t.deploy_early] : s === 'growth' ? [t.deploy_growth] : [t.deploy_early, t.deploy_growth]

@@ -7,6 +7,7 @@ import { useResearch } from '../store/research'
 import type { Assessment, Point } from '../types'
 import { CommentsLog, PointsEditor, PointsView } from './Commentary'
 import { Card } from './ui'
+import { GpLogo, WithLogo } from './Logo'
 
 /** "Your view" on a GP: overall view, pros / cons / risks, comment log, and your commitments to its funds. */
 export default function ManagerView({ id }: { id: string }) {
@@ -68,7 +69,7 @@ export default function ManagerView({ id }: { id: string }) {
             <thead><tr><th className="ns">Fund</th><th className="ns n">Commitment</th><th className="ns n">Called</th><th className="ns n">NAV</th><th className="ns n">Net TVPI</th><th className="ns n">Net IRR</th></tr></thead>
             <tbody>{data.commitments.map(c => (
               <tr key={c.id} className="click" onClick={() => go(`inv-${c.id}`)}>
-                <td className="nm">{c.vehicle || c.name}</td><td className="n">{usdm(c.commitment_usd_m)}</td><td className="n">{usdm(c.metrics.invested_usd_m)}</td>
+                <td className="nm"><WithLogo logo={<GpLogo id={c.manager_id} name={c.manager_name || c.name} size={20} />}>{c.vehicle || c.name}</WithLogo></td><td className="n">{usdm(c.commitment_usd_m)}</td><td className="n">{usdm(c.metrics.invested_usd_m)}</td>
                 <td className="n">{usdm(c.metrics.current_usd_m)}</td><td className="n">{x2(c.metrics.net_moic)}</td><td className="n">{c.metrics.irr_nm ? 'n.m.' : pct(c.metrics.net_irr)}</td>
               </tr>))}</tbody>
           </table>

@@ -4,6 +4,7 @@ import { clip, money } from '../lib/format'
 import { go } from '../lib/route'
 import { useData } from '../store/data'
 import { companyCols } from './Companies'
+import { Logo, WithLogo } from '../components/Logo'
 
 export default function Watchlist() {
   const { managers, companies, watch } = useData()
@@ -20,7 +21,7 @@ export default function Watchlist() {
           <DataTable rows={fw} rowKey={m => m.id} onRowClick={m => go(`gp-${m.id}`)}
             cols={[
               { key: 'w', header: '', cell: m => <Star kind="manager" id={m.id} /> },
-              { key: 'name', header: 'Manager', sort: m => m.name, cell: m => <span className="nm">{m.name}</span> },
+              { key: 'name', header: 'Manager', sort: m => m.name, cell: m => <WithLogo logo={<Logo url={m.website} name={m.name} size={24} />}><span className="nm">{m.name}</span></WithLogo> },
               { key: 'aum', header: 'AUM', numeric: true, sort: m => m.aum_usd_bn, cell: m => money(m.aum_usd_bn) },
               { key: 'n', header: 'Cos.', numeric: true, sort: m => m.n_companies, cell: m => m.n_companies },
               { key: 'r', header: 'Recent activity', wrap: true, cell: m => clip(m.recent_activity, 180) },

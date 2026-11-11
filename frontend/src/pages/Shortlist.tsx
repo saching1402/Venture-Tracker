@@ -16,6 +16,7 @@ import { closeDrawer, go } from '../lib/route'
 import { useData } from '../store/data'
 import { useResearch } from '../store/research'
 import type { Level, ShortlistData, SlItem, SlNews } from '../types'
+import { Logo, WithLogo } from '../components/Logo'
 
 const KEY = ['shortlist']
 const LEVELS: Level[] = ['L1', 'L2', 'L3']
@@ -143,7 +144,7 @@ function newsCol(): Col<SlItem> {
 
 function companyCols(canEdit: boolean, enabled: boolean, model: string): Col<SlItem>[] {
   return [
-    { key: 'name', header: 'Company', sort: i => i.name, cell: i => <><span className="nm">{i.name}</span><div className="sub">{i.company?.sector || ''}{i.company && i.company.status !== 'Private' ? ` · ${i.company.status}` : ''}</div></> },
+    { key: 'name', header: 'Company', sort: i => i.name, cell: i => <WithLogo logo={<Logo url={i.company?.website} name={i.name} size={26} />}><span className="nm">{i.name}</span><div className="sub">{i.company?.sector || ''}{i.company && i.company.status !== 'Private' ? ` · ${i.company.status}` : ''}</div></WithLogo> },
     ...priorityCols(canEdit),
     { key: 'val', header: 'Valuation', numeric: true, sort: i => i.company?.latest_valuation_usd_bn, cell: i => <>{money(i.company?.latest_valuation_usd_bn)}<Lbl l={i.company?.valuation_label} /><div className="sub">{i.company?.valuation_date}</div></> },
     { key: 'round', header: 'Last round', sort: i => lastRound(i)?.date, cell: i => { const r = lastRound(i); return r ? <>{r.round}<div className="sub">{r.date} · {money(r.post_money_usd_bn)}</div></> : '—' } },
@@ -158,7 +159,7 @@ function companyCols(canEdit: boolean, enabled: boolean, model: string): Col<SlI
 
 function fundCols(canEdit: boolean, enabled: boolean, model: string): Col<SlItem>[] {
   return [
-    { key: 'name', header: 'Manager / fund', sort: i => i.name, cell: i => <><span className="nm">{i.name}</span><div className="sub">{i.manager?.type || ''}{i.manager?.hq ? ` · ${i.manager.hq}` : ''}</div></> },
+    { key: 'name', header: 'Manager / fund', sort: i => i.name, cell: i => <WithLogo logo={<Logo url={i.manager?.website} name={i.name} size={26} />}><span className="nm">{i.name}</span><div className="sub">{i.manager?.type || ''}{i.manager?.hq ? ` · ${i.manager.hq}` : ''}</div></WithLogo> },
     ...priorityCols(canEdit),
     { key: 'aum', header: 'AUM', numeric: true, sort: i => i.manager?.aum_usd_bn, cell: i => <>{money(i.manager?.aum_usd_bn)}<Lbl l={i.manager?.aum_label} /><div className="sub">{i.manager?.aum_date}</div></> },
     { key: 'fund', header: 'Latest fund', sort: i => latestFund(i)?.vintage, cell: i => { const f = latestFund(i); return f ? <>{f.name}<div className="sub">{f.vintage ?? ''} · {money(f.size_usd_bn)}</div></> : '—' } },
@@ -397,7 +398,7 @@ export function ShortlistDrawer({ id }: { id: string }) {
   const run = async (f: () => Promise<void>) => { setErr(null); try { await f() } catch (e) { setErr(errorText(e)) } }
 
   return (
-    <Drawer eyebrow={`Shortlisted · ${KIND_LABEL[item.kind]}`} title={item.name} link={co?.website || mg?.website || undefined}
+    <Drawer eyebrow={`Shortlisted · ${KIND_LABEL[item.kind]}`} title={item.name} link={co?.website || mg?.website || undefined} logo={<Logo url={co?.website || mg?.website} name={item.name} size={44} />}
       actions={<>
         {can && data.enabled && (
           <>

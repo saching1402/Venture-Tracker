@@ -4,6 +4,7 @@ import { Card, GpChips } from '../components/ui'
 import { money, shortName, uniq } from '../lib/format'
 import { go } from '../lib/route'
 import { useData } from '../store/data'
+import { Logo, WithLogo } from '../components/Logo'
 
 export default function Overlap() {
   const { companies, managers } = useData()
@@ -27,7 +28,7 @@ export default function Overlap() {
         <p className="sec-sub">Companies held by three or more tracked managers. Many co-holders mean crowded rounds and marks that move together across your fund commitments.</p>
         <DataTable rows={consensus} rowKey={c => c.id} onRowClick={c => go(`co-${c.id}`)} pageSize={60} initialSort={{ key: 'n', dir: -1 }}
           cols={[
-            { key: 'name', header: 'Company', sort: c => c.name, cell: c => <><div className="nm">{c.name}</div><div className="sub">{c.sector}</div></> },
+            { key: 'name', header: 'Company', sort: c => c.name, cell: c => <WithLogo logo={<Logo url={c.website} name={c.name} size={24} />}><div className="nm">{c.name}</div><div className="sub">{c.sector}</div></WithLogo> },
             { key: 'val', header: 'Valuation', numeric: true, sort: c => c.latest_valuation_usd_bn, cell: c => money(c.latest_valuation_usd_bn) },
             { key: 'n', header: '# Managers', numeric: true, sort: c => c.tracked_gp_ids.length, cell: c => c.tracked_gp_ids.length },
             { key: 'g', header: 'Tracked co-holders', wrap: true, cell: c => <GpChips ids={c.tracked_gp_ids} max={14} /> },
@@ -41,7 +42,7 @@ export default function Overlap() {
             <tbody>
               {real.map(m => (
                 <tr key={m.id} className="click" onClick={() => go(`gp-${m.id}`)}>
-                  <td className="nm">{shortName(m.name)}</td>
+                  <td className="nm"><WithLogo logo={<Logo url={m.website} name={m.name} size={18} />}>{shortName(m.name)}</WithLogo></td>
                   {tags.map(t => {
                     const v = cnt[m.id]?.[t] ?? 0
                     const share = v / max

@@ -9,6 +9,7 @@ import { money, pct, usdm, x2 } from '../lib/format'
 import { closeDrawer, go } from '../lib/route'
 import type { FundBucket, LpInvestment, Point, SheetSettings, TrackRecordData, TrSummary } from '../types'
 import InvestmentForm from './InvestmentForm'
+import { CoLogo, GpLogo, WithLogo } from '../components/Logo'
 
 export const TR_KEY = ['track-record']
 export type SheetKind = 'all' | 'direct' | 'funds'
@@ -95,7 +96,7 @@ function BucketTable({ rows, label, k }: { rows: FundBucket[]; label: string; k:
 
 function directCols(): Col<LpInvestment>[] {
   return [
-    { key: 'name', header: 'Company', sort: i => i.name, wrap: true, cell: i => <><div className="nm">{i.name}{!i.include_in_sheet && <span className="tag" style={{ marginLeft: 6 }}>not on sheet</span>}</div><div className="sub">{i.sector}</div></> },
+    { key: 'name', header: 'Company', sort: i => i.name, wrap: true, cell: i => <WithLogo logo={<CoLogo id={i.company_id} name={i.name} size={26} />}><div className="nm">{i.name}{!i.include_in_sheet && <span className="tag" style={{ marginLeft: 6 }}>not on sheet</span>}</div><div className="sub">{i.sector}</div></WithLogo> },
     { key: 'st', header: 'Structure', sort: i => i.structure_label, cell: i => <>{i.structure_label}<div className="sub">{i.vehicle}</div></> },
     { key: 'date', header: 'Round / date', sort: i => i.invest_date, cell: i => <>{i.round || '—'}<div className="sub">{i.invest_date}</div></> },
     { key: 'entry', header: 'Entry val.', numeric: true, sort: i => i.entry_valuation_usd_bn, cell: i => money(i.entry_valuation_usd_bn) },
@@ -113,7 +114,7 @@ function directCols(): Col<LpInvestment>[] {
 
 function fundCols(): Col<LpInvestment>[] {
   return [
-    { key: 'name', header: 'Fund / GP', sort: i => i.vehicle || i.name, wrap: true, cell: i => <><div className="nm">{i.vehicle || i.name}</div><div className="sub">{i.manager_name}</div></> },
+    { key: 'name', header: 'Fund / GP', sort: i => i.vehicle || i.name, wrap: true, cell: i => <WithLogo logo={<GpLogo id={i.manager_id} name={i.manager_name || i.name} size={26} />}><div className="nm">{i.vehicle || i.name}</div><div className="sub">{i.manager_name}</div></WithLogo> },
     { key: 'type', header: 'Type', sort: i => i.structure_label, cell: i => i.structure_label },
     { key: 'vin', header: 'Vintage', numeric: true, sort: i => i.vintage, cell: i => i.vintage ?? i.invest_date.slice(0, 4) },
     { key: 'com', header: 'Commitment', numeric: true, sort: i => i.commitment_usd_m, cell: i => usdm(i.commitment_usd_m) },
@@ -321,6 +322,7 @@ export function InvestmentDrawer({ id }: { id: string }) {
 
   return (
     <Drawer eyebrow={[inv.structure_label, inv.vehicle, inv.status_label].filter(Boolean).join(' · ')} title={inv.is_fund ? inv.vehicle || inv.name : inv.name}
+      logo={inv.is_fund ? <GpLogo id={inv.manager_id} name={inv.manager_name || inv.name} size={44} /> : <CoLogo id={inv.company_id} name={inv.name} size={44} />}
       actions={canEdit ? <>
         <button className="btn" onClick={() => setEditing(true)}>Edit</button>
         {confirmDel

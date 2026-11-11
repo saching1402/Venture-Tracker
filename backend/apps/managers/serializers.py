@@ -23,7 +23,7 @@ class ManagerListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Manager
-        fields = ['id', 'name', 'type', 'hq', 'founded', 'aum_usd_bn', 'aum_label', 'stages', 'focus_areas',
+        fields = ['id', 'name', 'website', 'type', 'hq', 'founded', 'aum_usd_bn', 'aum_label', 'stages', 'focus_areas',
                   'key_people_names', 'latest_fund', 'n_companies', 'is_stub', 'recent_activity',
                   'research_status', 'added_via']
 

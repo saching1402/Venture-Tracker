@@ -4,6 +4,7 @@ export interface Fund { name: string; size_usd_bn: number | null; vintage: numbe
 export interface KeyPerson { name: string; title: string; focus: string }
 
 export interface ManagerRow {
+  website?: string
   id: string
   name: string
   type: string
@@ -74,6 +75,7 @@ export interface ManagerDetail {
 }
 
 export interface CompanyRow {
+  website?: string
   id: string
   name: string
   description: string

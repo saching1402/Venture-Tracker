@@ -6,6 +6,7 @@ import { money, uniq } from '../lib/format'
 import { go } from '../lib/route'
 import { useData } from '../store/data'
 import type { ManagerRow } from '../types'
+import { Logo, WithLogo } from '../components/Logo'
 
 export default function Managers() {
   const { managers, companies, coById, meta } = useData()
@@ -30,7 +31,7 @@ export default function Managers() {
 
   const cols: Col<ManagerRow>[] = [
     { key: 'w', header: '', cell: m => <Star kind="manager" id={m.id} /> },
-    { key: 'name', header: 'Manager', sort: m => m.name, cell: m => <><div className="nm">{m.name}<ResearchBadge status={m.research_status} /></div><div className="sub">{m.type || (m.research_status ? 'Profile being researched…' : '')}</div></> },
+    { key: 'name', header: 'Manager', sort: m => m.name, cell: m => <WithLogo logo={<Logo url={m.website} name={m.name} size={26} />}><div className="nm">{m.name}<ResearchBadge status={m.research_status} /></div><div className="sub">{m.type || (m.research_status ? 'Profile being researched…' : '')}</div></WithLogo> },
     { key: 'hq', header: 'HQ', sort: m => m.hq, cell: m => m.hq.replace(/, USA$/, '') },
     { key: 'aum', header: 'AUM', numeric: true, sort: m => m.aum_usd_bn, cell: m => money(m.aum_usd_bn) },
     { key: 'fund', header: 'Latest fund', numeric: true, sort: m => m.latest_fund?.size_usd_bn,

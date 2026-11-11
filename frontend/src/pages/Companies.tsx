@@ -6,12 +6,13 @@ import { clip, downloadCsv, money, num, uniq, xmult } from '../lib/format'
 import { go } from '../lib/route'
 import { useData } from '../store/data'
 import type { CompanyRow } from '../types'
+import { Logo, WithLogo } from '../components/Logo'
 
 export function companyCols(): Col<CompanyRow>[] {
   return [
     { key: 'w', header: '', cell: c => <Star kind="company" id={c.id} /> },
     { key: 'name', header: 'Company', sort: c => c.name, wrap: true,
-      cell: c => <><div className="nm">{c.name}<ResearchBadge status={c.research_status} /></div><div className="sub">{clip(c.description, 90) || (c.research_status ? 'Profile being researched…' : '')}</div></> },
+      cell: c => <WithLogo logo={<Logo url={c.website} name={c.name} size={26} />}><div className="nm">{c.name}<ResearchBadge status={c.research_status} /></div><div className="sub">{clip(c.description, 90) || (c.research_status ? 'Profile being researched…' : '')}</div></WithLogo> },
     { key: 'sector', header: 'Sector', sort: c => c.sector, cell: c => <>{c.sector}<div className="sub">{c.focus_tags[0] ?? ''}</div></> },
     { key: 'status', header: 'Status', sort: c => c.status, cell: c => <StatusPill status={c.status} /> },
     { key: 'val', header: 'Valuation', numeric: true, sort: c => c.latest_valuation_usd_bn,

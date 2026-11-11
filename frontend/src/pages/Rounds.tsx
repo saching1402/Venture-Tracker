@@ -6,6 +6,7 @@ import { money } from '../lib/format'
 import { go } from '../lib/route'
 import { useData } from '../store/data'
 import type { RecentRound } from '../types'
+import { Logo, WithLogo } from '../components/Logo'
 
 export default function Rounds() {
   const coById = useData(s => s.coById)
@@ -24,7 +25,7 @@ export default function Rounds() {
           initialSort={{ key: 'date', dir: -1 }}
           cols={[
             { key: 'date', header: 'Date', sort: r => r.date, cell: r => r.date },
-            { key: 'co', header: 'Company', sort: r => coById[r.company_id].name, cell: r => <><div className="nm">{coById[r.company_id].name}</div><div className="sub">{coById[r.company_id].sector}</div></> },
+            { key: 'co', header: 'Company', sort: r => coById[r.company_id].name, cell: r => <WithLogo logo={<Logo url={coById[r.company_id].website} name={coById[r.company_id].name} size={24} />}><div className="nm">{coById[r.company_id].name}</div><div className="sub">{coById[r.company_id].sector}</div></WithLogo> },
             { key: 'round', header: 'Round', wrap: true, cell: r => r.round },
             { key: 'pm', header: 'Post-money', numeric: true, sort: r => r.post_money_usd_bn, cell: r => money(r.post_money_usd_bn) },
             { key: 'lead', header: 'Lead', wrap: true, cell: r => r.lead || '—' },

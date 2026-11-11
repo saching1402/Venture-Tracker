@@ -8,6 +8,7 @@ import { money, shortName, xmult } from '../lib/format'
 import { go } from '../lib/route'
 import { useData } from '../store/data'
 import type { CompanyDetail } from '../types'
+import { GpLogo, Logo, WithLogo } from '../components/Logo'
 
 export default function CompanyDrawer({ id }: { id: string }) {
   const managers = useData(s => s.managers)
@@ -26,7 +27,7 @@ export default function CompanyDrawer({ id }: { id: string }) {
 
   return (
     <Drawer eyebrow={[c.sector, c.hq, c.founded ? `Founded ${c.founded}` : ''].filter(Boolean).join(' · ')} title={<>{c.name}<ResearchBadge status={c.research_status} /></>}
-      link={c.website || undefined} actions={<><ReresearchButton kind="company" id={c.id} status={c.research_status} /><Star kind="company" id={c.id} /></>}>
+      link={c.website || undefined} logo={<Logo url={c.website} name={c.name} size={44} />} actions={<><ReresearchButton kind="company" id={c.id} status={c.research_status} /><Star kind="company" id={c.id} /></>}>
       {c.research_status && c.research_status !== 'failed' && <div className="card"><p className="prose">Researching this company on the web. Valuation history, revenue and investors fill in automatically.</p></div>}
       {c.research_status === 'failed' && <div className="err-box">Research did not finish. Open Research in the header to see why and retry.</div>}
       <p className="prose">{c.description}</p>
@@ -80,7 +81,7 @@ export default function CompanyDrawer({ id }: { id: string }) {
             <tbody>
               {positions.map(p => (
                 <tr key={p.firm_id} className="click" onClick={() => go(`gp-${p.firm_id}`)}>
-                  <td className="nm">{p.firm_name}{p.lead && <span className="tag" style={{ marginLeft: 6 }}>lead</span>}</td>
+                  <td className="nm"><WithLogo logo={<GpLogo id={p.firm_id} name={p.firm_name} size={22} />}>{p.firm_name}{p.lead && <span className="tag" style={{ marginLeft: 6 }}>lead</span>}</WithLogo></td>
                   <td className="n">{p.first_invest_year ?? '—'}</td>
                   <td style={{ whiteSpace: 'normal' }}>{p.entry_round || (p.via ? 'via investor list' : '—')}</td>
                   <td className="n">{money(p.entry_post_usd_bn)}</td>

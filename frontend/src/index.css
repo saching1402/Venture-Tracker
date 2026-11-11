@@ -644,8 +644,8 @@ tbody tr:hover td{background:#f8f9fc}
 .tile-key{display:inline-block;width:12px;height:12px;border-radius:3px;border:2px solid;margin-right:4px;vertical-align:-2px}
 .legend{font-size:11px;color:var(--muted)}
 .key-early{border-color:#e2c983}.key-growth{border-color:var(--navy)}.key-public{border-color:var(--border);background:var(--surface2)}
-.logo{border-radius:6px;object-fit:contain;background:var(--surface2);padding:2px;flex:none}
-.logo-ph{display:inline-flex;align-items:center;justify-content:center;background:var(--navy);color:#fff;font-weight:700;font-family:var(--f-display);border-radius:6px;flex:none}
+.co-logo{border-radius:6px;object-fit:contain;background:#fff;border:1px solid var(--border);padding:2px;flex:none;box-sizing:border-box}
+.co-logo.logo-ph{display:inline-flex;align-items:center;justify-content:center;background:var(--navy);color:#fff;font-weight:700;font-family:var(--f-display);border-radius:6px;flex:none}
 .cf-list{display:flex;flex-direction:column}
 .cf-row{display:grid;grid-template-columns:minmax(150px,1.2fr) minmax(80px,1.6fr) 62px minmax(140px,2fr) minmax(110px,1fr);gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
 .cf-name{border:none;background:transparent;text-align:left;font-family:inherit;font-weight:600;color:var(--navy);cursor:pointer;padding:0;font-size:12.5px}
@@ -662,3 +662,12 @@ tbody tr:hover td{background:#f8f9fc}
 .pbk-item{display:flex;gap:10px;border:1.5px solid var(--border);border-radius:10px;padding:11px 13px}
 .pbk-n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--gold);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center}
 .pbk-t{font-weight:600;color:var(--navy);font-size:13px;margin-bottom:3px}
+
+/* logos everywhere */
+.with-logo{display:inline-flex;align-items:center;gap:9px;min-width:0;max-width:100%;vertical-align:middle}
+.with-logo-body{min-width:0;display:block}
+.tag-logo{display:inline-flex;align-items:center;gap:4px}
+.tag-logo .co-logo{border:none;padding:0;border-radius:3px}
+.tag-logo .logo-ph{font-size:7px!important}
+.drawer-logo .co-logo{border-radius:10px;padding:4px}
+.drawer-logo .logo-ph{border-radius:10px}

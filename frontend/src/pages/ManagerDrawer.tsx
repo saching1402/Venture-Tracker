@@ -9,6 +9,7 @@ import { useData } from '../store/data'
 import { money, xmult } from '../lib/format'
 import { go } from '../lib/route'
 import type { ManagerDetail } from '../types'
+import { CoLogo, Logo, WithLogo } from '../components/Logo'
 
 const SEC_COLORS = ['var(--navy)', 'var(--gold)', 'var(--navy3)', 'var(--gold2)', 'var(--blue)', 'var(--red)', '#7d8aa3', '#d9c08a']
 
@@ -33,7 +34,7 @@ export default function ManagerDrawer({ id }: { id: string }) {
   const secs = Object.entries(sec).sort((a, b) => b[1] - a[1])
 
   return (
-    <Drawer eyebrow={[f.type, f.founded ? `Founded ${f.founded}` : ''].filter(Boolean).join(' · ')} title={<>{f.name}<ResearchBadge status={f.research_status} /></>} link={f.website || undefined}
+    <Drawer eyebrow={[f.type, f.founded ? `Founded ${f.founded}` : ''].filter(Boolean).join(' · ')} title={<>{f.name}<ResearchBadge status={f.research_status} /></>} link={f.website || undefined} logo={<Logo url={f.website} name={f.name} size={44} />}
       actions={<><ReresearchButton kind="manager" id={f.id} status={f.research_status} /><Star kind="manager" id={f.id} /></>}>
       {f.research_status && f.research_status !== 'failed' && <div className="card"><p className="prose">Researching this manager on the web. The profile fills in automatically; its portfolio companies follow one by one (see Research in the header).</p></div>}
       {f.research_status === 'failed' && <div className="err-box">Research did not finish. Open Research in the header to see why and retry.</div>}
@@ -87,7 +88,7 @@ export default function ManagerDrawer({ id }: { id: string }) {
         <p className="sec-sub">Entry mark is the post-money of the round in the first investment year; markup is today's valuation over it. Gross company-level indicators only.</p>
         <DataTable rows={f.holdings} rowKey={h => h.company_id} onRowClick={h => go(`co-${h.company_id}`)} pageSize={300} initialSort={{ key: 'val', dir: -1 }}
           cols={[
-            { key: 'name', header: 'Company', sort: h => h.name, cell: h => <><div className="nm">{h.name}</div><div className="sub">{h.sector}</div></> },
+            { key: 'name', header: 'Company', sort: h => h.name, cell: h => <WithLogo logo={<CoLogo id={h.company_id} name={h.name} size={24} />}><div className="nm">{h.name}</div><div className="sub">{h.sector}</div></WithLogo> },
             { key: 'st', header: 'Status', sort: h => h.status, cell: h => <StatusPill status={h.status} /> },
             { key: 'yr', header: 'Entry', numeric: true, sort: h => h.first_invest_year,
               cell: h => h.first_invest_year ? <>{h.first_invest_year}<div className="sub">{h.entry_round}{h.lead ? ' · lead' : ''}</div></> : <span className="sub">{h.via ? 'investor list' : '—'}</span> },

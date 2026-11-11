@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { useData } from '../store/data'
 import { shortName, statusKind } from '../lib/format'
 import { go } from '../lib/route'
+import { Logo } from './Logo'
 
 export function Lbl({ l }: { l?: string | null }) {
   if (!l) return null
@@ -30,8 +31,8 @@ export function GpChips({ ids, max = 4 }: { ids: string[]; max?: number }) {
   return (
     <>
       {ids.slice(0, max).map(id => (
-        <span key={id} className="tag gp" onClick={e => { e.stopPropagation(); go(`gp-${id}`) }}>
-          {shortName(mgr[id]?.name ?? id)}
+        <span key={id} className="tag gp tag-logo" onClick={e => { e.stopPropagation(); go(`gp-${id}`) }}>
+          <Logo url={mgr[id]?.website} name={mgr[id]?.name ?? id} size={14} />{shortName(mgr[id]?.name ?? id)}
         </span>
       ))}
       {ids.length > max && <span className="tag">+{ids.length - max}</span>}

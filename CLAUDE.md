@@ -51,11 +51,12 @@ All money is **USD billions** (float). Dates are `YYYY-MM` or `YYYY-MM-DD` strin
 - Stage rule (`EARLY_MAX_USD_BN` = 1.0): early < $1bn post-money, growth ≥ $1bn private, public/acquired separate. `services._resolve` merges map entries with live `Company` rows; the newer valuation mark wins.
 - API `/api/v1/trends/`: GET (whole tab), `themes/<slug>/` PATCH (followed, user_note), `themes/<slug>/refresh/` (ResearchJob kind `theme` → `engine.run_theme`), `resources/` POST, `resources/<id>/` PATCH/DELETE, `import/` POST + `export/` GET (X-Import-Token). Import upserts themes and keeps user fields; news merges (cap 40).
 - Seed: `backend/data/trends.json` (built by `pipeline/build_trends_seed.py`), loaded by `start.sh` via `import_trends --if-empty`. Weekly updates come from the "Venture GP Atlas Weekly" scheduled task (Fridays), which exports, edits and re-imports.
-- Frontend: `pages/Trends.tsx` (tab `#trends`, drawer `#th-<id>`); logos from Google's favicon service with an initials fallback.
+- Frontend: `pages/Trends.tsx` (tab `#trends`, drawer `#th-<id>`).
 
 ## Conventions
 - All data endpoints require JWT (`IsAuthenticated`). Import/export require `X-Import-Token` or staff.
 - Frontend loads the full manager + company lists once into Zustand; detail drawers fetch via React Query. Hash routes: `#managers`, `#companies`, `#gp-<id>`, `#co-<id>`.
 - Frontend calls the API same-origin at `/api/v1` unless `VITE_API_URL` is set at build time.
 - Without `SECRET_KEY`, production derives a stable key from `DATABASE_URL` (all gunicorn workers must share one key).
+- Logos: `components/Logo.tsx` (`Logo` by url/domain, `CoLogo` / `GpLogo` by tracker id via the store, `WithLogo` layout); icons come from Google's favicon service (sz=128) with an initials fallback for missing or 16px placeholder icons. Manager and company list endpoints include `website` for this. CSS class is `co-logo` (`.logo` is the site brand mark).
 - Commit format: `type(scope): message`.

@@ -5,6 +5,7 @@ import { api, errorText } from '../lib/api'
 import { go } from '../lib/route'
 import { useData } from '../store/data'
 import type { ChangeRow } from '../types'
+import { CoLogo, WithLogo } from '../components/Logo'
 
 export default function Changes() {
   const meta = useData(s => s.meta)
@@ -32,7 +33,7 @@ export default function Changes() {
             onRowClick={r => r.company_id && go(`co-${r.company_id}`)}
             cols={[
               { key: 'date', header: 'Date', sort: r => r.date, cell: r => r.date },
-              { key: 'co', header: 'Company', sort: r => r.company_name, cell: r => <span className="nm">{r.company_name}</span> },
+              { key: 'co', header: 'Company', sort: r => r.company_name, cell: r => <WithLogo logo={<CoLogo id={r.company_id} name={r.company_name} size={22} />}><span className="nm">{r.company_name}</span></WithLogo> },
               { key: 'type', header: 'Type', sort: r => r.type, cell: r => <span className="badge badge-gray">{r.type.replace('_', ' ')}</span> },
               { key: 'd', header: 'Change', wrap: true, cell: r => <span className={r.from != null && r.to != null ? (r.to > r.from ? 'pos' : 'neg') : ''}>{r.detail}</span> },
             ]} />
