@@ -46,6 +46,13 @@ All money is **USD billions** (float). Dates are `YYYY-MM` or `YYYY-MM-DD` strin
 - Migration `0002_seed_shortlist` seeds Anthropic, OpenAI, Anduril, Physical Intelligence, Baseten, Fireworks (my priority L1; Claude's initial view) and queues a first refresh when ANTHROPIC_API_KEY is set. Snapshot imports never delete shortlisted companies/managers.
 - Frontend: `pages/Shortlist.tsx` (tab `#shortlist`, drawer `#sl-<id>`).
 
+## Trends (apps/trends)
+- `Theme` (slug, heat 0-100, signal, conviction, horizon, `deploy_early` / `deploy_growth` overweight|selective|watch|avoid, funding rows with `metric` venture|market, risks/catalysts, kpis, `segments` = market map [{name, companies:[{name, id (tracker slug), domain, stage, valuation…}]}], news, sources; user fields `followed`, `user_note`), `TrendResource` (reading list per theme or global; unique per theme+url; `hidden` = removed by user, never re-added), `TrendBrief` (one per weekly update; headline, deploy_now/watch/cooling, market stats, playbook, `heat` snapshot for history).
+- Stage rule (`EARLY_MAX_USD_BN` = 1.0): early < $1bn post-money, growth ≥ $1bn private, public/acquired separate. `services._resolve` merges map entries with live `Company` rows; the newer valuation mark wins.
+- API `/api/v1/trends/`: GET (whole tab), `themes/<slug>/` PATCH (followed, user_note), `themes/<slug>/refresh/` (ResearchJob kind `theme` → `engine.run_theme`), `resources/` POST, `resources/<id>/` PATCH/DELETE, `import/` POST + `export/` GET (X-Import-Token). Import upserts themes and keeps user fields; news merges (cap 40).
+- Seed: `backend/data/trends.json` (built by `pipeline/build_trends_seed.py`), loaded by `start.sh` via `import_trends --if-empty`. Weekly updates come from the "Venture GP Atlas Weekly" scheduled task (Fridays), which exports, edits and re-imports.
+- Frontend: `pages/Trends.tsx` (tab `#trends`, drawer `#th-<id>`); logos from Google's favicon service with an initials fallback.
+
 ## Conventions
 - All data endpoints require JWT (`IsAuthenticated`). Import/export require `X-Import-Token` or staff.
 - Frontend loads the full manager + company lists once into Zustand; detail drawers fetch via React Query. Hash routes: `#managers`, `#companies`, `#gp-<id>`, `#co-<id>`.

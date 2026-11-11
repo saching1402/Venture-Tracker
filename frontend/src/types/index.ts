@@ -151,7 +151,7 @@ export type ResearchStatus = '' | 'queued' | 'running' | 'failed'
 
 export interface ResearchJob {
   id: string
-  kind: 'manager' | 'company' | 'shortlist'
+  kind: 'manager' | 'company' | 'shortlist' | 'theme'
   name: string
   slug: string
   status: 'queued' | 'running' | 'done' | 'failed'
@@ -317,3 +317,38 @@ export interface SlItem {
   news: SlNews[]; priority_log: SlChange[]; marks: SlMark[]
 }
 export interface ShortlistData { items: SlItem[]; can_edit: boolean; enabled: boolean; active: number; models: ResearchModel[]; defaults: { manager: string; portfolio: string; company: string } }
+
+// ── Trends ───────────────────────────────────────────────────────────────────
+export type TrStage = 'early' | 'growth' | 'public' | 'acquired'
+export type Deploy = 'overweight' | 'selective' | 'watch' | 'avoid' | ''
+export interface TrCompany {
+  name: string; id: string | null; domain: string; stage: TrStage; hq: string; description: string
+  valuation_usd_bn: number | null; valuation_date: string; valuation_label: string; last_round: string; investors: string[]
+  note?: string; url?: string; tracked: boolean; status: string; revenue_usd_bn?: number | null; revenue_metric?: string
+  step_up_x?: number | null; gp_ids?: string[]; rounds: { date: string; round: string; post_money_usd_bn: number }[]
+}
+export interface TrSegment { name: string; description?: string; companies: TrCompany[] }
+export interface TrFunding { period: string; stage: string; capital_usd_bn: number | null; deals: number | null; note: string; source: string; url: string; label: string; metric?: 'venture' | 'market' }
+export interface TrNews { date: string; headline: string; url: string; source: string; summary: string }
+export interface TrResource { id: number; theme: string | null; title: string; url: string; source: string; kind: string; date: string; summary: string; added_via: string; pinned: boolean }
+export interface TrMark { company: string; id: string | null; date: string; round: string; post_money_usd_bn: number; stage: 'early' | 'growth' }
+export interface TrTheme {
+  id: string; name: string; category: string; order: number; color: string
+  summary: string; why_now: string; deploy_view: string; signal: string; heat: number | null; conviction: string; horizon: string
+  deploy_early: Deploy; deploy_growth: Deploy; funding: TrFunding[]; valuation_notes: string
+  risks: Point[]; catalysts: Point[]; kpis: string[]; segments: TrSegment[]; news: TrNews[]; sources: string[]
+  followed: boolean; user_note: string; research_status: ResearchStatus; last_refreshed_at: string | null
+  stats: { companies: number; early: number; growth: number; public: number; private_value_usd_bn: number; rounds_12m: number; tracked: number }
+  marks: TrMark[]; heat_history: { as_of: string; heat: number }[]; resources: TrResource[]
+}
+export interface TrPick { theme: string; stage: string; why: string }
+export interface TrBrief {
+  as_of: string; headline: string; summary: string; highlights: Point[]; deploy_now: TrPick[]; watch: TrPick[]; cooling: TrPick[]
+  market: Record<string, unknown> & { sources?: { label: string; url: string }[] }
+  playbook: { title: string; detail: string; cadence: string; links: string[] }[]
+}
+export interface TrendsData {
+  brief: TrBrief | null; early_max_usd_bn: number; themes: TrTheme[]; resources: TrResource[]
+  heat_prev: Record<string, number>; history: { as_of: string; heat: Record<string, number> }[]
+  can_edit: boolean; enabled: boolean; active: number; models: ResearchModel[]; defaults: { manager: string; portfolio: string; company: string }
+}

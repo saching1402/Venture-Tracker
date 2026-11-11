@@ -1,0 +1,3309 @@
+{
+ "asof": "2026-11-11",
+ "brief": {
+  "as_of": "2026-11-11",
+  "headline": "AI still takes about 64% of venture dollars, but the fastest-growing new themes are physical: robotics, defence, space and power",
+  "summary": "Q3 2026 global venture reached $159bn (+53% YoY; down from Q2's record $212bn), with AI at $102bn (64%) and a record 27 rounds of $1bn+ (Crunchbase). Capital is concentrating: late stage took $105bn and early stage $40.6bn. Outside software, physical AI ($47.4bn in H1), defence (a record by June), space ($20.8bn in Q3, a record) and power for AI (fusion and fission mega-rounds) are compounding fastest. For an LP: deploy EARLY where specialists see the frontier before mega-rounds (physical AI applications, defence autonomy, nuclear and grid, agent security, vertical agents). In GROWTH, be selective and favour category leaders bought via tenders or secondaries over primary rounds priced for perfection.",
+  "highlights": [
+   {
+    "text": "Q3 2026: $159bn global VC, AI $102bn (64%), 27 rounds of $1bn+ (Crunchbase)",
+    "severity": "high"
+   },
+   {
+    "text": "Enterprise AI spend $176.8bn (5.4x); Anthropic 55% of enterprise API spend (Menlo)",
+    "severity": "high"
+   },
+   {
+    "text": "Physical AI $47.4bn in H1 2026, almost 4x H2 2025; robotics $9.9bn in Q3 (+185% YoY)",
+    "severity": "high"
+   },
+   {
+    "text": "Defence: record $14.6bn by June; Anduril at $61bn; Castelion at $13bn",
+    "severity": "medium"
+   },
+   {
+    "text": "Space: record $20.8bn in Q3 after the SpaceX IPO ($1.77tn)",
+    "severity": "medium"
+   },
+   {
+    "text": "Quantum: $5.7bn of exits in Q1 2026; Quantinuum IPO",
+    "severity": "medium"
+   }
+  ],
+  "deploy_now": [
+   {
+    "theme": "physical-ai-robotics",
+    "stage": "early",
+    "why": "Application robots with paying customers before mega-round pricing"
+   },
+   {
+    "theme": "defense-tech",
+    "stage": "early",
+    "why": "Dual-use autonomy, counter-UAS, European defence; exits now opening"
+   },
+   {
+    "theme": "energy-for-ai",
+    "stage": "early",
+    "why": "Fission, fuel and grid enablers with hyperscaler offtake"
+   },
+   {
+    "theme": "enterprise-agents",
+    "stage": "early",
+    "why": "Vertical, outcome-priced agents capturing labour budgets"
+   },
+   {
+    "theme": "ai-security",
+    "stage": "early",
+    "why": "Agent and AI-code security where incumbents lag"
+   },
+   {
+    "theme": "frontier-models",
+    "stage": "growth",
+    "why": "Leaders via tenders / primaries at sane multiples only"
+   },
+   {
+    "theme": "physical-ai-robotics",
+    "stage": "growth",
+    "why": "Robot foundation-model leaders (PI, Skild), sized carefully"
+   }
+  ],
+  "watch": [
+   {
+    "theme": "quantum",
+    "stage": "growth",
+    "why": "Listed comps volatile; 2030+ timelines"
+   },
+   {
+    "theme": "ai-coding",
+    "stage": "growth",
+    "why": "Labs' own agents take about 70% of coding spend"
+   },
+   {
+    "theme": "neurotech-bci",
+    "stage": "early",
+    "why": "Frontier option; specialist funds only"
+   }
+  ],
+  "cooling": [
+   {
+    "theme": "ai-infrastructure",
+    "stage": "growth",
+    "why": "Asset-heavy neoclouds: refinancing and depreciation risk"
+   }
+  ],
+  "market": {
+   "q3_2026_global_vc_usd_bn": 159,
+   "q3_2026_ai_usd_bn": 102,
+   "q3_2026_ai_share_pct": 64,
+   "q3_2026_late_usd_bn": 105,
+   "q3_2026_early_usd_bn": 40.6,
+   "q3_2026_billion_rounds": 27,
+   "nine_month_2026_usd_bn": 679,
+   "enterprise_ai_spend_2026_usd_bn": 176.8,
+   "hyperscaler_capex_2026_usd_bn": 733,
+   "sources": [
+    {
+     "label": "Crunchbase News: Q3 2026 global funding",
+     "url": "https://news.crunchbase.com/venture/q3-2026-global-startup-funding-ai-billion-dollar-rounds-exits-data/"
+    },
+    {
+     "label": "Menlo Ventures: State of Enterprise AI 2026",
+     "url": "https://menlovc.com/wp-content/uploads/2026/11/menlo_ventures_enterprise_ai_report-2026-110326.pdf"
+    },
+    {
+     "label": "State of AI Report 2026",
+     "url": "https://www.stateof.ai/"
+    }
+   ]
+  },
+  "playbook": [
+   {
+    "title": "Weekly (15 min): this tab + one deal digest",
+    "cadence": "Every Monday",
+    "detail": "Read the Trends brief and heat changes here, then scan one weekly round-up (Crunchbase \"week's biggest rounds\" or aifunding.me). Flag any theme whose heat moved by 5 or more for a deeper look.",
+    "links": [
+     "https://news.crunchbase.com/venture/biggest-funding-rounds-defense-tech-ai-infrastructure-castelion/",
+     "https://aifunding.me/insights/weekly-roundup-nov-2-6-2026"
+    ]
+   },
+   {
+    "title": "Quarterly benchmarks (block 2 hours when they drop)",
+    "cadence": "Jan / Apr / Jul / Oct",
+    "detail": "Crunchbase quarterly global funding, PitchBook-NVCA Venture Monitor, CB Insights State of Venture; plus sector trackers: Seraphim (space), FIA (fusion, annual), Menlo enterprise AI (annual, Nov), State of AI (Oct).",
+    "links": [
+     "https://news.crunchbase.com/venture/q3-2026-global-startup-funding-ai-billion-dollar-rounds-exits-data/",
+     "https://nvca.org/pitchbook-nvca-venture-monitor/",
+     "https://seraphim.vc/wp-content/uploads/2026/07/Seraphim-Space-Index-Q2-2026.pdf",
+     "https://menlovc.com/wp-content/uploads/2026/11/menlo_ventures_enterprise_ai_report-2026-110326.pdf",
+     "https://www.stateof.ai/"
+    ]
+   },
+   {
+    "title": "GP voices: 2-3 long-form interviews a week",
+    "cadence": "Commute / gym",
+    "detail": "20VC, Invest Like the Best, BG2 (Gerstner/Gurley), No Priors, Dwarkesh, Acquired and the a16z podcast. Note when two or more top GPs independently name the same theme: that is the earliest consensus signal.",
+    "links": [
+     "https://thetwentyminutevc.libsyn.com/2025",
+     "https://valueaddvc.com/blog/top-10-vc-podcasts-actually-worth-your-time-in-2026"
+    ]
+   },
+   {
+    "title": "Use your GPs as sensors",
+    "cadence": "Each quarterly update / AGM",
+    "detail": "Ask each GP: \"Which theme is your partnership most over- and under-weight, and where are you seeing the highest entry prices?\" Log answers as comments on the GP in Atlas. Cross-check against their portfolio additions in the Changes tab.",
+    "links": []
+   },
+   {
+    "title": "Specialist access for physical / frontier themes",
+    "cadence": "Ongoing",
+    "detail": "Physical AI, defence, space, energy and quantum reward specialist GPs (e.g. Lux, Eclipse, DCVC, Founders Fund, 8VC, Playground) and co-invest rights. Prefer funds where you get co-invest flow in your L1 themes.",
+    "links": []
+   },
+   {
+    "title": "Primary checks before IC",
+    "cadence": "Per opportunity",
+    "detail": "Expert calls (AlphaSense / Tegus / GLG), customer references, and secondary pricing (Forge, Caplight) to test whether the theme narrative shows up in revenue. Use Shortlisted to track names you would back across rounds.",
+    "links": []
+   },
+   {
+    "title": "Keep a thesis with kill criteria per theme",
+    "cadence": "Monthly",
+    "detail": "In each theme's note, write the 2-3 milestones that would make you overweight, and the ones that would make you stop. Refresh the theme before an IC to check them.",
+    "links": []
+   }
+  ]
+ },
+ "themes": [
+  {
+   "id": "frontier-models",
+   "name": "Frontier models & AI labs",
+   "category": "AI",
+   "order": 1,
+   "color": "#0f2347",
+   "signal": "hot",
+   "heat": 95,
+   "conviction": "high",
+   "horizon": "now",
+   "deploy_early": "avoid",
+   "deploy_growth": "selective",
+   "summary": "The labs building frontier models (Anthropic, OpenAI, Google DeepMind, xAI) plus well-funded challengers. Revenue is compounding faster than any software category on record, and labs now capture most enterprise AI spend.",
+   "why_now": "State of AI 2026 puts the combined OpenAI + Anthropic revenue run-rate at about $105bn (from about $30bn at the start of the year). Menlo Ventures finds Anthropic, OpenAI and Google take 69% of enterprise AI deployment dollars, with Anthropic at 55% of enterprise API spend.",
+   "deploy_view": "Growth only, and only at entry prices that still compound: tenders and primary rounds in the two leaders, accessed directly or via low-fee SPVs. Seed-stage \"neo-labs\" now price at multi-billion valuations (Thinking Machines, SSI, Reflection), so they are not early-stage risk/return. Avoid fee-stacked SPV layers.",
+   "funding": [
+    {
+     "period": "2026 YTD (to Q3)",
+     "stage": "growth",
+     "capital_usd_bn": 227,
+     "note": "OpenAI ($132bn) + Anthropic ($95bn) raised in 2026: about one-third of all global VC",
+     "source": "CB Insights via Fintech News Switzerland",
+     "url": "https://fintechnews.ch/aifintech/q3-cb-insight-report-global-vc-funding-surges-driven-by-ai/86530/",
+     "label": "REPORTED"
+    },
+    {
+     "period": "2026",
+     "stage": "all",
+     "capital_usd_bn": 176.8,
+     "note": "US enterprise AI deployment spend (5.4x YoY); labs take 69%",
+     "metric": "market",
+     "source": "Menlo Ventures, State of Enterprise AI 2026",
+     "url": "https://menlovc.com/wp-content/uploads/2026/11/menlo_ventures_enterprise_ai_report-2026-110326.pdf",
+     "label": "ESTIMATE"
+    }
+   ],
+   "valuation_notes": "Leaders trade at roughly 10-20x forward run-rate revenue, re-marked every few months. Second-tier labs are priced on team and compute access, not revenue.",
+   "risks": [
+    {
+     "text": "Compute capex and power constraints: hyperscaler capex guided to about $733bn in 2026",
+     "severity": "high"
+    },
+    {
+     "text": "Open-weight models (incl. Chinese labs) compress API pricing; cost per benchmark point falls about 13x a year",
+     "severity": "high"
+    },
+    {
+     "text": "Entry price: most value accrues to holders who got in before 2025; fee layers erode returns",
+     "severity": "medium"
+    },
+    {
+     "text": "Regulatory, copyright and safety incidents",
+     "severity": "medium"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "Agentic products (coding, computer use) lift revenue per customer",
+     "severity": "high"
+    },
+    {
+     "text": "IPO path for the leaders creates liquidity for early holders",
+     "severity": "medium"
+    }
+   ],
+   "kpis": [
+    "Run-rate revenue and gross margin of the leaders",
+    "Enterprise API share (Menlo)",
+    "Tender / secondary prices vs last primary",
+    "Cost per token and open-weight benchmark gap",
+    "Compute contracts (GW) signed"
+   ],
+   "segments": [
+    {
+     "name": "Leading labs",
+     "companies": [
+      {
+       "name": "Anthropic",
+       "id": "anthropic",
+       "domain": "anthropic.com",
+       "stage": "",
+       "description": "Claude models; leads enterprise API spend",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "OpenAI",
+       "id": "openai",
+       "domain": "openai.com",
+       "stage": "",
+       "description": "ChatGPT, GPT models, Codex",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "xAI",
+       "id": "xai",
+       "domain": "x.ai",
+       "stage": "",
+       "description": "Grok; merged into SpaceX",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Mistral AI",
+       "id": "mistral",
+       "domain": "mistral.ai",
+       "stage": "",
+       "description": "European open-weight and sovereign AI lab",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Cohere",
+       "id": "cohere",
+       "domain": "cohere.com",
+       "stage": "",
+       "description": "Enterprise models and agents",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    },
+    {
+     "name": "Neo-labs (priced as growth from day one)",
+     "companies": [
+      {
+       "name": "Safe Superintelligence",
+       "id": "ssi",
+       "domain": "ssi.inc",
+       "stage": "",
+       "description": "Ilya Sutskever lab; reported $5bn raise Jul 2026",
+       "hq": "",
+       "last_round": "$5bn (reported), Jul 2026",
+       "investors": []
+      },
+      {
+       "name": "Thinking Machines Lab",
+       "id": "thinkingmachines",
+       "domain": "thinkingmachines.ai",
+       "stage": "",
+       "description": "Mira Murati lab; $5bn raise reported Nov 2026",
+       "hq": "",
+       "last_round": "$5bn, Nov 2026",
+       "investors": []
+      },
+      {
+       "name": "Reflection AI",
+       "id": "reflection",
+       "domain": "reflection.ai",
+       "stage": "",
+       "description": "Open frontier models / autonomous coding",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Perplexity",
+       "id": "perplexity",
+       "domain": "perplexity.ai",
+       "stage": "",
+       "description": "AI answer engine and browser",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    }
+   ],
+   "news": [
+    {
+     "date": "2026-11-06",
+     "headline": "Thinking Machines Lab raises $5.0bn",
+     "url": "https://aifunding.me/insights/weekly-roundup-nov-2-6-2026",
+     "source": "aifunding.me weekly roundup"
+    },
+    {
+     "date": "2026-10-08",
+     "headline": "State of AI 2026: OpenAI + Anthropic run-rate about $105bn; Anthropic about $65bn",
+     "url": "https://www.stateof.ai/",
+     "source": "Air Street Capital"
+    },
+    {
+     "date": "2026-07-31",
+     "headline": "Safe Superintelligence reported to raise $5bn led by Nvidia",
+     "url": "https://news.crunchbase.com/venture/biggest-funding-rounds-safe-superintelligence-commonwealth-fusion/",
+     "source": "Crunchbase News"
+    }
+   ],
+   "resources": [
+    {
+     "title": "State of AI Report 2026",
+     "url": "https://www.stateof.ai/",
+     "source": "Air Street Capital",
+     "kind": "report",
+     "date": "2026-10-08",
+     "summary": "Annual 244-slide review: research, industry, politics, safety, predictions."
+    },
+    {
+     "title": "Menlo Ventures: State of Enterprise AI 2026",
+     "url": "https://menlovc.com/wp-content/uploads/2026/11/menlo_ventures_enterprise_ai_report-2026-110326.pdf",
+     "source": "Menlo Ventures",
+     "kind": "report",
+     "date": "2026-11-03",
+     "summary": "$176.8bn enterprise AI spend, model share, coding and agents."
+    },
+    {
+     "title": "Enterprise AI spend hit $177bn; only 22% came from software budgets",
+     "url": "https://www.saastr.com/ai-spend-hit-177-billion-this-year-only-22-of-it-came-out-of-software-budgets/",
+     "source": "SaaStr",
+     "kind": "article",
+     "date": "2026-11",
+     "summary": "Where AI budgets come from and what it means for SaaS incumbents."
+    }
+   ]
+  },
+  {
+   "id": "ai-infrastructure",
+   "name": "AI infrastructure: compute, neoclouds & inference",
+   "category": "AI",
+   "order": 2,
+   "color": "#1d4e89",
+   "signal": "hot",
+   "heat": 90,
+   "conviction": "high",
+   "horizon": "now",
+   "deploy_early": "selective",
+   "deploy_growth": "selective",
+   "summary": "GPU clouds, data-centre developers, and inference / serving platforms that turn models into production workloads.",
+   "why_now": "Agents multiply model calls: 80% of OpenRouter tokens are now agent traffic (Menlo). Data centres were among five Q3 2026 sectors to clear $10bn of venture funding (Crunchbase).",
+   "deploy_view": "Early: overweight software that lowers inference cost (serving, orchestration, evaluation), not asset-heavy GPU resellers. Growth: be selective. Neoclouds are capital-intensive and GPU-backed debt is a real risk; prefer platforms with contracted, investment-grade demand and their own power.",
+   "funding": [
+    {
+     "period": "Q3 2026",
+     "stage": "all",
+     "capital_usd_bn": null,
+     "note": "Data centres one of five sectors above $10bn in Q3 2026 venture funding",
+     "source": "Crunchbase News",
+     "url": "https://news.crunchbase.com/venture/q3-2026-global-startup-funding-ai-billion-dollar-rounds-exits-data/"
+    },
+    {
+     "period": "2026",
+     "stage": "all",
+     "capital_usd_bn": 733,
+     "note": "Big-4 hyperscaler 2026 capex guidance (+79% YoY): demand backdrop, not VC",
+     "metric": "market",
+     "source": "State of AI 2026",
+     "url": "https://www.stateof.ai/",
+     "label": "REPORTED"
+    }
+   ],
+   "valuation_notes": "Inference platforms re-rated sharply in 2026 (e.g. Baseten to about $13bn); neocloud values track contracted megawatts and backlog.",
+   "risks": [
+    {
+     "text": "GPU depreciation and refinancing risk on asset-backed debt",
+     "severity": "high"
+    },
+    {
+     "text": "Hyperscalers and labs vertically integrating inference",
+     "severity": "high"
+    },
+    {
+     "text": "Local opposition: about $68bn of data-centre projects blocked or delayed in Q2 2026 (Data Center Watch via State of AI)",
+     "severity": "medium"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "Agent workloads and reasoning models raise tokens per task",
+     "severity": "high"
+    },
+    {
+     "text": "Custom silicon diversity (beyond Nvidia) lowers serving cost",
+     "severity": "medium"
+    }
+   ],
+   "kpis": [
+    "Contracted MW and backlog",
+    "Inference price per million tokens",
+    "Utilisation and gross margin of neoclouds",
+    "Debt cost of GPU financing"
+   ],
+   "segments": [
+    {
+     "name": "Neoclouds & AI data centres",
+     "companies": [
+      {
+       "name": "Crusoe",
+       "id": "crusoe",
+       "domain": "crusoe.ai",
+       "stage": "",
+       "description": "Energy-first AI data centres",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "CoreWeave",
+       "id": "coreweave",
+       "domain": "coreweave.com",
+       "stage": "",
+       "description": "Listed GPU cloud",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Lambda",
+       "id": "lambda",
+       "domain": "lambda.ai",
+       "stage": "",
+       "description": "GPU cloud for AI developers",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Nscale",
+       "id": null,
+       "domain": "nscale.com",
+       "stage": "growth",
+       "description": "European AI hyperscaler; $3bn+ round in Q3 2026",
+       "hq": "",
+       "last_round": ">$3bn, Q3 2026",
+       "investors": []
+      }
+     ]
+    },
+    {
+     "name": "Inference & serving platforms",
+     "companies": [
+      {
+       "name": "Baseten",
+       "id": "baseten",
+       "domain": "baseten.co",
+       "stage": "",
+       "description": "Model inference platform",
+       "hq": "",
+       "last_round": "",
+       "investors": [],
+       "valuation_usd_bn": 13.0,
+       "valuation_date": "2026-06",
+       "valuation_label": "REPORTED"
+      },
+      {
+       "name": "Fireworks AI",
+       "id": "fireworks",
+       "domain": "fireworks.ai",
+       "stage": "",
+       "description": "Inference cloud for open models",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Together AI",
+       "id": "together",
+       "domain": "together.ai",
+       "stage": "",
+       "description": "Open-model cloud",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "fal",
+       "id": null,
+       "domain": "fal.ai",
+       "stage": "growth",
+       "description": "Generative media inference; $1.3bn Series F",
+       "hq": "",
+       "last_round": "$1.3bn Series F, Nov 2026",
+       "investors": [
+        "Bessemer",
+        "NVIDIA",
+        "T. Rowe Price"
+       ]
+      },
+      {
+       "name": "Modal",
+       "id": "modal",
+       "domain": "modal.com",
+       "stage": "",
+       "description": "Serverless GPU compute",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    }
+   ],
+   "news": [
+    {
+     "date": "2026-11-03",
+     "headline": "fal raises $1.3bn Series F (Bessemer, NVIDIA, T. Rowe Price)",
+     "url": "https://aifunding.me/insights/weekly-roundup-nov-2-6-2026",
+     "source": "aifunding.me"
+    }
+   ],
+   "resources": [
+    {
+     "title": "Neoclouds: AI's $150bn middle layer that owns almost nothing",
+     "url": "https://measuredai.substack.com/p/neoclouds-ai-middle-layer",
+     "source": "Measured AI",
+     "kind": "article",
+     "date": "",
+     "summary": "Skeptical take on neocloud economics."
+    }
+   ]
+  },
+  {
+   "id": "ai-semiconductors",
+   "name": "AI semiconductors & photonics",
+   "category": "AI",
+   "order": 3,
+   "color": "#2c5f8a",
+   "signal": "accelerating",
+   "heat": 82,
+   "conviction": "medium",
+   "horizon": "1-3y",
+   "deploy_early": "selective",
+   "deploy_growth": "selective",
+   "summary": "Inference ASICs, wafer-scale and transformer-specific chips, chiplets and interconnect, and silicon photonics challenging GPU lock-in.",
+   "why_now": "Inference now outweighs training in demand. Cerebras listed in 2026 and Etched re-priced to $21bn, giving the category real exits and marks.",
+   "deploy_view": "Early: photonics and interconnect (bandwidth is the bottleneck), plus power-efficient inference. Growth: only names with hyperscaler or lab design wins; binary technical risk remains.",
+   "funding": [
+    {
+     "period": "2026 YTD (to 10 Jun)",
+     "stage": "all",
+     "capital_usd_bn": 10.7,
+     "note": "Seed to pre-IPO semiconductor funding, on track to beat 2025",
+     "source": "Crunchbase News",
+     "url": "https://news.crunchbase.com/semiconductors-and-5g/chip-startup-funding-2026-cerebras-matx-ayar-labs-ipos-nvda/"
+    }
+   ],
+   "valuation_notes": "Cerebras listed at a market cap around $50bn, then fell about a third. Etched $21bn (Aug 2026), Groq $3.5bn.",
+   "risks": [
+    {
+     "text": "Nvidia roadmap pace and CUDA ecosystem",
+     "severity": "high"
+    },
+    {
+     "text": "Tape-out failures; 3-4 year product cycles",
+     "severity": "high"
+    },
+    {
+     "text": "TSMC capacity allocation",
+     "severity": "medium"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "Labs diversifying away from a single supplier",
+     "severity": "high"
+    },
+    {
+     "text": "Co-packaged optics adoption",
+     "severity": "medium"
+    }
+   ],
+   "kpis": [
+    "Design wins at labs / hyperscalers",
+    "Tokens per second per watt vs Nvidia",
+    "Tape-out and volume ramp dates"
+   ],
+   "segments": [
+    {
+     "name": "AI accelerators",
+     "companies": [
+      {
+       "name": "Etched",
+       "id": "etched",
+       "domain": "etched.com",
+       "stage": "",
+       "description": "Transformer-specific ASIC",
+       "hq": "",
+       "last_round": "$700M led by Jane Street, Aug 2026",
+       "investors": [],
+       "valuation_usd_bn": 21,
+       "valuation_date": "2026-08",
+       "valuation_label": "REPORTED"
+      },
+      {
+       "name": "Cerebras",
+       "id": "cerebrassystems",
+       "domain": "cerebras.ai",
+       "stage": "",
+       "description": "Wafer-scale AI systems; listed 2026",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Groq",
+       "id": "groq",
+       "domain": "groq.com",
+       "stage": "",
+       "description": "LPU inference chips and cloud",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "MatX",
+       "id": "matx",
+       "domain": "matx.com",
+       "stage": "growth",
+       "description": "Chips for frontier-model training",
+       "hq": "",
+       "last_round": "$500M Series B, Feb 2026",
+       "investors": []
+      },
+      {
+       "name": "d-Matrix",
+       "id": "dmatrix",
+       "domain": "d-matrix.ai",
+       "stage": "",
+       "description": "In-memory compute for inference",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Tenstorrent",
+       "id": "tenstorrent",
+       "domain": "tenstorrent.com",
+       "stage": "",
+       "description": "RISC-V AI processors",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    },
+    {
+     "name": "Photonics & interconnect",
+     "companies": [
+      {
+       "name": "Ayar Labs",
+       "id": "ayar",
+       "domain": "ayarlabs.com",
+       "stage": "",
+       "description": "Optical I/O chiplets",
+       "hq": "",
+       "last_round": "$500M Series E, Mar 2026",
+       "investors": []
+      },
+      {
+       "name": "Lightmatter",
+       "id": "lightmatter",
+       "domain": "lightmatter.co",
+       "stage": "",
+       "description": "Photonic interconnect",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Eliyan",
+       "id": null,
+       "domain": "eliyan.com",
+       "stage": "growth",
+       "description": "Chiplet interconnect",
+       "hq": "",
+       "last_round": "$145M Series C",
+       "investors": [],
+       "valuation_usd_bn": 1.0,
+       "valuation_date": "2026-07",
+       "valuation_label": "REPORTED"
+      }
+     ]
+    }
+   ],
+   "resources": [
+    {
+     "title": "Chip startup funding in 2026: Cerebras, MatX, Ayar Labs and the IPO window",
+     "url": "https://news.crunchbase.com/semiconductors-and-5g/chip-startup-funding-2026-cerebras-matx-ayar-labs-ipos-nvda/",
+     "source": "Crunchbase News",
+     "kind": "article",
+     "date": "2026-06-10",
+     "summary": ""
+    }
+   ]
+  },
+  {
+   "id": "ai-coding",
+   "name": "AI coding & software agents",
+   "category": "AI",
+   "order": 4,
+   "color": "#3a6ea5",
+   "signal": "hot",
+   "heat": 86,
+   "conviction": "high",
+   "horizon": "now",
+   "deploy_early": "selective",
+   "deploy_growth": "watch",
+   "summary": "Coding assistants, autonomous software engineers and app builders: the first AI category with clear, large revenue.",
+   "why_now": "Coding is $34bn of the $77bn enterprise AI application market and 96% AI-native (Menlo). SpaceX agreed to buy Cursor for $60bn in stock (Jun 2026).",
+   "deploy_view": "Growth: watch. Labs' own agents (Claude Code, Codex) take about 70% of coding spend, which squeezes independents, and valuations already price in leadership. Early: selective on adjacent layers such as testing, code review, security of AI-written code, and agent infrastructure.",
+   "funding": [
+    {
+     "period": "2026",
+     "stage": "all",
+     "capital_usd_bn": 34.0,
+     "note": "Enterprise spend on AI coding (labs' first-party apps $24bn of it)",
+     "metric": "market",
+     "source": "Menlo Ventures",
+     "url": "https://menlovc.com/wp-content/uploads/2026/11/menlo_ventures_enterprise_ai_report-2026-110326.pdf",
+     "label": "ESTIMATE"
+    }
+   ],
+   "valuation_notes": "Cursor $29.3bn (late 2025) → $50bn (Jul 2026) → $60bn SpaceX deal. Lovable $13.3bn, Replit $9bn, Cognition $26bn+.",
+   "risks": [
+    {
+     "text": "Labs competing directly with their own coding agents",
+     "severity": "high"
+    },
+    {
+     "text": "Low switching costs; model-driven feature parity",
+     "severity": "medium"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "Non-developer builders: Codex non-developer users grew 137x Aug 2025 to Jun 2026 (State of AI)",
+     "severity": "medium"
+    },
+    {
+     "text": "Strategic M&A by labs and big tech",
+     "severity": "medium"
+    }
+   ],
+   "kpis": [
+    "ARR and net revenue retention of independents",
+    "Share of coding spend held by labs (Menlo: about 70%)",
+    "Gross margin after model costs"
+   ],
+   "segments": [
+    {
+     "name": "IDEs & software-engineer agents",
+     "companies": [
+      {
+       "name": "Cursor (Anysphere)",
+       "id": "cursor",
+       "domain": "cursor.com",
+       "stage": "",
+       "description": "AI IDE; being acquired by SpaceX for $60bn",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Cognition",
+       "id": "cognition",
+       "domain": "cognition.ai",
+       "stage": "",
+       "description": "Devin agent + Windsurf",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "poolside",
+       "id": "poolside",
+       "domain": "poolside.ai",
+       "stage": "",
+       "description": "Models for software engineering",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Trajectory",
+       "id": null,
+       "domain": "",
+       "stage": "early",
+       "description": "AI developer tools; $45M Series A, Nov 2026",
+       "hq": "",
+       "last_round": "$45M Series A",
+       "investors": [
+        "Sequoia",
+        "NVIDIA",
+        "Bessemer",
+        "BCV"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "App builders & platforms",
+     "companies": [
+      {
+       "name": "Lovable",
+       "id": "lovable",
+       "domain": "lovable.dev",
+       "stage": "",
+       "description": "Prompt-to-app builder",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Replit",
+       "id": "replit",
+       "domain": "replit.com",
+       "stage": "",
+       "description": "Cloud IDE and agent",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Vercel",
+       "id": "vercel",
+       "domain": "vercel.com",
+       "stage": "",
+       "description": "Frontend cloud, v0",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Supabase",
+       "id": "supabase",
+       "domain": "supabase.com",
+       "stage": "",
+       "description": "Postgres backend for AI apps",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    }
+   ],
+   "news": [
+    {
+     "date": "2026-06-16",
+     "headline": "SpaceX to acquire Cursor for $60bn in stock days after its IPO",
+     "url": "https://techcrunch.com/2026/06/16/spacex-to-acquire-cursor-for-60b-in-stock-days-after-blockbuster-ipo/",
+     "source": "TechCrunch"
+    }
+   ],
+   "resources": [
+    {
+     "title": "SpaceX to acquire Cursor for $60B in stock",
+     "url": "https://techcrunch.com/2026/06/16/spacex-to-acquire-cursor-for-60b-in-stock-days-after-blockbuster-ipo/",
+     "source": "TechCrunch",
+     "kind": "news",
+     "date": "2026-06-16",
+     "summary": ""
+    }
+   ]
+  },
+  {
+   "id": "enterprise-agents",
+   "name": "Enterprise agents & vertical AI",
+   "category": "AI",
+   "order": 5,
+   "color": "#4a7fb5",
+   "signal": "hot",
+   "heat": 84,
+   "conviction": "high",
+   "horizon": "1-3y",
+   "deploy_early": "overweight",
+   "deploy_growth": "selective",
+   "summary": "Agents that do work end to end (customer service, legal, finance, sales, back office) and vertical AI that owns a workflow and its data.",
+   "why_now": "Customer success is the fastest-growing AI department (4.3x, Menlo). 55% of incremental AI dollars come from net-new budgets, and ICONIQ finds about 70% of AI builders are vertical. Pricing is moving to outcomes.",
+   "deploy_view": "Early: overweight vertical, \"multiplayer\" agents with proprietary workflow data and outcome-based pricing (a16z Big Ideas). Growth: selective. Incumbents keep 91% of IT and 68% of HR spend (Menlo), so back category leaders with clear net-new budget capture (Sierra, Harvey, Decagon).",
+   "funding": [
+    {
+     "period": "2026",
+     "stage": "all",
+     "capital_usd_bn": 77.3,
+     "note": "Enterprise AI application market (coding + chatbots = 76%)",
+     "metric": "market",
+     "source": "Menlo Ventures",
+     "url": "https://menlovc.com/wp-content/uploads/2026/11/menlo_ventures_enterprise_ai_report-2026-110326.pdf",
+     "label": "ESTIMATE"
+    }
+   ],
+   "valuation_notes": "Category leaders at $5-16bn on high-growth ARR. Many seed / A rounds at $50-150M+ post for AI-native teams.",
+   "risks": [
+    {
+     "text": "Labs moving up the stack (plugins, agents) compress the application layer",
+     "severity": "high"
+    },
+    {
+     "text": "Incumbent seat conversion: 13 of 22 points of software-budget shift went to incumbents (Menlo)",
+     "severity": "medium"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "Outcome pricing and labour-budget capture",
+     "severity": "high"
+    },
+    {
+     "text": "Agent reliability gains",
+     "severity": "medium"
+    }
+   ],
+   "kpis": [
+    "ARR per FTE",
+    "Share of revenue from outcome-based pricing",
+    "Gross margin after inference",
+    "Logo retention vs incumbents"
+   ],
+   "segments": [
+    {
+     "name": "Customer & revenue agents",
+     "companies": [
+      {
+       "name": "Sierra",
+       "id": "sierra",
+       "domain": "sierra.ai",
+       "stage": "",
+       "description": "Customer-experience agents",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Decagon",
+       "id": "decagon",
+       "domain": "decagon.ai",
+       "stage": "",
+       "description": "AI customer support",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Clay",
+       "id": "clay",
+       "domain": "clay.com",
+       "stage": "",
+       "description": "GTM data and agents",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Nooks",
+       "id": null,
+       "domain": "nooks.ai",
+       "stage": "growth",
+       "description": "AI sales assistant; $500M growth round led by General Catalyst",
+       "hq": "",
+       "last_round": "$500M growth, Nov 2026",
+       "investors": []
+      },
+      {
+       "name": "ElevenLabs",
+       "id": "elevenlabs",
+       "domain": "elevenlabs.io",
+       "stage": "",
+       "description": "Voice AI and voice agents",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    },
+    {
+     "name": "Vertical AI: legal, finance, knowledge work",
+     "companies": [
+      {
+       "name": "Harvey",
+       "id": "harvey",
+       "domain": "harvey.ai",
+       "stage": "",
+       "description": "Legal AI",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Hebbia",
+       "id": "hebbia",
+       "domain": "hebbia.com",
+       "stage": "",
+       "description": "AI for finance research",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Glean",
+       "id": "glean",
+       "domain": "glean.com",
+       "stage": "",
+       "description": "Enterprise search and agents",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Rillet",
+       "id": null,
+       "domain": "rillet.com",
+       "stage": "growth",
+       "description": "AI-native ERP / accounting",
+       "hq": "",
+       "last_round": "$100M Series C led by ICONIQ",
+       "investors": [],
+       "valuation_usd_bn": 1.0,
+       "valuation_date": "2026-08",
+       "valuation_label": "REPORTED"
+      }
+     ]
+    }
+   ],
+   "resources": [
+    {
+     "title": "ICONIQ: 2026 State of AI bi-annual snapshot",
+     "url": "https://www.iconiq.com/growth/insights/state-of-ai-bi-annual-snapshot",
+     "source": "ICONIQ",
+     "kind": "report",
+     "date": "2026",
+     "summary": "Builder survey: model usage, pricing (outcome pricing at 18%), margins, vertical focus."
+    },
+    {
+     "title": "a16z Big Ideas 2026 (part 1)",
+     "url": "https://a16z.com/newsletter/big-ideas-2026-part-1/",
+     "source": "Andreessen Horowitz",
+     "kind": "article",
+     "date": "2026",
+     "summary": "Agent-native infrastructure, systems of record losing ground, multiplayer vertical AI."
+    }
+   ]
+  },
+  {
+   "id": "healthcare-ai",
+   "name": "Healthcare AI & clinical agents",
+   "category": "AI",
+   "order": 6,
+   "color": "#2f7d6d",
+   "signal": "accelerating",
+   "heat": 74,
+   "conviction": "medium",
+   "horizon": "1-3y",
+   "deploy_early": "overweight",
+   "deploy_growth": "selective",
+   "summary": "Ambient scribes, clinical decision support, healthcare agents and consumer preventive health.",
+   "why_now": "Clinician adoption of AI scribes and evidence tools is mainstream, and \"healthy MAUs\" (preventive monitoring) is an a16z 2026 big idea. Large growth rounds continue (Function $450M, Laza Medical $160M).",
+   "deploy_view": "Early: overweight agents that touch reimbursement (revenue cycle, prior auth) and specialty workflows. Growth: selective; scribes are commoditising.",
+   "funding": [],
+   "risks": [
+    {
+     "text": "Scribe commoditisation; EHR vendors bundling AI",
+     "severity": "high"
+    },
+    {
+     "text": "Regulatory (FDA, liability) and long hospital sales cycles",
+     "severity": "medium"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "Payer and provider labour shortages",
+     "severity": "high"
+    },
+    {
+     "text": "CMS reimbursement codes for AI-enabled care",
+     "severity": "medium"
+    }
+   ],
+   "kpis": [
+    "Health-system logo count",
+    "Revenue per clinician",
+    "Regulatory clearances"
+   ],
+   "segments": [
+    {
+     "name": "Clinical AI",
+     "companies": [
+      {
+       "name": "OpenEvidence",
+       "id": "openevidence",
+       "domain": "openevidence.com",
+       "stage": "",
+       "description": "Clinical evidence assistant for physicians",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Abridge",
+       "id": "abridge",
+       "domain": "abridge.com",
+       "stage": "",
+       "description": "Ambient clinical documentation",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Hippocratic AI",
+       "id": "hippocratic",
+       "domain": "hippocraticai.com",
+       "stage": "",
+       "description": "Healthcare agents (non-diagnostic)",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Ambience Healthcare",
+       "id": "ambiencehealthcare",
+       "domain": "ambiencehealthcare.com",
+       "stage": "",
+       "description": "Ambient AI and coding",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Laza Medical",
+       "id": null,
+       "domain": "",
+       "stage": "early",
+       "description": "AI healthcare; $160M Series B, Nov 2026",
+       "hq": "",
+       "last_round": "$160M Series B",
+       "investors": [
+        "GE HealthCare"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Consumer & preventive health",
+     "companies": [
+      {
+       "name": "Function Health",
+       "id": null,
+       "domain": "functionhealth.com",
+       "stage": "growth",
+       "description": "Lab testing and preventive health",
+       "hq": "",
+       "last_round": "$450M growth, Jul 2026",
+       "investors": [
+        "General Catalyst"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ai-drug-discovery",
+   "name": "AI drug discovery & TechBio",
+   "category": "Bio",
+   "order": 7,
+   "color": "#3f8f5f",
+   "signal": "accelerating",
+   "heat": 66,
+   "conviction": "medium",
+   "horizon": "3-7y",
+   "deploy_early": "selective",
+   "deploy_growth": "selective",
+   "summary": "Foundation models for biology and chemistry, generative protein and molecule design, and AI-native drug developers.",
+   "why_now": "Mega-rounds signal a shift from promise to deployment: Isomorphic Labs $2.1bn Series B (May 2026), Chai Discovery $400M Series C at $3.8bn.",
+   "deploy_view": "Early: platforms with pharma partnerships that carry milestone economics, and molecules nearing the clinic. Growth: selective; value only crystallises at clinical readouts (7-10 year horizon).",
+   "funding": [],
+   "valuation_notes": "Chai Discovery $3.8bn (Series C, 2026). Listed peers (Recursion) remain well below 2021 highs, so public-market comps are weak.",
+   "risks": [
+    {
+     "text": "Clinical attrition: AI has not yet proven higher phase-2 success rates",
+     "severity": "high"
+    },
+    {
+     "text": "Long timelines vs fund lives",
+     "severity": "medium"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "First AI-designed molecules reaching phase 2/3 readouts",
+     "severity": "high"
+    },
+    {
+     "text": "Big-pharma platform deals",
+     "severity": "medium"
+    }
+   ],
+   "kpis": [
+    "Clinical candidates and phase transitions",
+    "Pharma deal milestones",
+    "Model benchmarks (structure, binding)"
+   ],
+   "segments": [
+    {
+     "name": "AI-first drug discovery",
+     "companies": [
+      {
+       "name": "Isomorphic Labs",
+       "id": "isomorphic",
+       "domain": "isomorphiclabs.com",
+       "stage": "growth",
+       "description": "DeepMind spin-out; $2.1bn Series B",
+       "hq": "",
+       "last_round": "$2.1bn Series B, May 2026",
+       "investors": []
+      },
+      {
+       "name": "Xaira Therapeutics",
+       "id": "xairatherapeutics",
+       "domain": "xaira.com",
+       "stage": "growth",
+       "description": "AI drug developer",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Chai Discovery",
+       "id": "chaidiscovery",
+       "domain": "chaidiscovery.com",
+       "stage": "",
+       "description": "Foundation models for molecular design",
+       "hq": "",
+       "last_round": "$400M Series C",
+       "investors": [],
+       "valuation_usd_bn": 3.8,
+       "valuation_date": "2026",
+       "valuation_label": "REPORTED"
+      },
+      {
+       "name": "Recursion",
+       "id": "recursionpharmaceuticals",
+       "domain": "recursion.com",
+       "stage": "",
+       "description": "Listed TechBio",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Enveda",
+       "id": "enveda",
+       "domain": "envedabio.com",
+       "stage": "",
+       "description": "Nature-derived medicines with AI",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    }
+   ],
+   "resources": [
+    {
+     "title": "Chai Discovery raises $400M at $3.8bn",
+     "url": "https://thenextweb.com/news/chai-discovery-400m-series-c-ai-drug-discovery",
+     "source": "The Next Web",
+     "kind": "news",
+     "date": "2026",
+     "summary": ""
+    },
+    {
+     "title": "Isomorphic Labs raises $2.1bn to expand AI-driven drug discovery",
+     "url": "https://www.biopharminternational.com/view/isomorphic-labs-raises-2-1-billion-to-expand-ai-driven-drug-discovery-platform",
+     "source": "BioPharm International",
+     "kind": "news",
+     "date": "2026-05-13",
+     "summary": ""
+    }
+   ]
+  },
+  {
+   "id": "physical-ai-robotics",
+   "name": "Physical AI & robotics",
+   "category": "Physical",
+   "order": 8,
+   "color": "#b38728",
+   "signal": "accelerating",
+   "heat": 93,
+   "conviction": "high",
+   "horizon": "3-7y",
+   "deploy_early": "overweight",
+   "deploy_growth": "selective",
+   "summary": "Robot foundation models (\"one brain for all robots\"), humanoids, and AI-native industrial, logistics and field robots.",
+   "why_now": "Physical AI took $47.4bn in H1 2026 across 521 deals, almost 4x H2 2025 (Crunchbase). Robotics alone raised $9.9bn in Q3 2026 (+185% YoY). Robot foundation models are showing generalisation: Physical Intelligence's π-0.7 performs tasks it was never trained on.",
+   "deploy_view": "Early: overweight application robots with paying customers (logistics, construction, inspection) and data / simulation infrastructure. Growth: selective. Robot-brain leaders (Physical Intelligence, Skild) are worth owning, but humanoid valuations (Figure $39bn) are far ahead of revenue.",
+   "funding": [
+    {
+     "period": "H1 2026",
+     "stage": "all",
+     "capital_usd_bn": 47.4,
+     "deals": 521,
+     "note": "Physical AI (robotics, AVs, aerospace, drones, industrial automation, sensors)",
+     "source": "Crunchbase News",
+     "url": "https://news.crunchbase.com/venture/physical-ai-funding-startups-robotics-aerospace-h1-2026/"
+    },
+    {
+     "period": "H2 2025",
+     "stage": "all",
+     "capital_usd_bn": 12.0,
+     "deals": 470,
+     "source": "Crunchbase News",
+     "url": "https://news.crunchbase.com/venture/physical-ai-funding-startups-robotics-aerospace-h1-2026/"
+    },
+    {
+     "period": "H1 2025",
+     "stage": "all",
+     "capital_usd_bn": 26.4,
+     "deals": 436,
+     "source": "Crunchbase News",
+     "url": "https://news.crunchbase.com/venture/physical-ai-funding-startups-robotics-aerospace-h1-2026/"
+    },
+    {
+     "period": "Q3 2026",
+     "stage": "all",
+     "capital_usd_bn": 9.9,
+     "note": "Robotics only, +185% YoY; China $13.2bn and US $12.1bn YTD",
+     "source": "Crunchbase via RuntimeWire",
+     "url": "https://runtimewire.com/article/robotics-startup-funding-q3-2026-physical-ai"
+    }
+   ],
+   "valuation_notes": "Skild AI $14bn (Jan 2026, 9x in 18 months); Physical Intelligence above $11bn (reported Mar 2026, from $5.6bn); Figure $39bn (Sep 2025). Mobileye bought Mentee Robotics for about $900M.",
+   "risks": [
+    {
+     "text": "Humanoid hardware cost and reliability are years from consumer scale",
+     "severity": "high"
+    },
+    {
+     "text": "China's cost advantage (Unitree and others) and supply chain",
+     "severity": "high"
+    },
+    {
+     "text": "Valuations driven by narrative and data scarcity, not revenue",
+     "severity": "medium"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "Foundation-model generalisation (π-0.7, Skild Brain)",
+     "severity": "high"
+    },
+    {
+     "text": "Labour shortages in logistics, manufacturing and construction",
+     "severity": "high"
+    },
+    {
+     "text": "Nvidia ecosystem (Isaac, GR00T) lowering build cost",
+     "severity": "medium"
+    }
+   ],
+   "kpis": [
+    "Deployed robots and hours in production",
+    "Cost per robot-hour vs labour",
+    "Generalisation benchmarks",
+    "Humanoid unit pricing (1X NEO preorders at $20k)"
+   ],
+   "segments": [
+    {
+     "name": "Robot foundation models",
+     "companies": [
+      {
+       "name": "Physical Intelligence",
+       "id": "physicalintelligence",
+       "domain": "physicalintelligence.company",
+       "stage": "",
+       "description": "π models: general robot policies",
+       "hq": "",
+       "last_round": "About $1bn (reported), Mar 2026",
+       "investors": [
+        "Founders Fund",
+        "Thrive",
+        "Lux"
+       ],
+       "valuation_usd_bn": 11.0,
+       "valuation_date": "2026-03",
+       "valuation_label": "REPORTED"
+      },
+      {
+       "name": "Skild AI",
+       "id": "skild",
+       "domain": "skild.ai",
+       "stage": "",
+       "description": "Skild Brain: general-purpose robot intelligence",
+       "hq": "",
+       "last_round": "$1.4bn Series C, Jan 2026",
+       "investors": [
+        "SoftBank",
+        "NVentures",
+        "Bezos Expeditions"
+       ]
+      },
+      {
+       "name": "Generalist AI",
+       "id": "generalist",
+       "domain": "generalistai.com",
+       "stage": "",
+       "description": "Embodied foundation models",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Field AI",
+       "id": null,
+       "domain": "fieldai.com",
+       "stage": "growth",
+       "description": "Universal robot brains for field robots",
+       "hq": "",
+       "last_round": "$405M, Aug 2025",
+       "investors": []
+      }
+     ]
+    },
+    {
+     "name": "Humanoids",
+     "companies": [
+      {
+       "name": "Figure AI",
+       "id": "figure",
+       "domain": "figure.ai",
+       "stage": "",
+       "description": "General-purpose humanoid",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Agility Robotics",
+       "id": "agilityrobotics",
+       "domain": "agilityrobotics.com",
+       "stage": "",
+       "description": "Digit humanoid for logistics",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Apptronik",
+       "id": null,
+       "domain": "apptronik.com",
+       "stage": "growth",
+       "description": "Apollo humanoid; Google DeepMind partner",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "1X",
+       "id": null,
+       "domain": "1x.tech",
+       "stage": "growth",
+       "description": "NEO home humanoid ($20k preorders)",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Unitree Robotics",
+       "id": "unitreerobotics",
+       "domain": "unitree.com",
+       "stage": "growth",
+       "description": "Chinese quadrupeds and humanoids",
+       "hq": "Hangzhou",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Sunday Robotics",
+       "id": "sunday",
+       "domain": "",
+       "stage": "early",
+       "description": "Home robotics",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    },
+    {
+     "name": "Industrial, logistics & field robots",
+     "companies": [
+      {
+       "name": "Gecko Robotics",
+       "id": "geckorobotics",
+       "domain": "geckorobotics.com",
+       "stage": "",
+       "description": "Inspection robots and data",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Bedrock Robotics",
+       "id": "bedrockrobotics",
+       "domain": "bedrockrobotics.com",
+       "stage": "",
+       "description": "Autonomous construction equipment",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Mytra",
+       "id": "mytra",
+       "domain": "mytra.ai",
+       "stage": "",
+       "description": "Warehouse storage robotics",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Tutor Intelligence",
+       "id": "tutorintelligence",
+       "domain": "tutorintelligence.com",
+       "stage": "",
+       "description": "Factory and warehouse robots; $75M Nov 2026",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Dexterity",
+       "id": null,
+       "domain": "dexterity.ai",
+       "stage": "growth",
+       "description": "AI robots for logistics",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    }
+   ],
+   "news": [
+    {
+     "date": "2026-11-03",
+     "headline": "Tutor Intelligence raises $75M",
+     "url": "https://aifunding.me/insights/weekly-roundup-nov-2-6-2026",
+     "source": "aifunding.me"
+    },
+    {
+     "date": "2026-10-27",
+     "headline": "Robotics startups raised $9.9bn in Q3 2026, +185% YoY",
+     "url": "https://runtimewire.com/article/robotics-startup-funding-q3-2026-physical-ai",
+     "source": "RuntimeWire / Crunchbase"
+    },
+    {
+     "date": "2026-08-18",
+     "headline": "Physical AI startups raised $47.4bn in H1 2026, almost 4x H2 2025",
+     "url": "https://news.crunchbase.com/venture/physical-ai-funding-startups-robotics-aerospace-h1-2026/",
+     "source": "Crunchbase News"
+    }
+   ],
+   "resources": [
+    {
+     "title": "Physical AI funding: robotics and aerospace, H1 2026",
+     "url": "https://news.crunchbase.com/venture/physical-ai-funding-startups-robotics-aerospace-h1-2026/",
+     "source": "Crunchbase News",
+     "kind": "report",
+     "date": "2026-08-18",
+     "summary": "The definitive H1 2026 physical-AI funding tally and largest rounds."
+    },
+    {
+     "title": "Skild AI hits $14bn valuation",
+     "url": "https://fintool.com/news/skild-ai-14-billion-valuation-robotics",
+     "source": "Fintool",
+     "kind": "news",
+     "date": "2026-01",
+     "summary": ""
+    },
+    {
+     "title": "Physical Intelligence seeks $1bn at $11bn valuation",
+     "url": "https://dealroom.co/news/127095-robot-ai-startup-physical-intelligence-seeks-1b-at-11b-valuation/",
+     "source": "Dealroom (Bloomberg)",
+     "kind": "news",
+     "date": "2026-03-30",
+     "summary": ""
+    },
+    {
+     "title": "Robot unicorns are getting bigger",
+     "url": "https://robotsandstartups.substack.com/p/robot-unicorns-are-getting-bigger",
+     "source": "Robots & Startups (Substack)",
+     "kind": "newsletter",
+     "date": "",
+     "summary": "Specialist robotics newsletter worth following."
+    }
+   ]
+  },
+  {
+   "id": "autonomous-mobility",
+   "name": "Autonomous vehicles, drones & delivery",
+   "category": "Physical",
+   "order": 9,
+   "color": "#c79a3a",
+   "signal": "accelerating",
+   "heat": 80,
+   "conviction": "medium",
+   "horizon": "1-3y",
+   "deploy_early": "selective",
+   "deploy_growth": "selective",
+   "summary": "Robotaxis, autonomous trucking, embodied-AI driving stacks, simulation, and autonomous aerial delivery.",
+   "why_now": "AV funding hit $21.4bn by mid-April 2026, a record, versus $5.9bn in all of 2025 (Crunchbase). Waymo raised $16bn at $126bn, Wayve $1.2-1.5bn at $8.6bn for a London robotaxi launch, and Zipline $1.5bn (Nov 2026).",
+   "deploy_view": "Growth: Waymo is the category winner but is priced for it. Wayve offers an \"AV 2.0\" end-to-end option. Early: simulation, validation, teleoperation and fleet software; avoid sub-scale full-stack AV.",
+   "funding": [
+    {
+     "period": "2026 YTD (to 15 Apr)",
+     "stage": "all",
+     "capital_usd_bn": 21.4,
+     "deals": 34,
+     "note": "Record; Waymo about three-quarters of it",
+     "source": "Crunchbase News",
+     "url": "https://news.crunchbase.com/venture/record-funding-autonomous-vehicles-q1-2026/"
+    },
+    {
+     "period": "2025",
+     "stage": "all",
+     "capital_usd_bn": 5.9,
+     "deals": 99,
+     "source": "Crunchbase News",
+     "url": "https://news.crunchbase.com/venture/record-funding-autonomous-vehicles-q1-2026/"
+    },
+    {
+     "period": "2024",
+     "stage": "all",
+     "capital_usd_bn": 12.1,
+     "deals": 127,
+     "source": "Crunchbase News",
+     "url": "https://news.crunchbase.com/venture/record-funding-autonomous-vehicles-q1-2026/"
+    }
+   ],
+   "risks": [
+    {
+     "text": "Safety incidents and regulatory pauses",
+     "severity": "high"
+    },
+    {
+     "text": "Capital intensity of fleets",
+     "severity": "medium"
+    },
+    {
+     "text": "Chinese competition (Momenta, Pony) in global markets",
+     "severity": "medium"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "Robotaxi city launches (London, US expansion)",
+     "severity": "high"
+    },
+    {
+     "text": "Drone delivery regulation (BVLOS)",
+     "severity": "medium"
+    }
+   ],
+   "kpis": [
+    "Paid driverless rides per week",
+    "Cities live",
+    "Cost per mile",
+    "Disengagement and incident data"
+   ],
+   "segments": [
+    {
+     "name": "Robotaxi & driving stacks",
+     "companies": [
+      {
+       "name": "Waymo",
+       "id": "waymo",
+       "domain": "waymo.com",
+       "stage": "",
+       "description": "Robotaxi leader",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Wayve",
+       "id": "wayve",
+       "domain": "wayve.ai",
+       "stage": "",
+       "description": "End-to-end embodied AI driving",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Applied Intuition",
+       "id": "appliedintuition",
+       "domain": "appliedintuition.com",
+       "stage": "",
+       "description": "Simulation and vehicle software",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Nuro",
+       "id": "nuro",
+       "domain": "nuro.ai",
+       "stage": "",
+       "description": "Autonomy licensing",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Waabi",
+       "id": "waabi",
+       "domain": "waabi.ai",
+       "stage": "",
+       "description": "AI-first autonomous trucking",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    },
+    {
+     "name": "Drones & delivery",
+     "companies": [
+      {
+       "name": "Zipline",
+       "id": "zipline",
+       "domain": "flyzipline.com",
+       "stage": "",
+       "description": "Autonomous drone delivery; $1.5bn raise, Nov 2026",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    }
+   ],
+   "news": [
+    {
+     "date": "2026-11-06",
+     "headline": "Zipline raises $1.5bn (Paradigm, Fidelity, Uber, Tiger, ARK and others)",
+     "url": "https://aifunding.me/insights/weekly-roundup-nov-2-6-2026",
+     "source": "aifunding.me"
+    }
+   ],
+   "resources": [
+    {
+     "title": "Record funding for autonomous vehicles in Q1 2026",
+     "url": "https://news.crunchbase.com/venture/record-funding-autonomous-vehicles-q1-2026/",
+     "source": "Crunchbase News",
+     "kind": "report",
+     "date": "2026-04-17",
+     "summary": ""
+    },
+    {
+     "title": "Wayve raises $1.2bn at $8.6bn ahead of London robotaxi launch",
+     "url": "https://dealroom.co/news/126121-wayve-raises-1-2b-at-8-6b-valuation-ahead-of-london-robotaxi-launch/",
+     "source": "Dealroom",
+     "kind": "news",
+     "date": "2026-02-25",
+     "summary": ""
+    }
+   ]
+  },
+  {
+   "id": "defense-tech",
+   "name": "Defense tech & national security",
+   "category": "Physical",
+   "order": 10,
+   "color": "#8a1c22",
+   "signal": "hot",
+   "heat": 91,
+   "conviction": "high",
+   "horizon": "1-3y",
+   "deploy_early": "overweight",
+   "deploy_growth": "selective",
+   "summary": "Autonomous systems (air, sea, land), munitions and hypersonics, counter-drone, defence software and AI, and the industrial base.",
+   "why_now": "Defense funding passed its full-year record by June 2026 ($14.6bn+ YTD vs $9.6bn in 2025, Crunchbase). Anduril doubled to $61bn in under a year. European rearmament and Pentagon procurement reform favour new primes, and exits are opening (Swarmer IPO, Aevex listing, D-Fend sold for $1.5bn).",
+   "deploy_view": "Early: overweight dual-use autonomy, counter-UAS, munitions supply chain and European defence. Growth: selective. Anduril, Shield AI, Saronic and Castelion are priced for programme-of-record success, so size to contract visibility.",
+   "funding": [
+    {
+     "period": "2026 YTD (to 2 Jun)",
+     "stage": "all",
+     "capital_usd_bn": 14.6,
+     "deals": 107,
+     "note": "Already above any prior full year",
+     "source": "Crunchbase News",
+     "url": "https://news.crunchbase.com/defense-tech/startup-venture-funding-all-time-record-ai-anduril/"
+    },
+    {
+     "period": "2025",
+     "stage": "all",
+     "capital_usd_bn": 9.6,
+     "deals": 206,
+     "source": "Crunchbase News",
+     "url": "https://news.crunchbase.com/defense-tech/startup-venture-funding-all-time-record-ai-anduril/"
+    }
+   ],
+   "valuation_notes": "Anduril $61bn (May 2026), Shield AI $12.7bn, Saronic $9.25bn (more than double its Series C), Castelion $13bn (Aug 2026), Mach Industries $1.8bn.",
+   "risks": [
+    {
+     "text": "Budget and continuing-resolution timing; programme-of-record concentration",
+     "severity": "high"
+    },
+    {
+     "text": "Manufacturing scale-up execution",
+     "severity": "medium"
+    },
+    {
+     "text": "ESG and LP restrictions",
+     "severity": "low"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "NATO spending targets and European rearmament",
+     "severity": "high"
+    },
+    {
+     "text": "Drone and autonomy lessons from Ukraine",
+     "severity": "high"
+    },
+    {
+     "text": "Defense IPO window (Anduril widely expected)",
+     "severity": "medium"
+    }
+   ],
+   "kpis": [
+    "Programme-of-record wins",
+    "Backlog and production rate",
+    "European procurement share",
+    "IPO filings"
+   ],
+   "segments": [
+    {
+     "name": "New primes & autonomy",
+     "companies": [
+      {
+       "name": "Anduril Industries",
+       "id": "andurilindustries",
+       "domain": "anduril.com",
+       "stage": "",
+       "description": "Autonomy, Lattice, Arsenal manufacturing",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Shield AI",
+       "id": "shield",
+       "domain": "shield.ai",
+       "stage": "",
+       "description": "Hivemind AI pilot, V-BAT",
+       "hq": "",
+       "last_round": "$2bn Series G",
+       "investors": [
+        "Advent",
+        "JPMorgan"
+       ],
+       "valuation_usd_bn": 12.7,
+       "valuation_date": "2026-03",
+       "valuation_label": "REPORTED"
+      },
+      {
+       "name": "Saronic",
+       "id": "saronic",
+       "domain": "saronic.com",
+       "stage": "",
+       "description": "Autonomous surface vessels",
+       "hq": "",
+       "last_round": "$1.75bn Series D",
+       "investors": [
+        "Kleiner Perkins"
+       ],
+       "valuation_usd_bn": 9.25,
+       "valuation_date": "2026-03",
+       "valuation_label": "REPORTED"
+      },
+      {
+       "name": "Helsing",
+       "id": "helsing",
+       "domain": "helsing.ai",
+       "stage": "",
+       "description": "European defence AI and strike drones",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    },
+    {
+     "name": "Munitions, hypersonics & effectors",
+     "companies": [
+      {
+       "name": "Castelion",
+       "id": null,
+       "domain": "castelion.com",
+       "stage": "growth",
+       "description": "Low-cost hypersonic strike",
+       "hq": "",
+       "last_round": "$800M Series C + $250M debt",
+       "investors": [
+        "JPMorgan",
+        "a16z",
+        "Carlyle"
+       ],
+       "valuation_usd_bn": 13,
+       "valuation_date": "2026-08",
+       "valuation_label": "REPORTED"
+      },
+      {
+       "name": "Mach Industries",
+       "id": "machindustries",
+       "domain": "",
+       "stage": "growth",
+       "description": "Strike and VTOL systems",
+       "hq": "",
+       "last_round": "$300M Series C",
+       "investors": [
+        "Infinite Capital",
+        "Ribbit"
+       ],
+       "valuation_usd_bn": 1.8,
+       "valuation_date": "2026-06",
+       "valuation_label": "REPORTED"
+      },
+      {
+       "name": "Epirus",
+       "id": "epirus",
+       "domain": "epirusinc.com",
+       "stage": "",
+       "description": "High-power microwave counter-drone",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    }
+   ],
+   "news": [
+    {
+     "date": "2026-08-21",
+     "headline": "Castelion raises $800M Series C at $13bn",
+     "url": "https://news.crunchbase.com/venture/biggest-funding-rounds-defense-tech-ai-infrastructure-castelion/",
+     "source": "Crunchbase News"
+    },
+    {
+     "date": "2026-06-02",
+     "headline": "Defense tech funding hits an all-time record by June",
+     "url": "https://news.crunchbase.com/defense-tech/startup-venture-funding-all-time-record-ai-anduril/",
+     "source": "Crunchbase News"
+    }
+   ],
+   "resources": [
+    {
+     "title": "Defense startup funding hits an all-time record",
+     "url": "https://news.crunchbase.com/defense-tech/startup-venture-funding-all-time-record-ai-anduril/",
+     "source": "Crunchbase News",
+     "kind": "report",
+     "date": "2026-06-02",
+     "summary": ""
+    },
+    {
+     "title": "Anduril at $61bn and defense tech's 2026 reset",
+     "url": "https://augment.market/pulse/anduril-at-61b-and-defense-techs-2026-reset",
+     "source": "Augment Pulse",
+     "kind": "article",
+     "date": "2026",
+     "summary": ""
+    }
+   ]
+  },
+  {
+   "id": "space",
+   "name": "Space infrastructure",
+   "category": "Physical",
+   "order": 11,
+   "color": "#5b4b8a",
+   "signal": "accelerating",
+   "heat": 83,
+   "conviction": "medium",
+   "horizon": "1-3y",
+   "deploy_early": "selective",
+   "deploy_growth": "selective",
+   "summary": "Launch, satellite buses and constellations, in-space mobility and manufacturing, Earth observation, and defence space.",
+   "why_now": "SpaceX's June 2026 IPO ($75bn raised at about $1.77tn) re-rated the sector. Space start-ups raised a record $20.8bn in Q3 2026 across 216 deals (Seraphim), with launch and access at $16.4bn.",
+   "deploy_view": "Early: satellite buses, in-space mobility and defence-space data. Growth: selective in launch, where Stoke and Relativity compete with SpaceX's cost curve, so own capacity-constrained enablers.",
+   "funding": [
+    {
+     "period": "Q3 2026",
+     "stage": "all",
+     "capital_usd_bn": 20.8,
+     "deals": 216,
+     "note": "Record; launch & access $16.4bn; basis of Blue Origin's $10bn unclear",
+     "source": "Seraphim Space Index",
+     "url": "https://www.analyticsinsight.net/news/space-startups-raise-record-usd-208-billion-why-investors-are-betting-on-infrastructure"
+    },
+    {
+     "period": "Q2 2026",
+     "stage": "all",
+     "capital_usd_bn": 7.4,
+     "deals": 140,
+     "source": "Seraphim Space Index",
+     "url": "https://seraphim.vc/wp-content/uploads/2026/07/Seraphim-Space-Index-Q2-2026.pdf"
+    }
+   ],
+   "risks": [
+    {
+     "text": "SpaceX dominance in launch and broadband",
+     "severity": "high"
+    },
+    {
+     "text": "Government budget dependence",
+     "severity": "medium"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "SpaceX IPO creates public comps and liquidity",
+     "severity": "high"
+    },
+    {
+     "text": "Golden Dome / missile-defence constellations",
+     "severity": "high"
+    }
+   ],
+   "kpis": [
+    "Launch cadence and cost per kg",
+    "Government contract awards",
+    "Constellation deployment milestones"
+   ],
+   "segments": [
+    {
+     "name": "Launch & mobility",
+     "companies": [
+      {
+       "name": "SpaceX",
+       "id": "spacex",
+       "domain": "spacex.com",
+       "stage": "",
+       "description": "Launch, Starlink; listed Jun 2026",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Rocket Lab",
+       "id": "rocket",
+       "domain": "rocketlabusa.com",
+       "stage": "",
+       "description": "Listed launch and spacecraft",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Stoke Space",
+       "id": "stokespace",
+       "domain": "stokespace.com",
+       "stage": "",
+       "description": "Fully reusable rocket; $1bn raise Q3 2026",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Impulse Space",
+       "id": "impulsespace",
+       "domain": "impulsespace.com",
+       "stage": "",
+       "description": "In-space transportation",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Relativity Space",
+       "id": "relativityspace",
+       "domain": "relativityspace.com",
+       "stage": "",
+       "description": "Terran R launch",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    },
+    {
+     "name": "Satellites, data & stations",
+     "companies": [
+      {
+       "name": "K2 Space",
+       "id": null,
+       "domain": "k2space.com",
+       "stage": "growth",
+       "description": "High-power satellite buses; $500M raise Q3 2026",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Muon Space",
+       "id": "muonspace",
+       "domain": "muonspace.com",
+       "stage": "",
+       "description": "Earth-observation constellations; $250M Series C (Eclipse)",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Varda Space",
+       "id": "vardaspaceindustries",
+       "domain": "varda.com",
+       "stage": "",
+       "description": "In-space manufacturing and re-entry",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Vast",
+       "id": null,
+       "domain": "vastspace.com",
+       "stage": "growth",
+       "description": "Commercial space stations",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    }
+   ],
+   "resources": [
+    {
+     "title": "Seraphim Space Index Q2 2026",
+     "url": "https://seraphim.vc/wp-content/uploads/2026/07/Seraphim-Space-Index-Q2-2026.pdf",
+     "source": "Seraphim",
+     "kind": "report",
+     "date": "2026-07",
+     "summary": ""
+    },
+    {
+     "title": "Space start-ups raise a record $20.8bn in Q3",
+     "url": "https://www.analyticsinsight.net/news/space-startups-raise-record-usd-208-billion-why-investors-are-betting-on-infrastructure",
+     "source": "Analytics Insight (Seraphim data)",
+     "kind": "news",
+     "date": "2026-10-14",
+     "summary": ""
+    }
+   ]
+  },
+  {
+   "id": "quantum",
+   "name": "Quantum computing",
+   "category": "Frontier",
+   "order": 12,
+   "color": "#6c3483",
+   "signal": "emerging",
+   "heat": 70,
+   "conviction": "medium",
+   "horizon": "3-7y",
+   "deploy_early": "selective",
+   "deploy_growth": "watch",
+   "summary": "Quantum hardware (photonic, trapped-ion, neutral-atom, superconducting), error correction, and quantum software and sensing.",
+   "why_now": "2025 was a record $3.9bn across 125 deals (PitchBook), and growth-stage share jumped to 30% of deal value. Q1 2026 exits totalled $5.7bn and Quantinuum IPO'd in June 2026. BlackRock ($1.7bn) and Nvidia ($1.6bn) are the largest investors.",
+   "deploy_view": "Early: selective in error-correction and enabling hardware (control systems, cryo, photonics) that wins whichever modality leads. Growth: watch. Listed comps now exist (Quantinuum, IonQ, SPACs) and most insiders do not expect commercially useful machines before about 2030.",
+   "funding": [
+    {
+     "period": "2025",
+     "stage": "all",
+     "capital_usd_bn": 3.9,
+     "deals": 125,
+     "note": "Record year",
+     "source": "PitchBook via Fortune",
+     "url": "https://fortune.com/2026/06/29/blackrock-nvidia-temasek-betting-billions-quantum-computing/"
+    },
+    {
+     "period": "Q1 2026",
+     "stage": "all",
+     "capital_usd_bn": 1.2,
+     "source": "PitchBook via Fortune",
+     "url": "https://fortune.com/2026/06/29/blackrock-nvidia-temasek-betting-billions-quantum-computing/"
+    },
+    {
+     "period": "Q1 2026 exits",
+     "stage": "all",
+     "capital_usd_bn": 5.7,
+     "note": "Xanadu, Infleqtion, Quantum Circuits, Horizon Quantum",
+     "source": "PitchBook via Fortune",
+     "url": "https://fortune.com/2026/06/29/blackrock-nvidia-temasek-betting-billions-quantum-computing/"
+    }
+   ],
+   "valuation_notes": "PsiQuantum $7bn (Series E, Sep 2025). Quantinuum $10bn pre-money (Series B), then IPO at $60/share (Jun 2026).",
+   "risks": [
+    {
+     "text": "Timeline to fault-tolerant advantage is uncertain (about 2030+)",
+     "severity": "high"
+    },
+    {
+     "text": "Modality risk: the winning qubit type is unknown",
+     "severity": "high"
+    },
+    {
+     "text": "SPAC-listed comps are volatile",
+     "severity": "medium"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "Logical-qubit milestones",
+     "severity": "high"
+    },
+    {
+     "text": "Government programmes: above $60bn committed globally; DARPA QBI",
+     "severity": "medium"
+    }
+   ],
+   "kpis": [
+    "Logical qubits and error rates",
+    "Government programme selections (DARPA QBI)",
+    "Listed-comp multiples"
+   ],
+   "segments": [
+    {
+     "name": "Hardware platforms",
+     "companies": [
+      {
+       "name": "PsiQuantum",
+       "id": "psiquantum",
+       "domain": "psiquantum.com",
+       "stage": "",
+       "description": "Photonic, utility-scale quantum",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Quantinuum",
+       "id": "quantinuum",
+       "domain": "quantinuum.com",
+       "stage": "",
+       "description": "Trapped-ion; listed Jun 2026",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Atom Computing",
+       "id": "atomcomputing",
+       "domain": "atom-computing.com",
+       "stage": "",
+       "description": "Neutral-atom",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "QuEra",
+       "id": null,
+       "domain": "quera.com",
+       "stage": "growth",
+       "description": "Neutral-atom",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "IQM",
+       "id": null,
+       "domain": "meetiqm.com",
+       "stage": "growth",
+       "description": "Superconducting (Finland)",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Pasqal",
+       "id": null,
+       "domain": "pasqal.com",
+       "stage": "growth",
+       "description": "Neutral-atom (France)",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Alice & Bob",
+       "id": null,
+       "domain": "alice-bob.com",
+       "stage": "early",
+       "description": "Cat-qubit error correction (France)",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    }
+   ],
+   "resources": [
+    {
+     "title": "BlackRock, Nvidia and Temasek are betting billions on quantum",
+     "url": "https://fortune.com/2026/06/29/blackrock-nvidia-temasek-betting-billions-quantum-computing/",
+     "source": "Fortune (PitchBook data)",
+     "kind": "article",
+     "date": "2026-06-29",
+     "summary": ""
+    }
+   ]
+  },
+  {
+   "id": "energy-for-ai",
+   "name": "Power for AI: nuclear, fusion, geothermal & storage",
+   "category": "Energy",
+   "order": 13,
+   "color": "#1d7a47",
+   "signal": "accelerating",
+   "heat": 84,
+   "conviction": "high",
+   "horizon": "3-7y",
+   "deploy_early": "overweight",
+   "deploy_growth": "selective",
+   "summary": "Firm, clean power for data centres: advanced fission and SMRs, fusion, enhanced geothermal, long-duration and thermal storage, fuel supply.",
+   "why_now": "Power is the binding constraint on AI build-out. Fusion raised a record $4.48bn in the 12 months to Jul 2026 (FIA), and energy was one of five Q3 2026 sectors above $10bn (Crunchbase). Hyperscalers are signing PPAs (Microsoft–Helion, Google–CFS).",
+   "deploy_view": "Early: overweight fission micro-reactors, fuel (HALEU) and grid-edge enablers with offtake LOIs. Growth: selective. Fusion leaders are binary on science milestones; geothermal and storage have clearer near-term revenue.",
+   "funding": [
+    {
+     "period": "12m to Jul 2026",
+     "stage": "all",
+     "capital_usd_bn": 4.48,
+     "note": "Fusion only; $14.24bn cumulative since 2021",
+     "source": "Fusion Industry Association",
+     "url": "https://www.power-eng.com/nuclear/record-4-48bn-funding-boomtime-for-fusion-industry/"
+    },
+    {
+     "period": "Q3 2026",
+     "stage": "all",
+     "capital_usd_bn": null,
+     "note": "Energy one of five sectors above $10bn in Q3 venture funding",
+     "source": "Crunchbase News",
+     "url": "https://news.crunchbase.com/venture/q3-2026-global-startup-funding-ai-billion-dollar-rounds-exits-data/"
+    }
+   ],
+   "valuation_notes": "Oklo and Fervo trade publicly. CFS raised $1bn (Jul 2026), Helion $465M, Proxima Fusion $518M, Inertia $450M Series A, Antares $370M Series C.",
+   "risks": [
+    {
+     "text": "NRC licensing timelines",
+     "severity": "high"
+    },
+    {
+     "text": "Fusion science risk (net energy, materials)",
+     "severity": "high"
+    },
+    {
+     "text": "Fuel supply (HALEU)",
+     "severity": "medium"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "Hyperscaler PPAs and siting deals",
+     "severity": "high"
+    },
+    {
+     "text": "DOE reactor pilot programme and executive orders",
+     "severity": "medium"
+    }
+   ],
+   "kpis": [
+    "PPAs / offtake signed (MW)",
+    "Licensing milestones",
+    "Fusion Q>1 demonstrations",
+    "Cost per MWh"
+   ],
+   "segments": [
+    {
+     "name": "Advanced fission",
+     "companies": [
+      {
+       "name": "Oklo",
+       "id": "oklo",
+       "domain": "oklo.com",
+       "stage": "",
+       "description": "Listed micro-reactor developer",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Radiant",
+       "id": "radiantindustries",
+       "domain": "radiantnuclear.com",
+       "stage": "",
+       "description": "Portable micro-reactors",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Valar Atomics",
+       "id": "valaratomics",
+       "domain": "valaratomics.com",
+       "stage": "",
+       "description": "Small modular reactors",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Kairos Power",
+       "id": "kairospower",
+       "domain": "kairospower.com",
+       "stage": "",
+       "description": "Molten-salt cooled reactors",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Antares",
+       "id": null,
+       "domain": "antaresindustries.com",
+       "stage": "growth",
+       "description": "Micro-reactors; $370M Series C (Paradigm, Caffeinated)",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "General Matter",
+       "id": "generalmatter",
+       "domain": "generalmatter.com",
+       "stage": "",
+       "description": "Nuclear fuel enrichment",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    },
+    {
+     "name": "Fusion",
+     "companies": [
+      {
+       "name": "Commonwealth Fusion Systems",
+       "id": "commonwealthfusionsystems",
+       "domain": "cfs.energy",
+       "stage": "",
+       "description": "Tokamak; $1bn raise Jul 2026",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Helion",
+       "id": "helionenergy",
+       "domain": "helionenergy.com",
+       "stage": "",
+       "description": "Pulsed fusion; Microsoft PPA",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "TAE Technologies",
+       "id": "tae",
+       "domain": "tae.com",
+       "stage": "",
+       "description": "Beam-driven FRC fusion",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Pacific Fusion",
+       "id": "pacificfusion",
+       "domain": "pacificfusion.com",
+       "stage": "",
+       "description": "Pulser-driven inertial fusion",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Proxima Fusion",
+       "id": null,
+       "domain": "proximafusion.com",
+       "stage": "growth",
+       "description": "Stellarator (Germany); $518M, Jul 2026",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Inertia Enterprises",
+       "id": null,
+       "domain": "",
+       "stage": "growth",
+       "description": "Laser inertial fusion; $450M Series A",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    },
+    {
+     "name": "Geothermal & storage",
+     "companies": [
+      {
+       "name": "Fervo Energy",
+       "id": "fervoenergy",
+       "domain": "fervoenergy.com",
+       "stage": "",
+       "description": "Enhanced geothermal; listed",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Antora Energy",
+       "id": null,
+       "domain": "antora.energy",
+       "stage": "growth",
+       "description": "Thermal batteries; $550M Series C (G2VP, Eclipse)",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    }
+   ],
+   "news": [
+    {
+     "date": "2026-07-31",
+     "headline": "Commonwealth Fusion Systems raises $1bn; Antora $550M; Antares $370M",
+     "url": "https://news.crunchbase.com/venture/biggest-funding-rounds-safe-superintelligence-commonwealth-fusion/",
+     "source": "Crunchbase News"
+    }
+   ],
+   "resources": [
+    {
+     "title": "Record $4.48bn funding year for fusion (FIA Global Fusion Industry 2026)",
+     "url": "https://www.power-eng.com/nuclear/record-4-48bn-funding-boomtime-for-fusion-industry/",
+     "source": "Power Engineering",
+     "kind": "report",
+     "date": "2026-07-24",
+     "summary": ""
+    },
+    {
+     "title": "VC money floods into US nuclear start-ups as AI power demand explodes",
+     "url": "https://oilprice.com/Energy/Energy-General/VC-Money-Floods-Into-US-Nuclear-Startups-as-AI-Power-Demand-Explodes.amp.html",
+     "source": "OilPrice",
+     "kind": "article",
+     "date": "2026",
+     "summary": ""
+    }
+   ]
+  },
+  {
+   "id": "advanced-manufacturing",
+   "name": "Advanced manufacturing & reindustrialisation",
+   "category": "Physical",
+   "order": 14,
+   "color": "#7a5a1e",
+   "signal": "accelerating",
+   "heat": 72,
+   "conviction": "medium",
+   "horizon": "1-3y",
+   "deploy_early": "overweight",
+   "deploy_growth": "selective",
+   "summary": "AI-native factories, precision machining, additive manufacturing, inspection, and supply-chain onshoring for defence and aerospace.",
+   "why_now": "Defence demand and onshoring policy require new capacity. Hadrian raised $1.37bn in Q3 2026 (Seraphim / space data), and robotics funding (US $12.1bn YTD) increasingly targets factories.",
+   "deploy_view": "Early: overweight software-defined factories with defence and aerospace offtake. Growth: selective, as capex intensity makes these look more like PE than venture.",
+   "funding": [],
+   "risks": [
+    {
+     "text": "Capital intensity and margins like contract manufacturing",
+     "severity": "high"
+    },
+    {
+     "text": "Customer concentration in defence",
+     "severity": "medium"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "Defence munitions and drone demand",
+     "severity": "high"
+    },
+    {
+     "text": "Tariffs and onshoring incentives",
+     "severity": "medium"
+    }
+   ],
+   "kpis": [
+    "Throughput per machinist",
+    "Contracted backlog",
+    "Gross margin vs legacy job shops"
+   ],
+   "segments": [
+    {
+     "name": "AI-native factories & tools",
+     "companies": [
+      {
+       "name": "Hadrian",
+       "id": "hadrian",
+       "domain": "hadrian.co",
+       "stage": "",
+       "description": "Automated precision factories; $1.37bn raise, Q3 2026",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Lumafield",
+       "id": "lumafield",
+       "domain": "lumafield.com",
+       "stage": "",
+       "description": "CT-scan inspection",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Bright Machines",
+       "id": "brightmachines",
+       "domain": "brightmachines.com",
+       "stage": "",
+       "description": "Software-defined manufacturing",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Divergent",
+       "id": null,
+       "domain": "divergent3d.com",
+       "stage": "growth",
+       "description": "AI-designed, additively manufactured structures",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Machina Labs",
+       "id": null,
+       "domain": "machinalabs.ai",
+       "stage": "early",
+       "description": "Robotic sheet-metal forming",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ai-security",
+   "name": "AI security & cybersecurity",
+   "category": "Software",
+   "order": 15,
+   "color": "#455a64",
+   "signal": "steady",
+   "heat": 71,
+   "conviction": "medium",
+   "horizon": "1-3y",
+   "deploy_early": "overweight",
+   "deploy_growth": "selective",
+   "summary": "Securing AI agents and AI-written code, data security for AI, AI-driven SOC automation, and identity for non-human actors.",
+   "why_now": "Cyber funding was steady at $10.6bn in H1 2026 (Crunchbase), but AI-security seed is exploding: $855M across 150+ seed rounds in 2026 (Crunchbase via AI Weekly). Google's Wiz deal ($32bn) set the exit bar, and Cyera has raised again (about $800M, Nov 2026).",
+   "deploy_view": "Early: overweight agent security, AI-code vulnerability, and data security for LLM pipelines, where incumbents lag. Growth: selective, with consolidation via M&A as the main exit.",
+   "funding": [
+    {
+     "period": "H1 2026",
+     "stage": "all",
+     "capital_usd_bn": 10.6,
+     "note": "Global cyber, seed to growth",
+     "source": "Crunchbase News",
+     "url": "https://news.crunchbase.com/cybersecurity/solid-startup-venture-funding-growth-h1-2026/"
+    },
+    {
+     "period": "2026 YTD",
+     "stage": "early",
+     "capital_usd_bn": 0.855,
+     "deals": 150,
+     "note": "AI-security seed rounds",
+     "source": "AI Weekly (Crunchbase data)",
+     "url": "https://aiweekly.co/alerts/ai-security-startups-pull-855m-across-150-seed-rounds-in-2026"
+    }
+   ],
+   "risks": [
+    {
+     "text": "Platform bundling by CrowdStrike, Palo Alto, Microsoft",
+     "severity": "high"
+    },
+    {
+     "text": "Crowded seed market",
+     "severity": "medium"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "Agent adoption creates new attack surface",
+     "severity": "high"
+    },
+    {
+     "text": "Labs launching frontier cyber-defence (State of AI prediction)",
+     "severity": "medium"
+    }
+   ],
+   "kpis": [
+    "M&A multiples",
+    "AI-agent security budget lines",
+    "Time-to-detect improvements"
+   ],
+   "segments": [
+    {
+     "name": "Data & AI security",
+     "companies": [
+      {
+       "name": "Cyera",
+       "id": "cyera",
+       "domain": "cyera.io",
+       "stage": "",
+       "description": "AI-native data security; about $800M raise, Nov 2026",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Wiz",
+       "id": "wiz",
+       "domain": "wiz.io",
+       "stage": "",
+       "description": "Cloud security; acquired by Google",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Chainguard",
+       "id": "chainguard",
+       "domain": "chainguard.dev",
+       "stage": "",
+       "description": "Secure software supply chain",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Sentra",
+       "id": null,
+       "domain": "sentra.io",
+       "stage": "growth",
+       "description": "Data security; $150M, Nov 2026",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Abnormal Security",
+       "id": "abnormalsecurity",
+       "domain": "abnormalsecurity.com",
+       "stage": "",
+       "description": "AI email security",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Snyk",
+       "id": "snyk",
+       "domain": "snyk.io",
+       "stage": "",
+       "description": "Developer security",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    }
+   ],
+   "resources": [
+    {
+     "title": "So far, 2026 is a solid year for cybersecurity startup funding",
+     "url": "https://news.crunchbase.com/cybersecurity/solid-startup-venture-funding-growth-h1-2026/",
+     "source": "Crunchbase News",
+     "kind": "report",
+     "date": "2026-07",
+     "summary": ""
+    }
+   ]
+  },
+  {
+   "id": "fintech-stablecoins",
+   "name": "Fintech, stablecoins & agentic payments",
+   "category": "Finance",
+   "order": 16,
+   "color": "#0e6655",
+   "signal": "steady",
+   "heat": 64,
+   "conviction": "medium",
+   "horizon": "1-3y",
+   "deploy_early": "selective",
+   "deploy_growth": "selective",
+   "summary": "Stablecoin payment rails and treasury, AI-native finance software, neobanks, and payments for AI agents.",
+   "why_now": "Clear US stablecoin rules (GENIUS Act, 2025) brought institutional adoption. Card networks are expected to add rules for agent-initiated purchases (a State of AI 2027 prediction). Ramp $60bn and Revolut $115bn show fintech leaders compounding.",
+   "deploy_view": "Early: selective in stablecoin infrastructure for cross-border B2B and agentic payments. Growth: concentrate in proven compounders (Stripe, Ramp, Revolut) via secondaries.",
+   "funding": [],
+   "risks": [
+    {
+     "text": "Regulatory reversals; bank partner risk",
+     "severity": "medium"
+    },
+    {
+     "text": "Crypto-cycle correlation",
+     "severity": "medium"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "Stablecoin B2B settlement adoption",
+     "severity": "high"
+    },
+    {
+     "text": "Agent commerce standards",
+     "severity": "medium"
+    }
+   ],
+   "kpis": [
+    "Stablecoin settlement volume",
+    "Take rates",
+    "Growth-stage secondary prices"
+   ],
+   "segments": [
+    {
+     "name": "Payments & finance software",
+     "companies": [
+      {
+       "name": "Stripe",
+       "id": "stripe",
+       "domain": "stripe.com",
+       "stage": "",
+       "description": "Payments; owns Bridge (stablecoins)",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Ramp",
+       "id": "ramp",
+       "domain": "ramp.com",
+       "stage": "",
+       "description": "Spend management and AI finance",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Revolut",
+       "id": "revolut",
+       "domain": "revolut.com",
+       "stage": "",
+       "description": "Global neobank",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Mercury",
+       "id": "mercury",
+       "domain": "mercury.com",
+       "stage": "",
+       "description": "Business banking",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Plaid",
+       "id": "plaid",
+       "domain": "plaid.com",
+       "stage": "",
+       "description": "Financial data network",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    },
+    {
+     "name": "Stablecoin rails",
+     "companies": [
+      {
+       "name": "Kast",
+       "id": null,
+       "domain": "",
+       "stage": "early",
+       "description": "Stablecoin payments",
+       "hq": "",
+       "last_round": "$80M",
+       "investors": [],
+       "valuation_usd_bn": 0.6,
+       "valuation_date": "",
+       "valuation_label": "REPORTED"
+      },
+      {
+       "name": "Velocity",
+       "id": null,
+       "domain": "",
+       "stage": "early",
+       "description": "Stablecoin treasury for enterprises",
+       "hq": "",
+       "last_round": "$38M Series A (Dragonfly, FirstMark)",
+       "investors": []
+      }
+     ]
+    }
+   ],
+   "resources": [
+    {
+     "title": "a16z crypto: big ideas for 2026",
+     "url": "https://www.a16zcrypto.com/posts/article/big-ideas-things-excited-about-crypto-2026",
+     "source": "a16z crypto",
+     "kind": "article",
+     "date": "2026",
+     "summary": ""
+    },
+    {
+     "title": "How VCs are backing stablecoin projects in 2026",
+     "url": "https://stablecoininsider.org/how-vcs-are-backing-stablecoin-projects-in-2026/",
+     "source": "Stablecoin Insider",
+     "kind": "article",
+     "date": "2026",
+     "summary": ""
+    }
+   ]
+  },
+  {
+   "id": "generative-media",
+   "name": "Generative media & world models",
+   "category": "AI",
+   "order": 17,
+   "color": "#7d3c98",
+   "signal": "accelerating",
+   "heat": 74,
+   "conviction": "medium",
+   "horizon": "1-3y",
+   "deploy_early": "selective",
+   "deploy_growth": "watch",
+   "summary": "Video, voice and image generation, interactive world models, and AI-native creative tools.",
+   "why_now": "Higgsfield $5.4bn (Aug 2026), ElevenLabs $11bn and Kling AI's $3bn+ round show consumer and prosumer demand. a16z flags world models and multimodal creative tools as 2026 big ideas.",
+   "deploy_view": "Early: selective in world models for simulation, robotics data and gaming. Growth: watch, because labs ship competing video and voice models.",
+   "funding": [],
+   "risks": [
+    {
+     "text": "Commoditisation by labs (Sora, Veo)",
+     "severity": "high"
+    },
+    {
+     "text": "Copyright litigation",
+     "severity": "medium"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "World models feeding robotics and simulation",
+     "severity": "medium"
+    },
+    {
+     "text": "Enterprise voice agents",
+     "severity": "medium"
+    }
+   ],
+   "kpis": [
+    "Consumer ARR and retention",
+    "Cost per generated minute"
+   ],
+   "segments": [
+    {
+     "name": "Video, voice & worlds",
+     "companies": [
+      {
+       "name": "ElevenLabs",
+       "id": "elevenlabs",
+       "domain": "elevenlabs.io",
+       "stage": "",
+       "description": "Voice AI",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Higgsfield",
+       "id": "higgsfield",
+       "domain": "higgsfield.ai",
+       "stage": "",
+       "description": "AI video",
+       "hq": "",
+       "last_round": "$400M Series B (DST)",
+       "investors": [],
+       "valuation_usd_bn": 5.4,
+       "valuation_date": "2026-08",
+       "valuation_label": "REPORTED"
+      },
+      {
+       "name": "General Intuition",
+       "id": "generalintuition",
+       "domain": "generalintuition.com",
+       "stage": "",
+       "description": "World models from gameplay",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Runway",
+       "id": null,
+       "domain": "runwayml.com",
+       "stage": "growth",
+       "description": "Video generation and world models",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "World Labs",
+       "id": null,
+       "domain": "worldlabs.ai",
+       "stage": "growth",
+       "description": "Spatial intelligence / 3D worlds",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "neurotech-bci",
+   "name": "Neurotech & brain-computer interfaces",
+   "category": "Frontier",
+   "order": 18,
+   "color": "#a04000",
+   "signal": "emerging",
+   "heat": 55,
+   "conviction": "low",
+   "horizon": "7y+",
+   "deploy_early": "watch",
+   "deploy_growth": "avoid",
+   "summary": "Implantable and non-invasive BCIs, neural interfaces for paralysis and communication, and neuro-modulation.",
+   "why_now": "OpenAI led a $250M seed in Merge Labs (Sam Altman co-founded; about $850M valuation, Jan 2026). Neuralink human trials are expanding.",
+   "deploy_view": "Early: watch. This is a frontier option with long regulatory paths; back only exceptional teams via specialist funds.",
+   "funding": [],
+   "risks": [
+    {
+     "text": "Regulatory and clinical timelines",
+     "severity": "high"
+    },
+    {
+     "text": "Small addressable market until non-invasive breakthroughs",
+     "severity": "medium"
+    }
+   ],
+   "catalysts": [
+    {
+     "text": "FDA pivotal trials",
+     "severity": "medium"
+    }
+   ],
+   "kpis": [
+    "Implanted patients",
+    "FDA milestones",
+    "Bandwidth (bits per second)"
+   ],
+   "segments": [
+    {
+     "name": "BCI",
+     "companies": [
+      {
+       "name": "Neuralink",
+       "id": "neuralink",
+       "domain": "neuralink.com",
+       "stage": "",
+       "description": "Implantable BCI",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Merge Labs",
+       "id": null,
+       "domain": "",
+       "stage": "early",
+       "description": "Non-invasive BCI; OpenAI-led seed",
+       "hq": "",
+       "last_round": "$250M seed",
+       "investors": [],
+       "valuation_usd_bn": 0.85,
+       "valuation_date": "2026-01",
+       "valuation_label": "REPORTED"
+      },
+      {
+       "name": "Synchron",
+       "id": null,
+       "domain": "synchron.com",
+       "stage": "early",
+       "description": "Endovascular BCI",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Paradromics",
+       "id": null,
+       "domain": "paradromics.com",
+       "stage": "early",
+       "description": "High-bandwidth BCI",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      },
+      {
+       "name": "Science Corp",
+       "id": null,
+       "domain": "science.xyz",
+       "stage": "early",
+       "description": "Retinal and neural interfaces",
+       "hq": "",
+       "last_round": "",
+       "investors": []
+      }
+     ]
+    }
+   ],
+   "resources": [
+    {
+     "title": "OpenAI backs Merge Labs in $250M seed",
+     "url": "https://techinformed.com/openai-backs-merge-labs-in-250m-seed-round-led-by-sam-altman/",
+     "source": "TechInformed",
+     "kind": "news",
+     "date": "2026-01",
+     "summary": ""
+    }
+   ]
+  }
+ ],
+ "resources": [
+  {
+   "title": "Q3 2026 global venture funding: $159bn, AI 64%, record 27 billion-dollar rounds",
+   "url": "https://news.crunchbase.com/venture/q3-2026-global-startup-funding-ai-billion-dollar-rounds-exits-data/",
+   "source": "Crunchbase News",
+   "kind": "report",
+   "date": "2026-10",
+   "summary": "Quarterly benchmark: totals by stage, sector and the largest rounds."
+  },
+  {
+   "title": "PitchBook-NVCA Venture Monitor Q2 2026",
+   "url": "https://pitchbook.brightspotcdn.com/3a/89/e0ff94234b8d94b7517bdcd2c331/q2-2026-pitchbook-nvca-venture-monitor.pdf",
+   "source": "PitchBook / NVCA",
+   "kind": "report",
+   "date": "2026-07",
+   "summary": "US deal value, valuations by stage, exits, fundraising."
+  },
+  {
+   "title": "PitchBook-NVCA Venture Monitor (all editions)",
+   "url": "https://nvca.org/pitchbook-nvca-venture-monitor/",
+   "source": "NVCA",
+   "kind": "data",
+   "date": "",
+   "summary": ""
+  },
+  {
+   "title": "CB Insights: State of Venture Q2 2026",
+   "url": "https://www.cbinsights.com/research/report/venture-trends-q2-2026/",
+   "source": "CB Insights",
+   "kind": "report",
+   "date": "2026-07",
+   "summary": ""
+  },
+  {
+   "title": "This week in AI funding (Nov 2-6, 2026)",
+   "url": "https://aifunding.me/insights/weekly-roundup-nov-2-6-2026",
+   "source": "aifunding.me",
+   "kind": "data",
+   "date": "2026-11-07",
+   "summary": "25 rounds, $9.8bn in one week."
+  },
+  {
+   "title": "The week's biggest funding rounds (Castelion, Etched, Groq...)",
+   "url": "https://news.crunchbase.com/venture/biggest-funding-rounds-defense-tech-ai-infrastructure-castelion/",
+   "source": "Crunchbase News",
+   "kind": "news",
+   "date": "2026-08-21",
+   "summary": ""
+  },
+  {
+   "title": "The 20VC podcast archive",
+   "url": "https://thetwentyminutevc.libsyn.com/2025",
+   "source": "20VC",
+   "kind": "podcast",
+   "date": "",
+   "summary": "Harry Stebbings interviews GPs and founders; good for real-time GP sentiment."
+  },
+  {
+   "title": "Top 10 VC podcasts worth your time in 2026",
+   "url": "https://valueaddvc.com/blog/top-10-vc-podcasts-actually-worth-your-time-in-2026",
+   "source": "Value Add VC",
+   "kind": "article",
+   "date": "2026",
+   "summary": ""
+  },
+  {
+   "title": "StrictlyVC newsletter",
+   "url": "https://newsletter.strictlyvc.com/p/openai-has-big-hardware-ambitions",
+   "source": "StrictlyVC",
+   "kind": "newsletter",
+   "date": "",
+   "summary": "Daily venture news digest."
+  },
+  {
+   "title": "Sacra: private-company research (revenue estimates)",
+   "url": "https://sacra.com/research/physical-intelligence",
+   "source": "Sacra",
+   "kind": "data",
+   "date": "",
+   "summary": "Revenue and valuation estimates for private leaders."
+  }
+ ]
+}

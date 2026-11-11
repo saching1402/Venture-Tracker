@@ -44,6 +44,8 @@ else
     echo "Data present — skipping seed import."
 fi
 
+python -u manage.py import_trends /app/data/trends.json --if-empty 2>&1 || echo "!!! trends seed failed"
+
 echo "--- Starting research worker (Add manager / Add company) ---"
 python -u manage.py research_worker 2>&1 &
 

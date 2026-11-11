@@ -276,6 +276,9 @@ def _target(job: ResearchJob):
     if job.kind == 'shortlist':
         from apps.shortlist.models import ShortlistItem
         return ShortlistItem.objects.filter(id=int(job.slug) if job.slug.isdigit() else 0)
+    if job.kind == 'theme':
+        from apps.trends.models import Theme
+        return Theme.objects.filter(slug=job.slug)
     return (Manager if job.kind == 'manager' else Company).objects.filter(slug=job.slug)
 
 
@@ -283,6 +286,9 @@ def _run(job: ResearchJob) -> str:
     if job.kind == 'shortlist':
         from apps.shortlist.engine import run_refresh
         return run_refresh(job)
+    if job.kind == 'theme':
+        from apps.trends.engine import run_theme
+        return run_theme(job)
     return run_manager(job) if job.kind == 'manager' else run_company(job)
 
 
@@ -292,7 +298,7 @@ def run_job(job: ResearchJob) -> None:
         job.summary = _run(job)
         job.status, job.error = 'done', ''
         _target(job).update(research_status='')
-        if job.kind == 'shortlist':
+        if job.kind in ('shortlist', 'theme'):
             job.finished_at = timezone.now()
             job.save()
             return

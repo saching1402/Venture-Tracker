@@ -86,6 +86,10 @@ So a manager with 25 new portfolio companies is about $2 on the defaults. Change
 
 Rows added this way are marked `added_via=user` and are never removed by a weekly snapshot import. Viewer accounts cannot add (set the role in `/admin/`).
 
+## Trends tab (where to deploy)
+
+18 investable themes (frontier models, AI infra, chips, coding, enterprise agents, healthcare AI, AI bio, physical AI & robotics, autonomy, defence, space, quantum, power for AI, advanced manufacturing, AI security, fintech & stablecoins, generative media, neurotech) with a weekly brief, a deploy board split **Early** (post-money < $1bn) vs **Growth**, a heat ranking with week-on-week change, a visual market map with company logos (tracked companies open their profile), venture capital raised by theme with sources, valuation-evolution scatter charts, a reading-list repository (add your own links), and a "how to stay on top" playbook. Each theme opens a panel with its thesis, deploy view, funding, risks/catalysts, signals to watch, map, news, links and your own kill criteria; **Refresh theme** re-researches it on demand (billed to the API key). The "Venture GP Atlas Weekly" scheduled task updates everything every Friday via `/api/v1/trends/import/`.
+
 ## Shortlisted tab (names you'll back across rounds)
 
 Split into **Directs / Co-investments** and **Funds**. Each item carries **your priority** and **Claude's priority** (L1 = most important, L2, L3); the table flags where they differ (≠). Every change to either is kept in the item's **priority log** with the date, who made it and the reason.

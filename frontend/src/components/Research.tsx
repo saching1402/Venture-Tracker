@@ -150,7 +150,7 @@ export function ResearchTray() {
             return (
               <div key={j.id} className="job">
                 <div className="top">
-                  <span className="nm" onClick={() => { setTray(false); go(`${j.kind === 'manager' ? 'gp' : j.kind === 'shortlist' ? 'sl' : 'co'}-${j.slug}`) }}>{j.name}</span>
+                  <span className="nm" onClick={() => { setTray(false); go(`${j.kind === 'manager' ? 'gp' : j.kind === 'shortlist' ? 'sl' : j.kind === 'theme' ? 'th' : 'co'}-${j.slug}`) }}>{j.name}</span>
                   <span className="badge badge-gray">{j.kind}</span>
                   <span className={`badge ${j.status === 'done' ? 'badge-green' : j.status === 'failed' ? 'badge-red' : 'badge-gold'}`} style={{ marginLeft: 'auto' }}>{j.status}</span>
                 </div>
