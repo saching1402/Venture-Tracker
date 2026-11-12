@@ -208,3 +208,14 @@ def test_profiles_bulk_and_run(db, monkeypatch, settings):
     c.post('/api/v1/research/profiles/', {'kind': 'company', 'ids': ['widgetco']}, content_type='application/json', **h)
     assert c.delete('/api/v1/research/profiles/', **h).json()['cancelled'] == 1
     assert Company.objects.get(slug='widgetco').profile_status == ''
+
+
+def test_profiles_accept_import_token(db, settings):
+    from django.test import Client
+    from apps.managers.models import Manager
+    settings.ANTHROPIC_API_KEY, settings.IMPORT_TOKEN = 'k', 'tok'
+    Manager.objects.create(slug='gpx', name='GP X')
+    c = Client()
+    assert c.post('/api/v1/research/profiles/', {'kind': 'manager'}, content_type='application/json').status_code in (401, 403)
+    r = c.post('/api/v1/research/profiles/', {'kind': 'manager'}, content_type='application/json', HTTP_X_IMPORT_TOKEN='tok')
+    assert r.status_code == 202 and r.json()['queued'] == 1

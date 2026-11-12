@@ -167,8 +167,19 @@ def _profile_targets(kind: str, scope: str, ids: list[str]):
     return out
 
 
+def _import_token_ok(request) -> bool:
+    import hmac
+    tok, sent = settings.IMPORT_TOKEN, request.headers.get('X-Import-Token', '')
+    return bool(tok and sent and hmac.compare_digest(tok, sent))
+
+
+class SignedInOrImportToken(BasePermission):
+    def has_permission(self, request, view) -> bool:
+        return bool(request.user and request.user.is_authenticated) or _import_token_ok(request)
+
+
 @api_view(['GET', 'POST', 'DELETE'])
-@permission_classes([IsAuthenticated])
+@permission_classes([SignedInOrImportToken])
 def profiles(request):
     """GET: how many profiles exist / are missing, with cost per profile by model.
     POST {kind: company|manager|both, scope: missing|all|shortlist, ids?: [slug], limit?, model?}: queue profile jobs."""
@@ -182,7 +193,7 @@ def profiles(request):
                          'queued': Manager.objects.filter(profile_status__in=['queued', 'running']).count()},
             'enabled': bool(settings.ANTHROPIC_API_KEY), 'can_edit': can_research(request.user), **model_menu(),
         })
-    if not can_research(request.user):
+    if not (can_research(request.user) or _import_token_ok(request)):
         return Response({'detail': CanResearch.message}, status=status.HTTP_403_FORBIDDEN)
     if request.method == 'DELETE':  # cancel profile jobs that have not started
         q = ResearchJob.objects.filter(kind__in=('coprofile', 'gpprofile'), status='queued')
@@ -206,7 +217,7 @@ def profiles(request):
     if limit:
         targets = targets[:limit]
     model = pick_model(d.get('model'), settings.RESEARCH_PORTFOLIO_MODEL)
-    ResearchJob.objects.bulk_create([ResearchJob(kind=k, name=n, slug=sl, model=model, created_by=request.user) for k, sl, n in targets])
+    ResearchJob.objects.bulk_create([ResearchJob(kind=k, name=n, slug=sl, model=model, created_by=request.user if request.user.is_authenticated else None) for k, sl, n in targets])
     for k, model_cls in (('coprofile', Company), ('gpprofile', Manager)):
         model_cls.objects.filter(slug__in=[sl for kk, sl, _ in targets if kk == k]).update(profile_status='queued')
     return Response({'queued': len(targets), 'estimated_cost': round(len(targets) * estimate('profile', model), 2), 'model': model},
