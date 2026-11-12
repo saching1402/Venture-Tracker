@@ -33,6 +33,10 @@ class Manager(models.Model):
     added_via = models.CharField(max_length=12, default='snapshot', help_text='"user" when added in the app; never removed by snapshot imports')
     updated_at = models.DateTimeField(auto_now=True)
 
+    profile = models.JSONField(default=dict, blank=True, help_text='Structured profile written by profile research (see apps/research/profiles.py)')
+    profile_updated_at = models.DateTimeField(null=True, blank=True)
+    profile_status = models.CharField(max_length=12, blank=True, help_text='queued / running / failed while a profile job runs')
+
     class Meta:
         db_table = 'managers'
         ordering = ['name']

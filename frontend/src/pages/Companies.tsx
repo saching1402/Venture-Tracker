@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import DataTable, { type Col } from '../components/DataTable'
 import { AddButton, ResearchBadge } from '../components/Research'
+import { ProfilesBulkButton } from '../components/Profile'
 import { GpChips, Select, Star, StatusPill } from '../components/ui'
 import { clip, downloadCsv, money, num, uniq, xmult } from '../lib/format'
 import { go } from '../lib/route'
@@ -75,6 +76,7 @@ export default function Companies() {
           </label>
           <button className="btn" onClick={exportCsv}>Export CSV</button>
           <AddButton kind="company" />
+          <ProfilesBulkButton kind="company" />
           <span className="tbl-ct">{rows.length} companies · {money(total)}</span>
         </div>
       </div>

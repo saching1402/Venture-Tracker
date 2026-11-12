@@ -45,6 +45,10 @@ class Company(models.Model):
 
     managers = models.ManyToManyField(Manager, through='Position', related_name='companies')
 
+    profile = models.JSONField(default=dict, blank=True, help_text='Structured profile written by profile research (see apps/research/profiles.py)')
+    profile_updated_at = models.DateTimeField(null=True, blank=True)
+    profile_status = models.CharField(max_length=12, blank=True, help_text='queued / running / failed while a profile job runs')
+
     class Meta:
         db_table = 'companies'
         ordering = ['-latest_valuation_usd_bn', 'name']

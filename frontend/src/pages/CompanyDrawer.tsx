@@ -9,13 +9,15 @@ import { go } from '../lib/route'
 import { useData } from '../store/data'
 import type { CompanyDetail } from '../types'
 import { GpLogo, Logo, WithLogo } from '../components/Logo'
+import { CompanyProfileView, ProfileControls } from '../components/Profile'
+import type { CompanyProfile } from '../types'
 
 export default function CompanyDrawer({ id }: { id: string }) {
   const managers = useData(s => s.managers)
   const rs = useData(s => s.coById[id]?.research_status ?? '')
   const { data: c, error, isLoading } = useQuery({
     queryKey: ['company', id, rs],
-    refetchInterval: rs === 'queued' || rs === 'running' ? 8000 : false,
+    refetchInterval: q => (rs === 'queued' || rs === 'running' || ['queued', 'running'].includes(q.state.data?.profile_status ?? '') ? 8000 : false),
     queryFn: () => api.get<CompanyDetail>(`/companies/${encodeURIComponent(id)}/`).then(r => r.data),
   })
   if (isLoading) return <Drawer title="Loading…"><div className="empty-state">Loading company…</div></Drawer>
@@ -44,6 +46,8 @@ export default function CompanyDrawer({ id }: { id: string }) {
         <Fact k="CEO" v={c.ceo || '—'} />
         <Fact k="Tracked managers" v={c.gp_positions.length} />
       </div>
+      <ProfileControls kind="company" id={c.id} status={c.profile_status} has={!!(c.profile as CompanyProfile).summary} asOf={(c.profile as CompanyProfile).as_of} />
+      {(c.profile as CompanyProfile).summary && <CompanyProfileView p={c.profile as CompanyProfile} />}
       {(c.growth || c.profitability) && (
         <div className="grid2">
           <Card title="Growth"><p className="prose">{c.growth || 'Not disclosed.'}</p></Card>

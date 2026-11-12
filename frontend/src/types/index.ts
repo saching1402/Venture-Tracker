@@ -41,6 +41,7 @@ export interface Holding {
 }
 
 export interface ManagerDetail {
+  profile: ManagerProfile | Record<string, never>; profile_status: string
   id: string
   name: string
   website: string
@@ -120,6 +121,7 @@ export interface Position {
 }
 
 export interface CompanyDetail extends Omit<CompanyRow, 'tracked_gp_ids'> {
+  profile: CompanyProfile | Record<string, never>; profile_status: string
   website: string
   valuation_basis: string
   first_mark_usd_bn: number | null
@@ -153,7 +155,7 @@ export type ResearchStatus = '' | 'queued' | 'running' | 'failed'
 
 export interface ResearchJob {
   id: string
-  kind: 'manager' | 'company' | 'shortlist' | 'theme'
+  kind: 'manager' | 'company' | 'shortlist' | 'theme' | 'coprofile' | 'gpprofile'
   name: string
   slug: string
   status: 'queued' | 'running' | 'done' | 'failed'
@@ -172,7 +174,7 @@ export interface ResearchJob {
   finished_at: string | null
 }
 
-export interface ResearchModel { id: string; label: string; est_manager: number; est_company: number }
+export interface ResearchModel { id: string; label: string; est_manager: number; est_company: number; est_profile: number }
 
 export interface ResearchState {
   enabled: boolean
@@ -362,4 +364,18 @@ export interface TrendsData {
   brief: TrBrief | null; early_max_usd_bn: number; themes: TrTheme[]; resources: TrResource[]; framework: TrFramework
   heat_prev: Record<string, number>; history: { as_of: string; heat: Record<string, number> }[]
   can_edit: boolean; enabled: boolean; active: number; models: ResearchModel[]; defaults: { manager: string; portfolio: string; company: string }
+}
+
+// ── Business profiles ───────────────────────────────────────────────────────
+export interface CompanyProfile {
+  summary: string; products: { name: string; description: string }[]; customers: string; business_model: string
+  financials: { revenue_metric: string; revenue_usd_bn: number | null; revenue_date: string; growth: string; gross_margin: string; profitability: string; headcount: number | null; label: string; note: string }
+  value_chain: { chain: { layer: string; examples: string; current: boolean }[]; position: string }
+  competition: { name: string; note: string }[]; competitive_position: string; moat: string
+  industry: { market: string; trends: string[] }; risks: string[]; sources: string[]; as_of: string; model?: string
+}
+export interface ManagerProfile {
+  summary: string; strategy: { stages: string; check_size: string; sectors: string; geography: string; style: string }
+  funds: string; team: string; track_record: string; differentiation: string; platform: string
+  peers: { name: string; note: string }[]; current_themes: string[]; lp_considerations: string[]; sources: string[]; as_of: string; model?: string
 }

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import DataTable, { type Col } from '../components/DataTable'
 import { AddButton, ResearchBadge } from '../components/Research'
+import { ProfilesBulkButton } from '../components/Profile'
 import { Kpi, Select, Star, Tags } from '../components/ui'
 import { money, uniq } from '../lib/format'
 import { go } from '../lib/route'
@@ -59,6 +60,7 @@ export default function Managers() {
           <Select id="mstage" value={stage} onChange={setStage} options={uniq(real.flatMap(m => m.stages))} all="All stages" />
           <Select id="mfocus" value={focus} onChange={setFocus} options={uniq(real.flatMap(m => m.focus_areas))} all="All focus areas" />
           <AddButton kind="manager" />
+          <ProfilesBulkButton kind="manager" />
           <span className="tbl-ct">{rows.length} managers</span>
         </div>
       </div>

@@ -151,3 +151,60 @@ def test_haiku_long_prompt_tier():
     from apps.research.engine import request_cost
     assert request_cost('claude-haiku-5-5', 100_000, 0, 0) == pytest.approx(0.01)
     assert request_cost('claude-haiku-5-5', 200_000, 0, 0) == pytest.approx(0.10)
+
+
+# ── business profiles ─────────────────────────────────────────────────────────
+def _profile_reply(kind):
+    if kind == 'co':
+        return {'summary': 'Makes widgets.', 'products': [{'name': 'Widget', 'description': 'A widget'}],
+                'financials': {'revenue_metric': 'ARR', 'revenue_usd_bn': 0.12, 'revenue_date': '2026-09', 'label': 'REPORTED',
+                               'gross_margin': '70%'},
+                'value_chain': {'chain': [{'layer': 'Chips', 'current': True}, {'layer': 'Apps', 'current': True}], 'position': 'Mid'},
+                'competition': [{'name': 'Rival', 'note': 'bigger'}], 'industry': {'market': '$10bn', 'trends': ['AI']},
+                'risks': ['Competition'], 'sources': ['https://example.com', 'not a url']}
+    return {'summary': 'A GP.', 'strategy': {'stages': 'Seed-A'}, 'peers': [{'name': 'Other GP'}], 'current_themes': ['AI']}
+
+
+def test_profiles_bulk_and_run(db, monkeypatch, settings):
+    import json as _json
+    from django.test import Client
+    from apps.companies.models import Company
+    from apps.managers.models import Manager
+    from apps.research import engine, profiles
+    from apps.research.models import ResearchJob
+    from apps.users.models import User
+    settings.ANTHROPIC_API_KEY = 'test'
+    Company.objects.create(slug='widgetco', name='WidgetCo', latest_valuation_usd_bn=2.0)
+    Company.objects.create(slug='oldco', name='OldCo', legacy=True)
+    Manager.objects.create(slug='gp1', name='GP One', aum_usd_bn=5)
+    User.objects.create_user('a@example.com', 'a-long-test-password', role='analyst')
+    c = Client()
+    tok = c.post('/api/v1/auth/token/', {'email': 'a@example.com', 'password': 'a-long-test-password'},
+                 content_type='application/json').json()['access']
+    h = {'HTTP_AUTHORIZATION': f'Bearer {tok}'}
+    st = c.get('/api/v1/research/profiles/', **h).json()
+    assert st['companies'] == {'total': 1, 'with_profile': 0, 'queued': 0} and st['models'][0]['est_profile'] > 0
+    r = c.post('/api/v1/research/profiles/', {'kind': 'both', 'scope': 'missing'}, content_type='application/json', **h).json()
+    assert r['queued'] == 2 and r['estimated_cost'] > 0
+    assert Company.objects.get(slug='widgetco').profile_status == 'queued'
+    assert Company.objects.get(slug='widgetco').research_status == ''  # tables are not flagged
+    # a user-initiated job jumps ahead of bulk profiles
+    ResearchJob.objects.create(kind='company', name='Urgent', slug='widgetco')
+    assert engine.claim_next().name == 'Urgent'
+    replies = iter([('```json\n' + _json.dumps(_profile_reply('gp')) + '\n```', {'searches': 1, 'input_tokens': 1, 'output_tokens': 1, 'cost': 0.05}),
+                    ('```json\n' + _json.dumps(_profile_reply('co')) + '\n```', {'searches': 1, 'input_tokens': 1, 'output_tokens': 1, 'cost': 0.05})])
+    monkeypatch.setattr(profiles, 'ask_claude', lambda *a, **k: next(replies))
+    for _ in range(2):
+        engine.run_job(engine.claim_next())
+    co = Company.objects.get(slug='widgetco')
+    assert co.profile_status == '' and co.profile['summary'] == 'Makes widgets.'
+    assert [x['current'] for x in co.profile['value_chain']['chain']] == [True, False]   # exactly one highlighted
+    assert co.profile['sources'] == ['https://example.com']
+    assert co.revenue_usd_bn == 0.12 and co.revenue_metric == 'ARR'                     # gap filled from the profile
+    assert Manager.objects.get(slug='gp1').profile['peers'][0]['name'] == 'Other GP'
+    detail = c.get('/api/v1/companies/widgetco/', **h).json()
+    assert detail['profile']['financials']['gross_margin'] == '70%'
+    # cancel
+    c.post('/api/v1/research/profiles/', {'kind': 'company', 'ids': ['widgetco']}, content_type='application/json', **h)
+    assert c.delete('/api/v1/research/profiles/', **h).json()['cancelled'] == 1
+    assert Company.objects.get(slug='widgetco').profile_status == ''

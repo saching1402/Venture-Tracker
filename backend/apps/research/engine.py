@@ -15,6 +15,7 @@ from typing import Any
 
 from django.conf import settings
 from django.db import transaction
+from django.db.models import Case, IntegerField, Value, When
 from django.utils import timezone
 from django.utils.text import slugify
 
@@ -272,7 +273,18 @@ def _record_usage(job: ResearchJob, usage: dict) -> None:
 
 
 # ── job lifecycle ─────────────────────────────────────────────────────────────
+PROFILE_KINDS = ('coprofile', 'gpprofile')
+
+
+def _status_field(job: ResearchJob) -> str:
+    return 'profile_status' if job.kind in PROFILE_KINDS else 'research_status'
+
+
 def _target(job: ResearchJob):
+    if job.kind == 'coprofile':
+        return Company.objects.filter(slug=job.slug)
+    if job.kind == 'gpprofile':
+        return Manager.objects.filter(slug=job.slug)
     if job.kind == 'shortlist':
         from apps.shortlist.models import ShortlistItem
         return ShortlistItem.objects.filter(id=int(job.slug) if job.slug.isdigit() else 0)
@@ -283,6 +295,9 @@ def _target(job: ResearchJob):
 
 
 def _run(job: ResearchJob) -> str:
+    if job.kind in PROFILE_KINDS:
+        from .profiles import run_profile
+        return run_profile(job)
     if job.kind == 'shortlist':
         from apps.shortlist.engine import run_refresh
         return run_refresh(job)
@@ -293,12 +308,13 @@ def _run(job: ResearchJob) -> str:
 
 
 def run_job(job: ResearchJob) -> None:
-    _target(job).update(research_status='running')
+    field = _status_field(job)
+    _target(job).update(**{field: 'running'})
     try:
         job.summary = _run(job)
         job.status, job.error = 'done', ''
-        _target(job).update(research_status='')
-        if job.kind in ('shortlist', 'theme'):
+        _target(job).update(**{field: ''})
+        if job.kind in ('shortlist', 'theme') + PROFILE_KINDS:
             job.finished_at = timezone.now()
             job.save()
             return
@@ -319,7 +335,7 @@ def run_job(job: ResearchJob) -> None:
         elif 'rate_limit' in msg or 'overloaded' in msg:
             msg = 'The Claude API was busy or rate-limited. Retry in a few minutes.'
         job.status, job.error = 'failed', msg[:2000]
-        _target(job).update(research_status='failed')
+        _target(job).update(**{field: 'failed'})
         if job.kind == 'shortlist':
             _target(job).update(last_error=msg[:2000])
     job.finished_at = timezone.now()
@@ -328,8 +344,11 @@ def run_job(job: ResearchJob) -> None:
 
 def claim_next() -> ResearchJob | None:
     with transaction.atomic():
+        # user-initiated work first; bulk profile jobs fill the idle time
         job = (ResearchJob.objects.select_for_update(skip_locked=True)
-               .filter(status='queued').order_by('created_at').first())
+               .filter(status='queued')
+               .annotate(bulk=Case(When(kind__in=PROFILE_KINDS, then=Value(1)), default=Value(0), output_field=IntegerField()))
+               .order_by('bulk', 'created_at').first())
         if job is None:
             return None
         job.status, job.started_at = 'running', timezone.now()

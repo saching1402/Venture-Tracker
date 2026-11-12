@@ -693,3 +693,27 @@ tbody tr:hover td{background:#f8f9fc}
 .fw-tbl td:first-child,.fw-tbl th:first-child{width:190px}
 .fw-tbl td:nth-child(2),.fw-tbl th:nth-child(2){width:70px}
 .fw-tbl2{width:100%}.fw-tbl2 td{white-space:normal!important;font-size:12.5px}
+
+/* business profiles */
+.pf{display:flex;flex-direction:column;gap:12px;margin:12px 0}
+.pf-ctrl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0 0}
+.err-inline{color:var(--red);font-size:12px}
+.pf-k{font-size:9.5px;font-weight:700;color:var(--muted);letter-spacing:.7px;text-transform:uppercase;margin:10px 0 3px}
+.pf-tbl .pf-k{margin:0;width:110px;vertical-align:top;padding-top:8px}
+.pf-products{margin:0;padding-left:18px;line-height:1.55;font-size:13px}
+.pf-products li{margin-bottom:4px}
+.pf-fin{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.pf-fin .pf-k{margin-top:0}
+.pf-v{font-family:var(--f-display);font-size:22px;font-weight:700;color:var(--navy)}
+.pf-v2{font-size:13px;color:var(--text)}
+.pf-chain{display:flex;gap:0;overflow-x:auto;padding-bottom:4px}
+.pf-layer{flex:1 1 0;min-width:120px;position:relative;padding:10px 12px 10px 18px;background:var(--surface2);border:1.5px solid var(--border);margin-right:-1px;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%,10px 50%)}
+.pf-layer:first-child{clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%);padding-left:12px}
+.pf-layer.on{background:var(--navy);border-color:var(--navy)}
+.pf-layer.on .pf-layer-n,.pf-layer.on .sub{color:#fff}
+.pf-layer-n{font-weight:600;font-size:12.5px;color:var(--navy)}
+.pf-here{display:block;font-size:9px;letter-spacing:.6px;text-transform:uppercase;color:var(--gold2);font-weight:700;margin-top:2px}
+.pf-named{display:flex;flex-direction:column;gap:6px}
+.pf-named-row{display:flex;gap:9px;align-items:flex-start;font-size:12.5px}
+.pf-named-row.click{cursor:pointer}
+.pf-named-row.click:hover b{text-decoration:underline}

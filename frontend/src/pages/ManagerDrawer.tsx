@@ -10,6 +10,8 @@ import { money, xmult } from '../lib/format'
 import { go } from '../lib/route'
 import type { ManagerDetail } from '../types'
 import { CoLogo, Logo, WithLogo } from '../components/Logo'
+import { ManagerProfileView, ProfileControls } from '../components/Profile'
+import type { ManagerProfile } from '../types'
 
 const SEC_COLORS = ['var(--navy)', 'var(--gold)', 'var(--navy3)', 'var(--gold2)', 'var(--blue)', 'var(--red)', '#7d8aa3', '#d9c08a']
 
@@ -21,7 +23,7 @@ export default function ManagerDrawer({ id }: { id: string }) {
   const rs = useData(s => s.mgrById[id]?.research_status ?? '')
   const { data: f, error, isLoading } = useQuery({
     queryKey: ['manager', id, rs],
-    refetchInterval: rs === 'queued' || rs === 'running' ? 8000 : false,
+    refetchInterval: q => (rs === 'queued' || rs === 'running' || ['queued', 'running'].includes(q.state.data?.profile_status ?? '') ? 8000 : false),
     queryFn: () => api.get<ManagerDetail>(`/managers/${encodeURIComponent(id)}/`).then(r => r.data),
   })
   if (isLoading) return <Drawer title="Loading…"><div className="empty-state">Loading manager…</div></Drawer>
@@ -47,6 +49,8 @@ export default function ManagerDrawer({ id }: { id: string }) {
         <Fact k="Tracked holdings" v={`${f.holdings.length} · ${money(agg)}`} />
         <Fact k="Other offices" v={f.other_offices.join(', ') || '—'} />
       </div>
+      <ProfileControls kind="manager" id={f.id} status={f.profile_status} has={!!(f.profile as ManagerProfile).summary} asOf={(f.profile as ManagerProfile).as_of} />
+      {(f.profile as ManagerProfile).summary && <ManagerProfileView p={f.profile as ManagerProfile} />}
       <ManagerView id={f.id} />
       <Card title="Overview">
         <p className="prose">{f.overview || '—'}</p>

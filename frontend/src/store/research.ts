@@ -31,7 +31,7 @@ export const useResearch = create<ResearchStore>((set, get) => ({
   async refresh() {
     try {
       const { data } = await api.get<ResearchState>('/research/')
-      const doneKey = data.jobs.map(j => `${j.id}:${j.status}:${j.children_done}`).join('|')
+      const doneKey = data.jobs.filter(j => j.kind !== 'coprofile' && j.kind !== 'gpprofile').map(j => `${j.id}:${j.status}:${j.children_done}`).join('|')
       const changed = get().loaded && doneKey !== lastDone
       lastDone = doneKey
       set({ ...data, loaded: true })

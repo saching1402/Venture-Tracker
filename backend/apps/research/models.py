@@ -6,7 +6,7 @@ from django.db import models
 
 
 class ResearchJob(models.Model):
-    KINDS = [('manager', 'Manager'), ('company', 'Company'), ('shortlist', 'Shortlist refresh'), ('theme', 'Trend theme refresh')]
+    KINDS = [('manager', 'Manager'), ('company', 'Company'), ('shortlist', 'Shortlist refresh'), ('theme', 'Trend theme refresh'), ('coprofile', 'Company profile'), ('gpprofile', 'Manager profile')]
     STATUSES = [('queued', 'Queued'), ('running', 'Running'), ('done', 'Done'), ('failed', 'Failed')]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

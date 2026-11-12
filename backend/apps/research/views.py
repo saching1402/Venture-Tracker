@@ -28,7 +28,7 @@ def can_research(user) -> bool:
 
 
 # Typical usage per job (input tokens incl. search results, output tokens, searches) for the cost estimates
-TYPICAL = {'manager': (150_000, 9_000, 10), 'company': (60_000, 4_000, 5)}
+TYPICAL = {'manager': (150_000, 9_000, 10), 'company': (60_000, 4_000, 5), 'profile': (45_000, 3_500, 4)}
 
 
 def estimate(kind: str, model: str) -> float:
@@ -40,7 +40,8 @@ def estimate(kind: str, model: str) -> float:
 
 def model_menu() -> dict:
     return {
-        'models': [{'id': k, 'label': v['label'], 'est_manager': estimate('manager', k), 'est_company': estimate('company', k)}
+        'models': [{'id': k, 'label': v['label'], 'est_manager': estimate('manager', k), 'est_company': estimate('company', k),
+                    'est_profile': estimate('profile', k)}
                    for k, v in settings.RESEARCH_MODELS.items()],
         'defaults': {'manager': settings.RESEARCH_MODEL, 'portfolio': settings.RESEARCH_PORTFOLIO_MODEL,
                      'company': settings.RESEARCH_COMPANY_MODEL},
@@ -138,3 +139,75 @@ def retry(request, job_id):
             _target(j).update(research_status='queued')
             retried += 1
     return Response({'retried': retried})
+
+
+# ── business profiles (company / GP), single or bulk ──────────────────────────
+def _profile_targets(kind: str, scope: str, ids: list[str]):
+    from apps.shortlist.models import ShortlistItem
+    out = []
+    if kind in ('manager', 'both'):
+        qs = Manager.objects.filter(is_stub=False).order_by('-aum_usd_bn')
+        if ids:
+            qs = Manager.objects.filter(slug__in=ids)
+        elif scope == 'missing':
+            qs = qs.filter(profile={})
+        out += [('gpprofile', m.slug, m.name) for m in qs if m.profile_status not in ('queued', 'running')]
+    if kind in ('company', 'both'):
+        qs = Company.objects.filter(legacy=False)
+        if ids:
+            qs = Company.objects.filter(slug__in=ids)
+        else:
+            if scope == 'missing':
+                qs = qs.filter(profile={})
+            if scope == 'shortlist':
+                qs = qs.filter(shortlist_items__isnull=False)
+        listed = set(ShortlistItem.objects.filter(company__isnull=False).values_list('company_id', flat=True))
+        rows = sorted(qs, key=lambda c: (c.id not in listed, -(c.latest_valuation_usd_bn or 0)))
+        out += [('coprofile', c.slug, c.name) for c in rows if c.profile_status not in ('queued', 'running')]
+    return out
+
+
+@api_view(['GET', 'POST', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def profiles(request):
+    """GET: how many profiles exist / are missing, with cost per profile by model.
+    POST {kind: company|manager|both, scope: missing|all|shortlist, ids?: [slug], limit?, model?}: queue profile jobs."""
+    if request.method == 'GET':
+        cos = Company.objects.filter(legacy=False)
+        mgrs = Manager.objects.filter(is_stub=False)
+        return Response({
+            'companies': {'total': cos.count(), 'with_profile': cos.exclude(profile={}).count(),
+                          'queued': Company.objects.filter(profile_status__in=['queued', 'running']).count()},
+            'managers': {'total': mgrs.count(), 'with_profile': mgrs.exclude(profile={}).count(),
+                         'queued': Manager.objects.filter(profile_status__in=['queued', 'running']).count()},
+            'enabled': bool(settings.ANTHROPIC_API_KEY), 'can_edit': can_research(request.user), **model_menu(),
+        })
+    if not can_research(request.user):
+        return Response({'detail': CanResearch.message}, status=status.HTTP_403_FORBIDDEN)
+    if request.method == 'DELETE':  # cancel profile jobs that have not started
+        q = ResearchJob.objects.filter(kind__in=('coprofile', 'gpprofile'), status='queued')
+        slugs = list(q.values_list('slug', flat=True))
+        n = q.delete()[0]
+        Company.objects.filter(slug__in=slugs, profile_status='queued').update(profile_status='')
+        Manager.objects.filter(slug__in=slugs, profile_status='queued').update(profile_status='')
+        return Response({'cancelled': n})
+    if not settings.ANTHROPIC_API_KEY:
+        return Response({'detail': 'Research is off. Add ANTHROPIC_API_KEY to the Railway service variables.'},
+                        status=status.HTTP_503_SERVICE_UNAVAILABLE)
+    d = request.data
+    kind = d.get('kind') if d.get('kind') in ('company', 'manager', 'both') else 'both'
+    scope = d.get('scope') if d.get('scope') in ('missing', 'all', 'shortlist') else 'missing'
+    ids = [str(x)[:96] for x in (d.get('ids') or []) if x][:2000]
+    targets = _profile_targets(kind, scope, ids)
+    try:
+        limit = max(0, int(d.get('limit') or 0))
+    except (TypeError, ValueError):
+        limit = 0
+    if limit:
+        targets = targets[:limit]
+    model = pick_model(d.get('model'), settings.RESEARCH_PORTFOLIO_MODEL)
+    ResearchJob.objects.bulk_create([ResearchJob(kind=k, name=n, slug=sl, model=model, created_by=request.user) for k, sl, n in targets])
+    for k, model_cls in (('coprofile', Company), ('gpprofile', Manager)):
+        model_cls.objects.filter(slug__in=[sl for kk, sl, _ in targets if kk == k]).update(profile_status='queued')
+    return Response({'queued': len(targets), 'estimated_cost': round(len(targets) * estimate('profile', model), 2), 'model': model},
+                    status=status.HTTP_202_ACCEPTED)
