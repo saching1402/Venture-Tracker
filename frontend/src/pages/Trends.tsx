@@ -16,7 +16,7 @@ import { clip, money } from '../lib/format'
 import { go } from '../lib/route'
 import { useData } from '../store/data'
 import { useResearch } from '../store/research'
-import type { Deploy, TrBrief, TrCompany, TrendsData, TrMark, TrResource, TrTheme } from '../types'
+import type { Deploy, HeatComponent, TrBrief, TrCompany, TrendsData, TrFramework, TrMark, TrResource, TrTheme } from '../types'
 
 const KEY = ['trends']
 type StageView = 'all' | 'early' | 'growth'
@@ -58,12 +58,106 @@ const inStage = (c: TrCompany, s: StageView) => s === 'all' || c.stage === s
 const deployFor = (t: TrTheme, s: StageView): Deploy[] => s === 'early' ? [t.deploy_early] : s === 'growth' ? [t.deploy_growth] : [t.deploy_early, t.deploy_growth]
 const ym = (d: string) => { const [y, m] = d.split('-').map(Number); return y + ((m || 6) - 1) / 12 }
 
+export const COMP_COLOR: Record<string, string> = {
+  capital: '#0f2347', velocity: '#3a6ea5', valuation: '#b38728', exits: '#1d7a47', conviction: '#8a5a9e',
+}
+
+function HeatStack({ comps }: { comps: HeatComponent[] }) {
+  return (
+    <span className="heat-bar heat-stack" title={comps.map(c => `${c.label}: ${c.points} pts (score ${c.score} × ${Math.round(c.weight * 100)}%)${c.scored ? '' : ', not yet sourced'}`).join('\n')}>
+      {comps.map(c => <span key={c.id} style={{ width: `${c.points}%`, background: COMP_COLOR[c.id], opacity: c.scored ? 1 : 0.35 }} />)}
+    </span>
+  )
+}
+
+function CompLegend() {
+  return (
+    <span className="comp-legend">
+      {[['capital', 'Capital 30%'], ['velocity', 'Velocity 20%'], ['valuation', 'Valuation 15%'], ['exits', 'Exits 15%'], ['conviction', 'Smart money 20%']].map(([k, l]) => (
+        <span key={k}><i style={{ background: COMP_COLOR[k] }} />{l}</span>
+      ))}
+      <span><i style={{ background: '#999', opacity: 0.35 }} />Faded = not yet sourced (neutral 50)</span>
+    </span>
+  )
+}
+
+export function HeatBreakdown({ t }: { t: TrTheme }) {
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+        <span className="heat-big">{t.heat}</span>
+        <div style={{ flex: 1 }}><HeatStack comps={t.score.components} /></div>
+        <SignalBadge s={t.signal} />
+        {t.score.delta_4w != null && <span className="note">{t.score.delta_4w >= 0 ? '+' : ''}{t.score.delta_4w} vs 4 weeks ago</span>}
+      </div>
+      <table className="mini-tbl">
+        <thead><tr><th>Input</th><th>Measured</th><th>Score</th><th>Weight</th><th>Points</th><th>Evidence</th></tr></thead>
+        <tbody>{t.score.components.map(c => (
+          <tr key={c.id}>
+            <td style={{ whiteSpace: 'nowrap' }}><i className="comp-dot" style={{ background: COMP_COLOR[c.id] }} />{c.label}</td>
+            <td>{c.value ?? '—'}</td>
+            <td><b>{c.score}</b>{!c.scored && <span className="note"> (neutral)</span>}</td>
+            <td>{Math.round(c.weight * 100)}%</td>
+            <td>{c.points}</td>
+            <td className="sub">{c.evidence}</td>
+          </tr>
+        ))}</tbody>
+      </table>
+    </div>
+  )
+}
+
+function FrameworkModal({ fw, onClose }: { fw: TrFramework; onClose: () => void }) {
+  useEffect(() => {
+    const k = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k)
+  }, [onClose])
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-panel fw-panel" role="dialog" aria-modal="true" aria-label="How the Trends framework works" onClick={e => e.stopPropagation()}>
+        <div className="modal-header"><div className="modal-title">How heat, signals and deploy views work</div><button className="btn" onClick={onClose}>Close</button></div>
+        <div className="modal-body">
+          <p className="fw-lead"><b>Two separate questions.</b> <i>Heat</i> asks "how much momentum is in this theme?" and is <b>calculated</b>.
+            The <i>deploy view</i> asks "should an LP put money in at today's prices, at this stage?" and is a <b>judgement</b> against four tests.
+            A theme can be very hot and still be "Avoid" at early stage.</p>
+
+          <h3 className="fw-h">1 · Heat (0–100): measured momentum</h3>
+          <p>{fw.heat.summary}</p>
+          <table className="mini-tbl fw-tbl">
+            <thead><tr><th>Input</th><th>Weight</th><th>How it is measured and scored</th></tr></thead>
+            <tbody>{fw.heat.components.map(c => (
+              <tr key={c.id}><td style={{ whiteSpace: 'nowrap' }}><i className="comp-dot" style={{ background: COMP_COLOR[c.id] }} /><b>{c.label}</b></td>
+                <td>{Math.round(c.weight * 100)}%</td><td>{c.how}</td></tr>
+            ))}</tbody>
+          </table>
+          <p className="note">{fw.heat.missing} Heat = Σ (score × weight). Example: capital 75 × 30% + velocity 80 × 20% + valuation 70 × 15% + exits 40 × 15% + smart money 90 × 20% = 73.</p>
+
+          <h3 className="fw-h">2 · Signal: derived from heat and its direction</h3>
+          <table className="mini-tbl fw-tbl2"><tbody>{fw.signal.map(r => <tr key={r.id}><td style={{ width: 120 }}><SignalBadge s={r.id} /></td><td>{r.rule}</td></tr>)}</tbody></table>
+          <p className="note">Rules are checked top to bottom, so "Cooling" overrides a high heat.</p>
+
+          <h3 className="fw-h">3 · Deploy view: Overweight / Selective / Watch / Avoid (per stage)</h3>
+          <p>{fw.deploy.summary}</p>
+          <div className="fw-tests">{fw.deploy.tests.map((t, i) => <div key={i} className="fw-test"><span className="pbk-n">{i + 1}</span>{t}</div>)}</div>
+          <table className="mini-tbl fw-tbl2"><tbody>{fw.deploy.levels.map(l => <tr key={l.id}><td style={{ width: 120 }}><span className={`dep dep-${l.id}`}>{l.label}</span></td><td>{l.rule}</td></tr>)}</tbody></table>
+
+          <h3 className="fw-h">4 · Stages and cadence</h3>
+          <p>{fw.stage}</p>
+          <p>{fw.cadence}</p>
+          <p className="note">Open any theme to see its own heat breakdown with the evidence behind each input, and the reasoning for its early and growth deploy views.</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── page ─────────────────────────────────────────────────────────────────────
 export default function Trends() {
   const { data, isLoading, error } = useTrends()
   const [stage, setStage] = useState<StageView>('all')
   const [followedOnly, setFollowedOnly] = useState(false)
   const [mapTheme, setMapTheme] = useState('')
+  const [showFw, setShowFw] = useState(false)
   if (isLoading) return <p className="note">Loading trends…</p>
   if (error || !data) return <div className="err-box">{errorText(error)}</div>
   const themes = data.themes.filter(t => !followedOnly || t.followed)
@@ -82,6 +176,7 @@ export default function Trends() {
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <button className="btn" onClick={() => setShowFw(true)}>ⓘ How heat &amp; deploy work</button>
           <div className="toggle-bar" role="tablist" aria-label="Stage" style={{ marginBottom: 0 }}>
             {(['all', 'early', 'growth'] as const).map(s => (
               <button key={s} role="tab" aria-selected={stage === s} className={`tog-btn${stage === s ? ' on' : ''}`} onClick={() => setStage(s)}>
@@ -117,19 +212,20 @@ export default function Trends() {
         </div>
       )}
 
-      <DeployBoard themes={themes} stage={stage} picks={b ? [...b.deploy_now] : []} byId={byId} />
-      <HeatRanking themes={themes} prev={data.heat_prev} />
+      <DeployBoard themes={themes} stage={stage} picks={b ? [...b.deploy_now] : []} byId={byId} onHelp={() => setShowFw(true)} />
+      <HeatRanking themes={themes} prev={data.heat_prev} onHelp={() => setShowFw(true)} />
       <MarketMap themes={themes} stage={stage} only={mapTheme} setOnly={setMapTheme} />
       <CapitalFlows themes={themes} />
       <ValuationEvolution themes={themes} stage={stage} />
       <ReadingList data={data} />
       {b?.playbook?.length ? <Playbook items={b.playbook} /> : null}
+      {showFw && data.framework && <FrameworkModal fw={data.framework} onClose={() => setShowFw(false)} />}
     </div>
   )
 }
 
 // ── deploy board ─────────────────────────────────────────────────────────────
-function DeployBoard({ themes, stage, picks, byId }: { themes: TrTheme[]; stage: StageView; picks: { theme: string; stage: string; why: string }[]; byId: Record<string, TrTheme> }) {
+function DeployBoard({ themes, stage, picks, byId, onHelp }: { themes: TrTheme[]; stage: StageView; picks: { theme: string; stage: string; why: string }[]; byId: Record<string, TrTheme>; onHelp: () => void }) {
   const rows = themes.flatMap(t => {
     const st = stage === 'all' ? (['early', 'growth'] as const) : [stage]
     const by = new Map<Deploy, string[]>()
@@ -138,7 +234,8 @@ function DeployBoard({ themes, stage, picks, byId }: { themes: TrTheme[]; stage:
   })
   const pk = picks.filter(p => stage === 'all' || p.stage === stage).filter(p => byId[p.theme])
   return (
-    <Card title={`Where to deploy · ${stage === 'all' ? 'early and growth' : stage}`}>
+    <Card title={`Where to deploy · ${stage === 'all' ? 'early and growth' : stage}`}
+      right={<button className="linkish" onClick={onHelp}>What do Overweight / Selective / Watch / Avoid mean?</button>}>
       {pk.length > 0 && (
         <div className="tr-picks">
           {pk.map((p, i) => (
@@ -170,10 +267,10 @@ function DeployBoard({ themes, stage, picks, byId }: { themes: TrTheme[]; stage:
 }
 
 // ── heat ranking ─────────────────────────────────────────────────────────────
-function HeatRanking({ themes, prev }: { themes: TrTheme[]; prev: Record<string, number> }) {
+function HeatRanking({ themes, prev, onHelp }: { themes: TrTheme[]; prev: Record<string, number>; onHelp: () => void }) {
   const sorted = [...themes].sort((a, b) => (b.heat ?? 0) - (a.heat ?? 0))
   return (
-    <Card title="Theme heat (0–100)" right={<span className="note">Capital momentum, round velocity, exits and GP narrative · Δ vs last week</span>}>
+    <Card title="Theme heat (0–100)" right={<span style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}><CompLegend /><button className="linkish" onClick={onHelp}>How is heat measured?</button></span>}>
       <div className="heat-list">
         {sorted.map((t, i) => {
           const d = prev[t.id] != null && t.heat != null ? t.heat - prev[t.id] : null
@@ -181,7 +278,7 @@ function HeatRanking({ themes, prev }: { themes: TrTheme[]; prev: Record<string,
             <button key={t.id} className="heat-row" onClick={() => go(`th-${t.id}`)}>
               <span className="heat-rank">{i + 1}</span>
               <span className="heat-name">{t.name}{!t.followed && <span className="note"> · not followed</span>}</span>
-              <span className="heat-bar"><span style={{ width: `${t.heat ?? 0}%`, background: t.color || 'var(--navy)' }} /></span>
+              <HeatStack comps={t.score.components} />
               <span className="heat-val">{t.heat ?? '—'}</span>
               <span className={`heat-d ${d && d > 0 ? 'up' : d && d < 0 ? 'down' : ''}`}>{d == null ? '' : d === 0 ? '·' : `${d > 0 ? '▲' : '▼'}${Math.abs(d)}`}</span>
               <span className="heat-sig"><SignalBadge s={t.signal} /></span>
@@ -190,7 +287,7 @@ function HeatRanking({ themes, prev }: { themes: TrTheme[]; prev: Record<string,
           )
         })}
       </div>
-      <p className="note" style={{ marginTop: 6 }}>Right-hand tags: deploy view for Early, then Growth.</p>
+      <p className="note" style={{ marginTop: 6 }}>Bar segments show the points each input contributes (hover for detail). Δ = change vs last week. Right-hand tags: deploy view for Early, then Growth. Heat is momentum, not a buy signal: see the deploy board.</p>
     </Card>
   )
 }
@@ -467,7 +564,8 @@ export function ThemeDrawer({ id }: { id: string }) {
         <span className="note">· updated {t.last_refreshed_at ? new Date(t.last_refreshed_at).toLocaleDateString('en-GB') : '—'}</span>
       </div>
       <p style={{ marginTop: 0 }}>{t.summary}</p>
-      <div className="grid2" style={{ marginBottom: 12 }}>
+      <Card title="Heat breakdown (how this score is calculated)"><HeatBreakdown t={t} /></Card>
+      <div className="grid2" style={{ margin: '12px 0' }}>
         <Card title="Why now"><p style={{ margin: 0 }}>{t.why_now}</p></Card>
         <Card title="How to deploy (early vs growth)"><p style={{ margin: 0 }}>{t.deploy_view}</p></Card>
       </div>

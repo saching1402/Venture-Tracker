@@ -10,7 +10,7 @@ from apps.research.engine import ask_claude, parse_json
 from apps.research.prompts import RULES
 
 from .models import EARLY_MAX_USD_BN, Theme
-from .services import apply_theme, export_trends
+from .services import apply_theme, export_trends, rescore
 
 PROMPT = """Refresh the investable theme "{name}" for an institutional LP (Abu Dhabi allocator investing in US / Europe
 venture and growth via funds, directs and co-investments). The LP's goal: deploy into the themes that will produce
@@ -25,8 +25,10 @@ valuations, IPOs / M&A, new entrants, GP interviews and partner views (podcasts,
 commentary, and policy or technology milestones. Prefer primary sources and best-in-class reports.
 
 Return ONE JSON object in the same shape as the current record (keys: id, name, summary, why_now, deploy_view,
-signal [accelerating|hot|steady|emerging|cooling], heat [0-100: capital momentum, round velocity, exits, narrative],
-conviction [high|medium|low], horizon [now|1-3y|3-7y|7y+], deploy_early and deploy_growth [overweight|selective|watch|avoid],
+inputs {{capital_growth_x: venture $ into the theme in the latest period ÷ the prior comparable period (e.g. H1 2026 vs H1 2025),
+capital_note: period + source, exits_12m: number of IPOs / M&A / large secondaries in the last 12 months, mega_exit: true if
+any was $25bn+, exits_note: the events}} (heat and signal are calculated by the site from these inputs and the market map: do not
+send them), conviction [high|medium|low], horizon [now|1-3y|3-7y|7y+], deploy_early and deploy_growth [overweight|selective|watch|avoid],
 funding [{{period, stage, capital_usd_bn, deals, note, source, url, label, metric: venture (VC raised) | market (spend / market size / capex)}}], valuation_notes, risks and catalysts
 [{{text, severity}}], kpis [strings], segments [{{name, description, companies: [{{name, id (tracker id if given), domain,
 stage [early|growth|public|acquired], hq, description, valuation_usd_bn, valuation_date YYYY-MM, valuation_label,
@@ -54,6 +56,8 @@ def run_theme(job) -> str:
     data['id'] = theme.slug
     old_heat = theme.heat
     theme, added = apply_theme(data, via='refresh')
+    rescore([theme])
+    theme.refresh_from_db()
     moved = f', heat {old_heat} → {theme.heat}' if old_heat != theme.heat else ''
     return f'{theme.name}: refreshed; {added} new reading-list links{moved}.'
 

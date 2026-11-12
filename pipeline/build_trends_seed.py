@@ -523,6 +523,30 @@ themes.append({
     'resources': [R('OpenAI backs Merge Labs in $250M seed', 'https://techinformed.com/openai-backs-merge-labs-in-250m-seed-round-led-by-sam-altman/', 'TechInformed', 'news', '2026-01')],
 })
 
+PROXY_AI = 'Proxy: global venture +53% YoY in Q3 2026, AI 64% of it (Crunchbase); no theme-specific comparable yet'
+INPUTS = {
+    'frontier-models': dict(capital_growth_x=4.0, capital_note='ESTIMATE: OpenAI + Anthropic raised $227bn in 2026 YTD (CB Insights) vs about $57bn in 2025 (OpenAI $40bn; Anthropic $3.5bn + $13bn)', exits_12m=1, mega_exit=True, exits_note='xAI merged into SpaceX (2026)'),
+    'ai-infrastructure': dict(capital_growth_x=1.53, capital_note=PROXY_AI + '; data centres >$10bn in Q3', exits_12m=0, exits_note='No IPO / M&A in the mapped set in the last 12 months'),
+    'ai-semiconductors': dict(capital_growth_x=1.3, capital_note='ESTIMATE: $10.7bn by 10 Jun 2026, "on track to exceed 2025" (Crunchbase); 1.3x used conservatively', exits_12m=2, exits_note='Cerebras IPO (2026); Nvidia–Groq licensing deal (Dec 2025)'),
+    'ai-coding': dict(capital_growth_x=1.53, capital_note=PROXY_AI, exits_12m=1, mega_exit=True, exits_note='SpaceX to acquire Cursor for $60bn (Jun 2026)'),
+    'enterprise-agents': dict(capital_growth_x=1.53, capital_note=PROXY_AI, exits_12m=0, exits_note='None in the mapped set'),
+    'healthcare-ai': dict(capital_growth_x=1.53, capital_note=PROXY_AI, exits_12m=0, exits_note='None in the mapped set'),
+    'ai-drug-discovery': dict(exits_12m=0, exits_note='None in the mapped set'),
+    'physical-ai-robotics': dict(capital_growth_x=1.80, capital_note='H1 2026 $47.4bn vs H1 2025 $26.4bn (Crunchbase physical AI)', exits_12m=1, exits_note='Mobileye acquired Mentee Robotics (~$0.9bn)'),
+    'autonomous-mobility': dict(capital_growth_x=3.6, capital_note='2026 to 15 Apr $21.4bn vs all of 2025 $5.9bn (Crunchbase; Waymo about 3/4)', exits_12m=0, exits_note='Momenta filed for a HK IPO (not yet completed)'),
+    'defense-tech': dict(capital_growth_x=1.52, capital_note='2026 to 2 Jun $14.6bn vs all of 2025 $9.6bn (Crunchbase)', exits_12m=4, exits_note='Swarmer IPO; Aevex and HawkEye 360 listings; Motorola–D-Fend ($1.5bn)'),
+    'space': dict(capital_growth_x=2.4, capital_note='Space investment +140% in the year to Jun 2026; record $20.8bn in Q3 (Seraphim)', exits_12m=2, mega_exit=True, exits_note='SpaceX IPO ($1.77tn, Jun 2026); HawkEye 360 listing'),
+    'quantum': dict(capital_growth_x=1.23, capital_note='Q1 2026 $1.2bn vs 2025 quarterly average $0.98bn (PitchBook via Fortune)', exits_12m=5, exits_note='Xanadu, Infleqtion, Quantum Circuits, Horizon Quantum (Q1 2026, $5.7bn); Quantinuum IPO (Jun 2026)'),
+    'energy-for-ai': dict(capital_growth_x=1.7, capital_note='Fusion: $4.48bn in 12m to Jul 2026 vs $2.64bn the year before (FIA)', exits_12m=2, exits_note='TAE Technologies and General Fusion Nasdaq listings (2026)'),
+    'advanced-manufacturing': dict(exits_12m=0, exits_note='None in the mapped set'),
+    'ai-security': dict(capital_growth_x=1.0, capital_note='H1 2026 $10.6bn, "roughly in line" with prior periods (Crunchbase)', exits_12m=2, mega_exit=True, exits_note='Google–Wiz ($32bn, closed 2026); Motorola–D-Fend ($1.5bn)'),
+    'fintech-stablecoins': dict(exits_12m=0, exits_note='None in the mapped set in the last 12 months'),
+    'generative-media': dict(capital_growth_x=1.53, capital_note=PROXY_AI, exits_12m=0, exits_note='None in the mapped set'),
+    'neurotech-bci': dict(exits_12m=0, exits_note='None in the mapped set'),
+}
+for t in themes:
+    t['inputs'] = INPUTS[t['id']]
+
 GLOBAL = [
     R('Q3 2026 global venture funding: $159bn, AI 64%, record 27 billion-dollar rounds', CB_Q3, 'Crunchbase News', 'report', '2026-10',
       'Quarterly benchmark: totals by stage, sector and the largest rounds.'),

@@ -11,6 +11,7 @@ from django.utils import timezone
 from apps.companies.models import Company
 from apps.importer.services import _f, _i, _l, _s
 
+from . import heat as heatmod
 from .models import DEPLOY, EARLY_MAX_USD_BN, SIGNALS, Theme, TrendBrief, TrendResource
 
 SIGNAL_IDS = {k for k, _ in SIGNALS}
@@ -93,6 +94,24 @@ def _clean_news(v) -> list[dict]:
     return sorted(out, key=lambda n: n['date'], reverse=True)
 
 
+def _clean_inputs(v, old: dict) -> dict:
+    out = dict(old or {})
+    if not isinstance(v, dict):
+        return out
+    g = _f(v.get('capital_growth_x'))
+    if g is not None and 0 < g < 100:
+        out['capital_growth_x'] = round(g, 3)
+    n = _i(v.get('exits_12m'))
+    if n is not None and 0 <= n < 1000:
+        out['exits_12m'] = n
+    if 'mega_exit' in v:
+        out['mega_exit'] = bool(v.get('mega_exit'))
+    for k in ('capital_note', 'exits_note'):
+        if _s(v.get(k)):
+            out[k] = _s(v.get(k), 400)
+    return out
+
+
 def add_resource(theme: Theme | None, r: dict, via: str = 'weekly', user=None) -> TrendResource | None:
     url = _url(r.get('url'))
     title = _s(r.get('title'), 500)
@@ -114,14 +133,10 @@ def apply_theme(data: dict, via: str = 'weekly') -> tuple[Theme, int]:
     for fld in THEME_TEXT:
         if _s(data.get(fld)):
             setattr(theme, fld, _s(data.get(fld)))
-    if data.get('signal') in SIGNAL_IDS:
-        theme.signal = data['signal']
+    theme.inputs = _clean_inputs(data.get('inputs'), theme.inputs)
     for fld in ('deploy_early', 'deploy_growth'):
         if data.get(fld) in DEPLOY_IDS:
             setattr(theme, fld, data[fld])
-    heat = _i(data.get('heat'))
-    if heat is not None:
-        theme.heat = max(0, min(100, heat))
     if _i(data.get('order')) is not None:
         theme.order = _i(data['order'])
     if _clean_funding(data.get('funding')):
@@ -158,6 +173,7 @@ def import_trends(payload: dict, source: str = 'weekly') -> dict:
             slug = _s(r.get('theme'), 64)
             theme = Theme.objects.filter(slug=slug).first() if slug else None
             added += 1 if add_resource(theme, r, 'weekly') else 0
+    rescore()
     b = payload.get('brief') if isinstance(payload.get('brief'), dict) else {}
     as_of = _date(payload.get('asof') or b.get('as_of')) or dt.date.today().isoformat()
     brief = None
@@ -187,7 +203,7 @@ def export_trends() -> dict:
             'id': t.slug, 'name': t.name, 'category': t.category, 'order': t.order, 'color': t.color,
             'summary': t.summary, 'why_now': t.why_now, 'deploy_view': t.deploy_view, 'signal': t.signal, 'heat': t.heat,
             'conviction': t.conviction, 'horizon': t.horizon, 'deploy_early': t.deploy_early, 'deploy_growth': t.deploy_growth,
-            'funding': t.funding, 'valuation_notes': t.valuation_notes, 'risks': t.risks, 'catalysts': t.catalysts,
+            'inputs': t.inputs, 'funding': t.funding, 'valuation_notes': t.valuation_notes, 'risks': t.risks, 'catalysts': t.catalysts,
             'kpis': t.kpis, 'segments': t.segments, 'news': t.news, 'sources': t.sources,
             'followed': t.followed, 'last_refreshed_at': t.last_refreshed_at.isoformat() if t.last_refreshed_at else None,
             'resources': [resource_json(r) for r in t.resources.filter(hidden=False)],
@@ -238,6 +254,7 @@ def _resolve(c: dict, cos: dict[str, Company]) -> dict:
         out['revenue_metric'] = co.revenue_metric
         out['step_up_x'] = co.step_up_x
         out['gp_ids'] = [p.manager.slug for p in co.positions.all()][:12]
+        out['gp_entries'] = [(p.manager.slug, p.first_invest_year) for p in co.positions.all()]
         out['rounds'] = [{'date': r.date, 'round': r.round, 'post_money_usd_bn': r.post_money_usd_bn}
                          for r in co.rounds.all() if r.post_money_usd_bn]
     else:
@@ -248,9 +265,38 @@ def _resolve(c: dict, cos: dict[str, Company]) -> dict:
     return out
 
 
+def _heat_4w_ago(slug: str, history: list[dict]) -> int | None:
+    cutoff = (dt.date.today() - dt.timedelta(days=26)).isoformat()
+    older = [h for h in history if h['as_of'] <= cutoff and h['heat'].get(slug) is not None]
+    return older[-1]['heat'][slug] if older else None
+
+
+def score_theme(t: Theme, cos: dict[str, Company], history: list[dict]) -> dict:
+    flat = [_resolve(c, cos) for s in t.segments for c in s.get('companies', [])]
+    return heatmod.compute(flat, t.inputs or {}, _heat_4w_ago(t.slug, history))
+
+
+def _context() -> tuple[dict[str, Company], list[dict]]:
+    themes = list(Theme.objects.all())
+    ids = {c.get('id') for t in themes for s in t.segments for c in s.get('companies', []) if c.get('id')}
+    cos = {c.slug: c for c in Company.objects.filter(slug__in=ids).prefetch_related('rounds', 'positions__manager')}
+    history = [{'as_of': b.as_of.isoformat(), 'heat': b.heat or {}} for b in reversed(TrendBrief.objects.all()[:26])]
+    return cos, history
+
+
+def rescore(themes: list[Theme] | None = None) -> None:
+    """Recalculate and store heat + signal (the stored values feed the weekly history)."""
+    cos, history = _context()
+    for t in themes or Theme.objects.all():
+        sc = score_theme(t, cos, history)
+        if (t.heat, t.signal) != (sc['heat'], sc['signal']):
+            Theme.objects.filter(id=t.id).update(heat=sc['heat'], signal=sc['signal'])
+
+
 def theme_json(t: Theme, cos: dict[str, Company], resources: list[TrendResource], history: list[dict]) -> dict:
     segments = [{**s, 'companies': [_resolve(c, cos) for c in s.get('companies', [])]} for s in t.segments]
     flat = [c for s in segments for c in s['companies']]
+    score = heatmod.compute(flat, t.inputs or {}, _heat_4w_ago(t.slug, history))
     priv = [c for c in flat if c['stage'] in ('early', 'growth')]
     cutoff = (dt.date.today() - dt.timedelta(days=365)).isoformat()[:7]
     marks = sorted(({'company': c['name'], 'id': c.get('id'), 'date': r['date'], 'round': r['round'],
@@ -268,10 +314,11 @@ def theme_json(t: Theme, cos: dict[str, Company], resources: list[TrendResource]
     }
     return {
         'id': t.slug, 'name': t.name, 'category': t.category, 'order': t.order, 'color': t.color,
-        'summary': t.summary, 'why_now': t.why_now, 'deploy_view': t.deploy_view, 'signal': t.signal, 'heat': t.heat,
+        'summary': t.summary, 'why_now': t.why_now, 'deploy_view': t.deploy_view, 'signal': score['signal'], 'heat': score['heat'],
+        'score': {'components': score['components'], 'delta_4w': score['delta_4w']}, 'inputs': t.inputs,
         'conviction': t.conviction, 'horizon': t.horizon, 'deploy_early': t.deploy_early, 'deploy_growth': t.deploy_growth,
         'funding': t.funding, 'valuation_notes': t.valuation_notes, 'risks': t.risks, 'catalysts': t.catalysts,
-        'kpis': t.kpis, 'segments': segments, 'news': t.news, 'sources': t.sources,
+        'kpis': t.kpis, 'segments': [{**s, 'companies': [{k: v for k, v in c.items() if k != 'gp_entries'} for c in s['companies']]} for s in segments], 'news': t.news, 'sources': t.sources,
         'followed': t.followed, 'user_note': t.user_note, 'research_status': t.research_status,
         'last_refreshed_at': t.last_refreshed_at.isoformat() if t.last_refreshed_at else None,
         'stats': stats, 'marks': marks, 'heat_history': [{'as_of': h['as_of'], 'heat': h['heat'].get(t.slug)}
@@ -282,15 +329,14 @@ def theme_json(t: Theme, cos: dict[str, Company], resources: list[TrendResource]
 
 def trends_payload() -> dict:
     themes = list(Theme.objects.all())
-    ids = {c.get('id') for t in themes for s in t.segments for c in s.get('companies', []) if c.get('id')}
-    cos = {c.slug: c for c in Company.objects.filter(slug__in=ids).prefetch_related('rounds', 'positions__manager')}
+    cos, history = _context()
     resources = list(TrendResource.objects.filter(hidden=False).select_related('theme'))
-    history = [{'as_of': b.as_of.isoformat(), 'heat': b.heat or {}} for b in reversed(TrendBrief.objects.all()[:26])]
     brief = TrendBrief.objects.first()
     prev = TrendBrief.objects.all()[1:2].first()
     return {
         'brief': brief_json(brief), 'early_max_usd_bn': EARLY_MAX_USD_BN,
         'themes': [theme_json(t, cos, resources, history) for t in themes],
         'resources': [resource_json(r) for r in resources if not r.theme_id],
+        'framework': heatmod.FRAMEWORK,
         'heat_prev': prev.heat if prev else {}, 'history': history,
     }

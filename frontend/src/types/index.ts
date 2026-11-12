@@ -342,6 +342,15 @@ export interface TrTheme {
   followed: boolean; user_note: string; research_status: ResearchStatus; last_refreshed_at: string | null
   stats: { companies: number; early: number; growth: number; public: number; private_value_usd_bn: number; rounds_12m: number; tracked: number }
   marks: TrMark[]; heat_history: { as_of: string; heat: number }[]; resources: TrResource[]
+  score: { components: HeatComponent[]; delta_4w: number | null }
+  inputs: { capital_growth_x?: number; capital_note?: string; exits_12m?: number; mega_exit?: boolean; exits_note?: string }
+}
+export interface HeatComponent { id: string; label: string; weight: number; score: number; points: number; scored: boolean; value: string | null; evidence: string }
+export interface TrFramework {
+  heat: { summary: string; components: { id: string; label: string; weight: number; how: string }[]; missing: string }
+  signal: { id: string; rule: string }[]
+  deploy: { summary: string; tests: string[]; levels: { id: string; label: string; rule: string }[] }
+  stage: string; cadence: string
 }
 export interface TrPick { theme: string; stage: string; why: string }
 export interface TrBrief {
@@ -350,7 +359,7 @@ export interface TrBrief {
   playbook: { title: string; detail: string; cadence: string; links: string[] }[]
 }
 export interface TrendsData {
-  brief: TrBrief | null; early_max_usd_bn: number; themes: TrTheme[]; resources: TrResource[]
+  brief: TrBrief | null; early_max_usd_bn: number; themes: TrTheme[]; resources: TrResource[]; framework: TrFramework
   heat_prev: Record<string, number>; history: { as_of: string; heat: Record<string, number> }[]
   can_edit: boolean; enabled: boolean; active: number; models: ResearchModel[]; defaults: { manager: string; portfolio: string; company: string }
 }

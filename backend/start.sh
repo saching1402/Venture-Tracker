@@ -45,6 +45,7 @@ else
 fi
 
 python -u manage.py import_trends /app/data/trends.json --if-empty 2>&1 || echo "!!! trends seed failed"
+python -u manage.py rescore_trends --seed-inputs /app/data/trends.json 2>&1 || echo "!!! trends rescore failed"
 
 echo "--- Starting research worker (Add manager / Add company) ---"
 python -u manage.py research_worker 2>&1 &

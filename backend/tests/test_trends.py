@@ -86,7 +86,7 @@ def test_import_export_round_trip(setup):
     assert len(exp['themes']) == 18 and exp['brief']['playbook']
     Theme.objects.filter(slug='space').update(followed=False, user_note='mine')
     t = next(x for x in exp['themes'] if x['id'] == 'space')
-    t['heat'] = 88
+    t['inputs'] = {'capital_growth_x': 4.0, 'capital_note': 'test'}
     t['news'] = [{'date': '2026-11-12', 'headline': 'New space round', 'url': 'https://example.com/s'}]
     d = next(x for x in exp['themes'] if x['id'] == 'defense-tech')
     d['news'] = [{'date': '2026-11-12', 'headline': 'New defense round', 'url': 'https://example.com/d'}]
@@ -95,26 +95,58 @@ def test_import_export_round_trip(setup):
     r = c.post('/api/v1/trends/import/?source=weekly-brief', exp, content_type='application/json', HTTP_X_IMPORT_TOKEN=TOKEN)
     assert r.status_code == 201, r.content
     space = Theme.objects.get(slug='space')
-    assert space.heat == 88 and space.followed is False and space.user_note == 'mine'  # user fields kept
+    assert space.inputs['capital_growth_x'] == 4.0 and space.followed is False and space.user_note == 'mine'  # user fields kept
+    assert space.heat == TrendBrief.objects.first().heat['space']  # stored heat is the calculated one
     assert space.news[0]['headline'] == 'New space round'
     defense = Theme.objects.get(slug='defense-tech')
     assert defense.news[0]['headline'] == 'New defense round' and len(defense.news) > 1  # older headlines kept
-    assert TrendBrief.objects.count() == 2 and TrendBrief.objects.first().heat['space'] == 88
+    assert TrendBrief.objects.count() == 2
     v, vh = login('v@example.com')
     body = v.get('/api/v1/trends/', **vh).json()
-    assert body['heat_prev']['space'] != 88 and len(body['history']) == 2
+    assert body['heat_prev']['space'] < body['history'][-1]['heat']['space'] and len(body['history']) == 2
+    sp = next(t for t in body['themes'] if t['id'] == 'space')
+    assert sp['score']['components'][0]['id'] == 'capital' and sp['score']['components'][0]['score'] == 100
+    assert body['framework']['heat']['components'] and body['framework']['deploy']['levels']
     assert c.post('/api/v1/trends/import/', {'nope': 1}, content_type='application/json', HTTP_X_IMPORT_TOKEN=TOKEN).status_code == 400
 
 
 def test_theme_refresh_applies_reply(setup, monkeypatch):
-    reply = {'heat': 97, 'signal': 'hot', 'summary': 'Updated.', 'segments': [{'name': 'New seg', 'companies': [{'name': 'NewCo', 'domain': 'newco.ai', 'valuation_usd_bn': 0.3}]}],
+    reply = {'heat': 3, 'signal': 'cooling', 'inputs': {'capital_growth_x': 2.0, 'exits_12m': 4}, 'summary': 'Updated.', 'segments': [{'name': 'New seg', 'companies': [{'name': 'NewCo', 'domain': 'newco.ai', 'valuation_usd_bn': 0.3}]}],
              'resources': [{'title': 'Great report', 'url': 'https://example.com/r', 'kind': 'report'}]}
     monkeypatch.setattr(engine, 'ask_claude', lambda *a, **k: ('```json\n' + json.dumps(reply) + '\n```',
                                                                  {'searches': 2, 'input_tokens': 1, 'output_tokens': 1, 'cost': 0.2}))
     job = ResearchJob.objects.create(kind='theme', name='Physical AI', slug='physical-ai-robotics')
     msg = engine.run_theme(job)
     t = Theme.objects.get(slug='physical-ai-robotics')
-    assert t.heat == 97 and t.summary == 'Updated.' and t.segments[0]['name'] == 'New seg'
+    assert t.heat != 3 and t.signal != 'cooling'  # heat/signal are calculated, never taken from the reply
+    assert t.inputs['capital_growth_x'] == 2.0 and t.inputs['exits_12m'] == 4
+    assert t.summary == 'Updated.' and t.segments[0]['name'] == 'New seg'
     assert t.resources.filter(url='https://example.com/r', added_via='refresh').exists()
     assert '1 new' in msg and job.cost == pytest.approx(0.2)
     assert Company.objects.filter(slug='physicalintelligence').exists()
+
+
+def test_heat_formula():
+    import datetime as dt
+    from apps.trends import heat
+    today = dt.date(2026, 11, 11)
+    cos = [
+        {'name': 'A', 'stage': 'growth', 'rounds': [{'date': '2025-01', 'post_money_usd_bn': 1.0}, {'date': '2026-05', 'post_money_usd_bn': 2.0}],
+         'gp_entries': [('g1', 2025), ('g2', 2020)]},
+        {'name': 'B', 'stage': 'early', 'rounds': [{'date': '2024-01', 'post_money_usd_bn': 0.1}, {'date': '2025-01', 'post_money_usd_bn': 0.2}],
+         'gp_entries': [('g3', None)]},
+        {'name': 'C', 'stage': 'early', 'rounds': [], 'last_round': '$50M Series A, Q3 2026', 'gp_entries': []},
+        {'name': 'P', 'stage': 'public', 'rounds': [], 'gp_entries': [('g1', 2025)]},
+    ]
+    r = heat.compute(cos, {'capital_growth_x': 2.0, 'exits_12m': 1, 'mega_exit': True}, None, today)
+    c = {x['id']: x for x in r['components']}
+    assert c['capital']['score'] == 75 and c['exits']['score'] == 55
+    assert c['velocity']['value'] == '2 of 3' and c['velocity']['score'] == 83   # A and C fresh; text date counted
+    assert c['valuation']['score'] == 75                                           # median of 2x and 2x
+    assert c['conviction']['value'] == '3 GPs' and c['conviction']['score'] == 15
+    assert r['heat'] == round(75 * .3 + 83.33 * .2 + 75 * .15 + 55 * .15 + 15 * .2)
+    assert r['heat'] == 62 and r['signal'] == 'emerging'                            # below 65 with capital >= 1.2x
+    assert heat.compute(cos, {'capital_growth_x': 0.8}, None, today)['signal'] == 'cooling'
+    missing = heat.compute(cos, {}, None, today)
+    assert {x['id']: x['scored'] for x in missing['components']}['capital'] is False
+    assert heat.text_dates('raised in Mar 2026 after H1 2025') == ['2026-03', '2025-06']
