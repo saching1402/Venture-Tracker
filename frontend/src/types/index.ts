@@ -122,6 +122,7 @@ export interface Position {
 
 export interface CompanyDetail extends Omit<CompanyRow, 'tracked_gp_ids'> {
   profile: CompanyProfile | Record<string, never>; profile_status: string
+  investor_sources?: string[]; investors_updated_at?: string | null
   website: string
   valuation_basis: string
   first_mark_usd_bn: number | null

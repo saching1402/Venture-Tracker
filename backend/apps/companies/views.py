@@ -1,7 +1,9 @@
 import django_filters
 from django.db.models import Prefetch
 from rest_framework import viewsets
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+
+from apps.importer.views import ImportTokenOrStaff
 from rest_framework.response import Response
 
 from .models import Company, Position, ValuationRound
@@ -46,3 +48,14 @@ def recent_rounds(request):
         'company_id': r.company.slug, 'date': r.date, 'round': r.round,
         'post_money_usd_bn': r.post_money_usd_bn, 'lead': r.lead,
     } for r in rows])
+
+
+@api_view(['POST'])
+@permission_classes([ImportTokenOrStaff])
+def investors_merge(request):
+    """Merge sourced investor lists: {"companies": [{"id", "investors": [{"name", "lead"?, "round"?, "year"?}], "sources": [url]}]}.
+    Tracked GPs become positions; everyone else goes to other_investors. Additive only."""
+    from .investors import merge_investors
+    if not isinstance(request.data, dict) or not isinstance(request.data.get('companies'), list):
+        return Response({'detail': 'Expected {"companies": [...]}'}, status=400)
+    return Response(merge_investors(request.data, source=str(request.query_params.get('source') or 'investor sweep')[:64]))

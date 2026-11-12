@@ -103,6 +103,10 @@ export default function CompanyDrawer({ id }: { id: string }) {
           return m ? <span key={o} className="tag gp" onClick={() => go(`gp-${m.id}`)}>{o}</span> : <span key={o} className="tag">{o}</span>
         })}
         {!c.other_investors.length && <span className="note">Not available.</span>}
+        {(c.investor_sources?.length ?? 0) > 0 && (
+          <p className="note" style={{ marginTop: 8 }}>Investor list checked {c.investors_updated_at ? new Date(c.investors_updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : ''} · sources:{' '}
+            {c.investor_sources!.map((u, i) => <span key={u}>{i ? ' · ' : ''}<a href={u} target="_blank" rel="noopener noreferrer">{u.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]}</a></span>)}</p>
+        )}
       </Card>
       {c.notes && <Card title="Notes"><p className="prose">{c.notes}</p></Card>}
       <Sources list={c.sources} verified={c.last_verified} />

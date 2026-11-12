@@ -36,6 +36,8 @@ class Company(models.Model):
     employees = models.IntegerField(null=True, blank=True)
     ceo = models.CharField(max_length=255, blank=True)
     other_investors = models.JSONField(default=list, blank=True)
+    investor_sources = models.JSONField(default=list, blank=True, help_text='Where the investor list was sourced (investor sweep)')
+    investors_updated_at = models.DateTimeField(null=True, blank=True)
     notes = models.TextField(blank=True)
     sources = models.JSONField(default=list, blank=True)
     last_verified = models.CharField(max_length=20, blank=True)
