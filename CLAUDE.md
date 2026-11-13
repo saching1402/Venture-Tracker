@@ -23,6 +23,7 @@ All money is **USD billions** (float). Dates are `YYYY-MM` or `YYYY-MM-DD` strin
 - `valuation_stale` = only an old mark exists (pre-2024, or a non-private company with no current mark). Excluded from totals.
 - `apps/importer/services.py::_derive` recomputes step-up, val/revenue (quarterly revenue ×4; >1000x dropped as unit error) and entry marks; keep it in sync with `pipeline/merge.py`.
 - Import is a full snapshot: companies absent from it are removed (logged). Snapshots < 70% of live company count are rejected unless `force=1`.
+- Single-company add/update without a full snapshot: `POST /api/v1/import/companies/` (X-Import-Token or staff) {companies:[<snapshot company> + optional `profile`]} → `importer.services.upsert_companies`: new rows are `added_via='user'`; rounds and positions merge additively; profile cleaned via `profiles.clean_company`.
 - Investor sweep (`apps/companies/investors.py`): `POST /api/v1/companies/investors/` (X-Import-Token or staff) {companies:[{id, investors:[{name, lead?, round?, year?} | "name"], sources:[url]}]}. Names matching a tracked manager (`ManagerIndex`: full name, parenthetical aliases, trailing generic words stripped, `ALIASES`; `NO_SHORT` blocks collisions such as "Bain Capital" → BCV, "Index", "Insight") become `Position(via='investor sweep')` + a `new_position` ChangeEvent; others append to `other_investors`. Additive only; stores `investor_sources`, `investors_updated_at`.
 
 ## Auto-research (apps/research)

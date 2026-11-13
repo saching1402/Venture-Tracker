@@ -284,3 +284,64 @@ def export_payload() -> dict:
                      'type': e.type, 'from': e.from_value, 'to': e.to_value, 'detail': e.detail}
                     for e in ChangeEvent.objects.select_related('company').order_by('date', 'id')],
     }
+
+
+@transaction.atomic
+def upsert_companies(payload: dict, source: str = 'manual') -> dict:
+    """Add or update individual companies (snapshot company format) without touching the rest of the book.
+
+    Rounds and GP positions are merged additively; a new company is marked added_via='user' so snapshot imports keep it.
+    An optional "profile" (company profile shape, see apps/research/profiles.py) is cleaned and stored.
+    """
+    from django.utils import timezone
+
+    from apps.research.engine import recompute
+    from apps.research.profiles import clean_company
+
+    out = {'added': [], 'updated': [], 'positions_added': 0, 'rounds_added': 0, 'unknown_gps': []}
+    today = dt.date.today()
+    for c in _l(payload.get('companies')):
+        if not isinstance(c, dict) or not _s(c.get('id')) or not _s(c.get('name')):
+            continue
+        slug = _s(c['id'], 96)
+        obj = Company.objects.filter(slug=slug).first()
+        fields = {k: v for k, v in _company_fields(c).items() if k in c or k in ('name',)}
+        if obj is None:
+            obj = Company.objects.create(slug=slug, added_via='user', **fields)
+            out['added'].append(slug)
+            ChangeEvent.objects.create(date=today, company=obj, company_name=obj.name, type='added', detail=f'Added to tracker ({source})')
+        else:
+            for k, v in fields.items():
+                setattr(obj, k, v)
+            obj.save()
+            out['updated'].append(slug)
+        have = {(r.date[:7], (r.round or '').lower()) for r in obj.rounds.all()}
+        for v in _l(c.get('valuation_history')):
+            if isinstance(v, dict) and _s(v.get('date')) and (_s(v.get('date'))[:7], _s(v.get('round')).lower()) not in have:
+                obj.rounds.create(date=_s(v.get('date'), 20), round=_s(v.get('round'), 255),
+                                  post_money_usd_bn=_f(v.get('post_money_usd_bn')), lead=_s(v.get('lead'), 500))
+                out['rounds_added'] += 1
+        held = set(obj.positions.values_list('manager__slug', flat=True))
+        for g in _l(c.get('gp_positions')):
+            fid = _s(g.get('firm_id'), 64) if isinstance(g, dict) else ''
+            m = Manager.objects.filter(slug=fid, is_stub=False).first() if fid else None
+            if not m:
+                if fid:
+                    out['unknown_gps'].append(fid)
+                continue
+            if fid in held:
+                continue
+            Position.objects.create(company=obj, manager=m, first_invest_year=_i(g.get('first_invest_year')),
+                                    entry_round=_s(g.get('entry_round'), 255), lead=bool(g.get('lead')), via=_s(g.get('via'), 64) or source[:64])
+            ChangeEvent.objects.create(date=today, company=obj, company_name=obj.name, manager=m, type='new_position',
+                                       detail=f'{m.name} now on cap table')
+            held.add(fid)
+            out['positions_added'] += 1
+        if isinstance(c.get('profile'), dict):
+            prof = clean_company(c['profile'])
+            if prof['summary']:
+                prof.update(as_of=today.isoformat(), model=_s(c['profile'].get('model'), 40) or 'manual research')
+                obj.profile, obj.profile_updated_at = prof, timezone.now()
+                obj.save(update_fields=['profile', 'profile_updated_at'])
+        recompute(obj)
+    return out

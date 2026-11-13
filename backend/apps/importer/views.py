@@ -75,3 +75,13 @@ def pipeline_file(request, name):
     if not path.exists():
         raise Http404('Pipeline file missing.')
     return FileResponse(open(path, 'rb'), content_type=f'{PIPELINE_FILES[name]}; charset=utf-8')
+
+
+@api_view(['POST'])
+@permission_classes([ImportTokenOrStaff])
+def upsert_companies_view(request):
+    """Add / update individual companies without a full snapshot: {"companies": [<snapshot company> + optional "profile"]}."""
+    from .services import upsert_companies
+    if not isinstance(request.data, dict) or not isinstance(request.data.get('companies'), list):
+        return Response({'detail': 'Expected {"companies": [...]}'}, status=status.HTTP_400_BAD_REQUEST)
+    return Response(upsert_companies(request.data, source=str(request.query_params.get('source') or 'manual')[:64]))

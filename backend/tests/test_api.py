@@ -84,3 +84,28 @@ def test_pipeline_files_need_token(db):
     r = c.get('/api/v1/pipeline/merge.py', HTTP_X_IMPORT_TOKEN='t0ken')
     assert r.status_code == 200 and b'KNOWN_IDS' in b''.join(r.streaming_content)
     assert c.get('/api/v1/pipeline/secrets.txt', HTTP_X_IMPORT_TOKEN='t0ken').status_code == 404
+
+
+def test_upsert_companies(db, settings):
+    import copy, json
+    from pathlib import Path
+    from django.test import Client
+    from apps.companies.models import Company
+    from apps.importer.services import import_payload
+    seed = json.loads((Path(__file__).resolve().parent.parent / 'data' / 'tracker.json').read_text())
+    import_payload(copy.deepcopy(seed), source='test')
+    settings.IMPORT_TOKEN = 'tok'
+    c = Client()
+    body = {'companies': [{'id': 'newco', 'name': 'NewCo', 'website': 'https://newco.ai', 'sector': 'AI', 'status': 'Private',
+                           'latest_valuation_usd_bn': 1.0, 'valuation_date': '2026-06', 'valuation_label': 'REPORTED',
+                           'valuation_history': [{'date': '2026-06', 'round': 'Seed', 'post_money_usd_bn': 1.0}],
+                           'gp_positions': [{'firm_id': 'kleiner', 'lead': True, 'entry_round': 'Series A', 'first_invest_year': 2026}, {'firm_id': 'zzz'}],
+                           'profile': {'summary': 'Builds things.', 'products': [{'name': 'Thing'}]}}]}
+    assert c.post('/api/v1/import/companies/', body, content_type='application/json').status_code in (401, 403)
+    r = c.post('/api/v1/import/companies/', body, content_type='application/json', HTTP_X_IMPORT_TOKEN='tok').json()
+    assert r['added'] == ['newco'] and r['positions_added'] == 1 and r['unknown_gps'] == ['zzz']
+    co = Company.objects.get(slug='newco')
+    assert co.added_via == 'user' and co.profile['summary'] == 'Builds things.' and co.positions.get().lead
+    r2 = c.post('/api/v1/import/companies/', body, content_type='application/json', HTTP_X_IMPORT_TOKEN='tok').json()
+    assert r2['updated'] == ['newco'] and r2['positions_added'] == 0 and r2['rounds_added'] == 0
+    assert c.get('/api/v1/companies/newco/', HTTP_X_IMPORT_TOKEN='tok').status_code in (200, 401)
