@@ -16,7 +16,7 @@ import Rounds from '../../pages/Rounds'
 import Watchlist from '../../pages/Watchlist'
 import TrackRecord, { InvestmentDrawer } from '../../pages/TrackRecord'
 import Shortlist, { ShortlistDrawer } from '../../pages/Shortlist'
-import Trends, { ThemeDrawer } from '../../pages/Trends'
+import Trends, { MapCoModal, ThemeDrawer } from '../../pages/Trends'
 import { ResearchTray } from '../Research'
 
 const PAGES = { managers: Managers, companies: Companies, shortlist: Shortlist, trends: Trends, track: TrackRecord, rounds: Rounds, overlap: Overlap, watchlist: Watchlist, changes: Changes, method: Method }
@@ -86,6 +86,7 @@ function AppShell() {
       {drawer?.kind === 'inv' && <InvestmentDrawer key={drawer.id} id={drawer.id} />}
       {drawer?.kind === 'sl' && <ShortlistDrawer key={drawer.id} id={drawer.id} />}
       {drawer?.kind === 'th' && <ThemeDrawer key={drawer.id} id={drawer.id} />}
+      <MapCoModal />
     </div>
   )
 }

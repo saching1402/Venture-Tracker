@@ -16,6 +16,7 @@ import { clip, money } from '../lib/format'
 import { go } from '../lib/route'
 import { useData } from '../store/data'
 import { useResearch } from '../store/research'
+import { create } from 'zustand'
 import type { Deploy, HeatComponent, TrBrief, TrCompany, TrendsData, TrFramework, TrMark, TrResource, TrTheme } from '../types'
 
 const KEY = ['trends']
@@ -293,16 +294,99 @@ function HeatRanking({ themes, prev, onHelp }: { themes: TrTheme[]; prev: Record
 }
 
 // ── market map ───────────────────────────────────────────────────────────────
-function Tile({ c }: { c: TrCompany }) {
+// Every map company opens in-app: tracked ones open their full profile drawer, the rest a details popup.
+type MapCoSel = { c: TrCompany; theme?: string; segment?: string }
+const useMapCo = create<{ sel: MapCoSel | null; open: (s: MapCoSel) => void; close: () => void }>(set => ({
+  sel: null, open: sel => set({ sel }), close: () => set({ sel: null }),
+}))
+
+function useOpenCo() {
+  const { companies } = useData()
+  const open = useMapCo(s => s.open)
+  const tracked = useMemo(() => new Set(companies.map(c => c.id)), [companies])
+  return (c: TrCompany, theme?: string, segment?: string) => {
+    if (c.tracked && c.id && tracked.has(c.id)) go(`co-${c.id}`)
+    else open({ c, theme, segment })
+  }
+}
+
+function Tile({ c, theme, segment }: { c: TrCompany; theme?: string; segment?: string }) {
+  const openCo = useOpenCo()
   const tip = [c.name, c.description, c.valuation_usd_bn ? `${money(c.valuation_usd_bn)} (${c.valuation_date || 'n.d.'}${c.valuation_label ? `, ${c.valuation_label}` : ''})` : '',
-    c.last_round, c.investors?.length ? `Investors: ${c.investors.join(', ')}` : '', c.tracked ? 'Click for full profile' : c.domain ? 'Click to open website' : ''].filter(Boolean).join('\n')
-  const open = () => { if (c.tracked && c.id) go(`co-${c.id}`); else if (c.domain) window.open(`https://${c.domain}`, '_blank', 'noopener') }
+    c.last_round, 'Click for details'].filter(Boolean).join('\n')
   return (
-    <button className={`tile tile-${c.stage}`} title={tip} onClick={open}>
+    <button className={`tile tile-${c.stage}`} title={tip} onClick={() => openCo(c, theme, segment)}>
       <Logo domain={c.domain} name={c.name} />
       <span className="tile-nm">{c.name.replace(/ \(.*\)$/, '')}</span>
       <span className="tile-v">{c.valuation_usd_bn ? money(c.valuation_usd_bn) : STAGE_LABEL[c.stage]}</span>
     </button>
+  )
+}
+
+export function MapCoModal() {
+  const { sel, close } = useMapCo()
+  const { managers } = useData()
+  useEffect(() => {
+    if (!sel) return
+    const k = (e: KeyboardEvent) => { if (e.key === 'Escape') close() }
+    window.addEventListener('keydown', k)
+    return () => window.removeEventListener('keydown', k)
+  }, [sel, close])
+  if (!sel) return null
+  const { c, theme, segment } = sel
+  const site = c.domain ? `https://${c.domain.replace(/^https?:\/\//, '')}` : ''
+  const gpByName = (n: string) => {
+    const k = n.toLowerCase().replace(/[^a-z0-9]/g, '')
+    return managers.find(m => m.name.toLowerCase().replace(/[^a-z0-9]/g, '') === k || m.id === k)
+  }
+  return (
+    <div className="modal-overlay" onClick={close}>
+      <div className="modal-panel" role="dialog" aria-modal="true" aria-label={c.name} onClick={e => e.stopPropagation()}>
+        <div className="modal-header" style={{ alignItems: 'flex-start', gap: 12 }}>
+          <Logo domain={c.domain} name={c.name} size={40} />
+          <div style={{ minWidth: 0 }}>
+            <div className="modal-title" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>{c.name}<span className={`stg stg-${c.stage}`}>{STAGE_LABEL[c.stage]}</span></div>
+            <div className="note">{[theme, segment].filter(Boolean).join(' · ')}</div>
+            {site && <a href={site} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12.5 }}>{c.domain} ↗</a>}
+          </div>
+          <button className="btn" style={{ marginLeft: 'auto' }} onClick={close}>Close</button>
+        </div>
+        <div className="modal-body" style={{ overflowY: 'auto', padding: '14px 20px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {c.description && <p style={{ margin: 0 }}>{c.description}</p>}
+          <div className="facts">
+            <div><div className="k">Latest valuation</div><div className="v big">{c.valuation_usd_bn ? money(c.valuation_usd_bn) : '—'}</div>
+              <div className="note">{[c.valuation_date, c.valuation_label].filter(Boolean).join(' · ')}</div></div>
+            <div><div className="k">Stage</div><div className="v">{STAGE_LABEL[c.stage]}</div><div className="note">{c.status}</div></div>
+            {c.hq && <div><div className="k">HQ</div><div className="v">{c.hq}</div></div>}
+            {c.revenue_usd_bn ? <div><div className="k">{c.revenue_metric || 'Revenue'}</div><div className="v">{money(c.revenue_usd_bn)}</div></div> : null}
+            {c.last_round && <div style={{ gridColumn: '1 / -1' }}><div className="k">Last round</div><div className="v" style={{ fontWeight: 500 }}>{c.last_round}</div></div>}
+          </div>
+          {c.investors?.length > 0 && (
+            <div>
+              <div className="mm-seg-nm">Investors</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {c.investors.map(n => {
+                  const m = gpByName(n)
+                  return m
+                    ? <button key={n} className="chip on" onClick={() => { close(); go(`gp-${m.id}`) }} title="Tracked GP: open profile">{n}</button>
+                    : <span key={n} className="chip" style={{ cursor: 'default' }}>{n}</span>
+                })}
+              </div>
+            </div>
+          )}
+          {c.note && <p className="note" style={{ margin: 0 }}>{c.note}</p>}
+          {c.rounds?.length > 0 && (
+            <table className="mini-tbl"><thead><tr><th>Date</th><th>Round</th><th>Post-money</th></tr></thead>
+              <tbody>{c.rounds.map(r => <tr key={r.date + r.round}><td>{r.date}</td><td>{r.round}</td><td>{money(r.post_money_usd_bn)}</td></tr>)}</tbody></table>
+          )}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+            {site && <a className="btn btn-primary" href={site} target="_blank" rel="noopener noreferrer">Visit website ↗</a>}
+            {c.url && <a className="btn" href={c.url} target="_blank" rel="noopener noreferrer">Source ↗</a>}
+            <span className="note">From the Trends market map; not yet a tracked company, so there is no full profile.</span>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -329,14 +413,14 @@ function MarketMap({ themes, stage, only, setOnly }: { themes: TrTheme[]; stage:
               {segs.map(s => (
                 <div key={s.name} className="mm-seg">
                   <div className="mm-seg-nm">{s.name}</div>
-                  <div className="mm-tiles">{s.companies.map(c => <Tile key={c.name} c={c} />)}</div>
+                  <div className="mm-tiles">{s.companies.map(c => <Tile key={c.name} c={c} theme={t.name} segment={s.name} />)}</div>
                 </div>
               ))}
             </section>
           )
         })}
       </div>
-      <p className="note" style={{ marginTop: 8 }}>Logos via each company's website icon. Valuations: the newer of the tracker's mark and the theme's sourced mark. Hover for details; tracked companies open their profile.</p>
+      <p className="note" style={{ marginTop: 8 }}>Logos via each company's website icon. Valuations: the newer of the tracker's mark and the theme's sourced mark. Click any company for details; tracked companies open their full profile.</p>
     </Card>
   )
 }
@@ -546,6 +630,7 @@ export function ThemeDrawer({ id }: { id: string }) {
   const est = data.models.find(m => m.id === model)?.est_company
   const fund = t.funding.filter(f => f.capital_usd_bn != null)
   const tracked = new Set(companies.map(c => c.id))
+  const openCo = useOpenCo()
 
   return (
     <Drawer eyebrow={`Trend theme · ${t.category}`} title={t.name}
@@ -592,8 +677,7 @@ export function ThemeDrawer({ id }: { id: string }) {
             <div className="mm-seg-nm">{s.name}</div>
             <table className="mini-tbl"><thead><tr><th>Company</th><th>Stage</th><th>Valuation</th><th>Last round / note</th></tr></thead>
               <tbody>{s.companies.map(c => (
-                <tr key={c.name} style={{ cursor: c.tracked || c.domain ? 'pointer' : undefined }}
-                  onClick={() => { if (c.tracked && c.id && tracked.has(c.id)) go(`co-${c.id}`); else if (c.domain) window.open(`https://${c.domain}`, '_blank', 'noopener') }}>
+                <tr key={c.name} style={{ cursor: 'pointer' }} onClick={() => openCo(c, t.name, s.name)}>
                   <td><span style={{ display: 'inline-flex', gap: 7, alignItems: 'center' }}><Logo domain={c.domain} name={c.name} size={20} /><span><b style={{ fontWeight: 600 }}>{c.name}</b><div className="sub">{clip(c.description, 90)}</div></span></span></td>
                   <td><span className={`stg stg-${c.stage}`}>{STAGE_LABEL[c.stage]}</span></td>
                   <td>{money(c.valuation_usd_bn)}<div className="sub">{c.valuation_date}{c.valuation_label ? ` · ${c.valuation_label}` : ''}</div></td>
