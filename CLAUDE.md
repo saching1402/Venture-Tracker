@@ -47,6 +47,7 @@ All money is **USD billions** (float). Dates are `YYYY-MM` or `YYYY-MM-DD` strin
 - Adding an untracked name creates the company/manager row + a profile ResearchJob; `research.engine.run_job` then calls `after_profile` to queue the first refresh.
 - API `/api/v1/shortlist/`: GET (items + can_edit + model menu), POST add, `<id>/` PATCH (my_priority + note, thesis, rounds_plan, target) / DELETE, `<id>/refresh/`, `refresh/` (kind, priority, ids), `news/<id>/` DELETE (dismiss). Edits need admin/analyst.
 - Migration `0002_seed_shortlist` seeds Anthropic, OpenAI, Anduril, Physical Intelligence, Baseten, Fireworks (my priority L1; Claude's initial view) and queues a first refresh when ANTHROPIC_API_KEY is set. Snapshot imports never delete shortlisted companies/managers.
+- Migration `0003_add_armada` (14-Nov-26 ADCG-VG run) enriches the live Armada row (Series B $2.21bn post, rounds, FF/Lux/Felicis/8VC positions) and shortlists it with Claude L2 and my priority unset; it is a no-op on a fresh DB, where `tracker.json` carries the same data.
 - Frontend: `pages/Shortlist.tsx` (tab `#shortlist`, drawer `#sl-<id>`).
 
 ## Trends (apps/trends)
